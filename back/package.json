@@ -26,7 +26,9 @@
     "prisma:generate": "npx prisma generate --schema ./src/shared/infrastructure/database/prisma/schema.prisma",
     "prisma:migrate": "npx dotenv-cli -e .env.development -- prisma migrate dev --schema ./src/shared/infrastructure/database/prisma/schema.prisma",
     "prisma:migrate-test": "npx dotenv-cli -e .env.test -- npx prisma migrate deploy --schema ./src/shared/infrastructure/database/prisma/schema.prisma",
-    "generate:openapi": "ts-node scripts/generate-open-api.ts"
+    "generate:openapi": "ts-node scripts/generate-open-api.ts",
+    "plop": "plop",
+    "generate": "plop --plopfile generators/plopfile.cjs"
   },
   "dependencies": {
     "@fastify/static": "^7.0.4",
@@ -64,6 +66,7 @@
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
     "jest": "^29.5.0",
+    "plop": "^4.0.4",
     "prettier": "^3.0.0",
     "prisma": "^5.19.1",
     "source-map-support": "^0.5.21",

@@ -1,0 +1,20 @@
+import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { ClassValidatorFields } from '@/shared/domain/entities/validators/class-validator-fields';
+import { {{pascalCase name}}Props } from '@/{{dashCase name}}/domain/entities/{{dashCase name}}.entity';
+
+class {{pascalCase name}}Rules {
+  constructor(data: {{pascalCase name}}Props) {
+  }
+}
+
+export class {{pascalCase name}}Validator extends ClassValidatorFields<{{pascalCase name}}Rules> {
+  validate(data: {{pascalCase name}}Props): boolean {
+    return super.validate(new {{pascalCase name}}Rules(data));
+  }
+}
+
+export class {{pascalCase name}}ValidatorFactory {
+  static create(): {{pascalCase name}}Validator {
+    return new {{pascalCase name}}Validator();
+  }
+}

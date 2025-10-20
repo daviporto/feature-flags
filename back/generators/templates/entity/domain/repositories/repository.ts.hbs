@@ -1,0 +1,24 @@
+import { RepositoryInterface } from '@/shared/domain/repositories/repository-contracts';
+import { {{pascalCase name}}Entity } from '@/{{dashCase name}}/domain/entities/{{dashCase name}}.entity';
+import {
+  SearchParams as DefaultSearchParams,
+  SearchResult as DefaultSearchResult,
+  SearchableRepositoryInterface,
+} from '@/shared/domain/repositories/searchable-repository-contracts';
+
+export namespace {{pascalCase name}}Repository {
+  export type Filter = string;
+
+  export class SearchParams extends DefaultSearchParams<Filter> {}
+
+  export class SearchResult extends DefaultSearchResult<{{pascalCase name}}Entity, Filter> {}
+
+  export interface Repository
+    extends SearchableRepositoryInterface<
+      {{pascalCase name}}Entity,
+      Filter,
+      SearchParams,
+      SearchResult
+    > {
+  }
+}

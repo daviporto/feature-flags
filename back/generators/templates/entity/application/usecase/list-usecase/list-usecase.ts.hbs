@@ -1,0 +1,34 @@
+import { {{pascalCase name}}Repository } from '@/{{dashCase name}}/domain/repositories/{{dashCase name}}.repository';
+import { UseCaseInterface } from '@/shared/application/use-cases/use-case';
+import { SearchInput } from '@/shared/application/dtos/search-input';
+import {
+  PaginationOutput,
+  PaginationOutputMapper,
+} from '@/shared/application/dtos/pagination-output';
+import { {{pascalCase name}}OutputMapper } from '@/{{dashCase name}}/application/dtos/{{dashCase name}}-output';
+
+export namespace List{{pascalCase name}}sUsecase {
+  export type Input = SearchInput;
+
+  export type Output = PaginationOutput;
+
+  export class UseCase implements UseCaseInterface<Input, Output> {
+    constructor(private repository: {{pascalCase name}}Repository.Repository) {}
+
+    async execute(input: Input): Promise<Output> {
+      const params = new {{pascalCase name}}Repository.SearchParams(input);
+
+      const searchResult = await this.repository.search(params);
+
+      return this.toOutput(searchResult);
+    }
+
+    private toOutput(searchResult: {{pascalCase name}}Repository.SearchResult): Output {
+      const item = searchResult.items.map(({{dashCase name}}) =>
+        {{pascalCase name}}OutputMapper.toOutput({{dashCase name}}),
+      );
+
+      return PaginationOutputMapper.toOutput(item, searchResult);
+    }
+  }
+}

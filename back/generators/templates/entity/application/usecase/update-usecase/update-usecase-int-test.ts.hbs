@@ -1,0 +1,39 @@
+import { PrismaClient } from '@prisma/client';
+import { {{pascalCase name}}PrismaRepository } from '@/{{dashCase name}}/infrastructure/database/prisma/repositories/{{dashCase name}}-prisma.repository';
+import { Test, TestingModule } from '@nestjs/testing';
+import { setUpPrismaTest } from '@/shared/infrastructure/database/prisma/testing/set-up-prisma-test';
+import { DatabaseModule } from '@/shared/infrastructure/database/database.module';
+import { {{pascalCase name}}DataBuilder } from '@/{{dashCase name}}/domain/testing/helper/{{dashCase name}}-data-builder';
+import { {{pascalCase name}}WithIdNotFoundError } from '@/{{dashCase name}}/infrastructure/errors/{{dashCase name}}-with-id-not-found-error';
+import { Update{{pascalCase name}}Usecase } from '@/{{dashCase name}}/application/usecases/update-{{dashCase name}}.usecase';
+
+describe('Update {{dashCase name}} usecase integration tests', () => {
+  const prismaService = new PrismaClient();
+  let repository: {{pascalCase name}}PrismaRepository;
+  let sut: Update{{pascalCase name}}Usecase.UseCase;
+  let module: TestingModule;
+
+  beforeAll(async () => {
+    setUpPrismaTest();
+
+    module = await Test.createTestingModule({
+      imports: [DatabaseModule.forTest(prismaService)],
+    }).compile();
+
+    repository = new {{pascalCase name}}PrismaRepository(prismaService as any);
+  });
+
+  beforeEach(async () => {
+    sut = new Update{{pascalCase name}}Usecase.UseCase(repository);
+    await prismaService.{{dashCase name}}.deleteMany();
+  });
+
+  afterAll(async () => {
+    await prismaService.$disconnect();
+    await module.close();
+  });
+
+  it.todo('should throw error when {{dashCase name}} not found');
+
+  it.todo('should update a {{dashCase name}}');
+});

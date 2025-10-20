@@ -1,0 +1,18 @@
+import { {{pascalCase name}}Repository } from '@/{{dashCase name}}/domain/repositories/{{dashCase name}}.repository';
+import { UseCaseInterface } from '@/shared/application/use-cases/use-case';
+
+export namespace Delete{{pascalCase name}}Usecase {
+  export type Input = {
+    id: string;
+  };
+
+  export type Output = void;
+
+  export class UseCase implements UseCaseInterface<Input, Output> {
+    constructor(private repository: {{pascalCase name}}Repository.Repository) {}
+
+    async execute(input: Input): Promise<Output> {
+      await this.repository.delete(input.id);
+    }
+  }
+}

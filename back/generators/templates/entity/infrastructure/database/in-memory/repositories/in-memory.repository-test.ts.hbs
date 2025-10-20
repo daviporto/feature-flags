@@ -1,0 +1,34 @@
+import { {{pascalCase name}}InMemoryRepository } from '@/{{dashCase name}}/infrastructure/database/in-memory/repositories/{{dashCase name}}-in-memory.repository';
+import { {{pascalCase name}}WithEmailNotFoundError } from '@/{{dashCase name}}/domain/errors/{{dashCase name}}-with-email-not-found-error';
+import { faker } from '@faker-js/faker';
+import { {{pascalCase name}}DataBuilder } from '@/{{dashCase name}}/domain/testing/helper/{{dashCase name}}-data-builder';
+import { {{pascalCase name}}Entity, {{pascalCase name}}Props } from '@/{{dashCase name}}/domain/entities/{{dashCase name}}.entity';
+import { SortOrderEnum } from '@/shared/domain/repositories/searchable-repository-contracts';
+
+function create{{pascalCase name}}Entity({{dashCase name}}Props: Partial<{{pascalCase name}}Props> = {}) {
+  return new {{pascalCase name}}Entity({{pascalCase name}}DataBuilder({{dashCase name}}Props));
+}
+
+describe('{{dashCase name}} in memory repository', () => {
+  let sut: {{pascalCase name}}InMemoryRepository;
+
+  beforeEach(() => {
+    sut = new {{pascalCase name}}InMemoryRepository();
+  });
+
+  describe('apply filters method', () => {
+    it('should return item with null filter', async () => {
+      const items = Array.from({ length: 3 }, () => create{{pascalCase name}}Entity());
+
+      const spyFilter = jest.spyOn(items, 'filter');
+
+      const result = await sut['applyFilters'](items, null);
+
+      expect(result).toStrictEqual(items);
+      expect(spyFilter).not.toHaveBeenCalled();
+    });
+
+  });
+
+  describe('apply sort method', () => { });
+});

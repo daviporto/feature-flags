@@ -1,0 +1,12 @@
+import { {{pascalCase name}}Entity, {{pascalCase name}}Props } from '@/{{dashCase name}}/domain/entities/{{dashCase name}}.entity';
+import { {{pascalCase name}}DataBuilder } from '@/{{dashCase name}}/domain/testing/helper/{{dashCase name}}-data-builder';
+
+function commonAssertions(sut: {{pascalCase name}}Entity, props: {{pascalCase name}}Props) { }
+
+describe('{{pascalCase name}} entity unit tests', () => {
+  let sut: {{pascalCase name}}Entity;
+
+  beforeEach(() => {
+    {{pascalCase name}}Entity.validate = jest.fn();
+  })
+});

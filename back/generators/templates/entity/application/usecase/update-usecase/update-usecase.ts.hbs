@@ -1,0 +1,19 @@
+import { {{pascalCase name}}Repository } from '@/{{dashCase name}}/domain/repositories/{{dashCase name}}.repository';
+import {
+  {{pascalCase name}}Output,
+  {{pascalCase name}}OutputMapper,
+} from '@/{{dashCase name}}/application/dtos/{{dashCase name}}-output';
+import { UseCaseInterface } from '@/shared/application/use-cases/use-case';
+import { BadRequestError } from '@/shared/application/errors/bad-request-error';
+
+export namespace Update{{pascalCase name}}Usecase {
+  export type Input = { };
+
+  export type Output = {{pascalCase name}}Output;
+
+  export class UseCase implements UseCaseInterface<Input, Output> {
+    constructor(private repository: {{pascalCase name}}Repository.Repository) {}
+
+    async execute(input: Input): Promise<Output> { }
+  }
+}

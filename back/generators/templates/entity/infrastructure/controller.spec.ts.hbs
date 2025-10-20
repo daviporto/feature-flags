@@ -1,0 +1,92 @@
+import { {{pascalCase name}}Controller } from '@/{{dashCase name}}/infrastructure/{{dashCase name}}.controller';
+import { {{pascalCase name}}Output } from '@/{{dashCase name}}/application/dtos/{{dashCase name}}-output';
+import { {{pascalCase name}}DataBuilder } from '@/{{dashCase name}}/domain/testing/helper/{{dashCase name}}-data-builder';
+import { List{{pascalCase name}}sDto } from '@/{{dashCase name}}/infrastructure/dtos/list-{{dashCase name}}.dto';
+import { Update{{pascalCase name}}Dto } from '@/{{dashCase name}}/infrastructure/dtos/update-{{dashCase name}}.dto';
+import { faker } from '@faker-js/faker';
+import {
+  {{pascalCase name}}CollectionPresenter,
+  {{pascalCase name}}Presenter,
+} from '@/{{dashCase name}}/infrastructure/presenters/{{dashCase name}}.presenter';
+import { List{{pascalCase name}}sUsecase } from '@/{{dashCase name}}/application/usecases/list-{{dashCase name}}.usecase';
+
+describe('{{pascalCase name}}Controller unit tests', () => {
+  let sut: {{pascalCase name}}Controller;
+  let id: string;
+  let props: {{pascalCase name}}Output;
+
+  beforeEach(() => {
+    sut = new {{pascalCase name}}Controller();
+    props = {
+      id: '5ea0320a-3483-42d4-be62-48e29b9a631d',
+      ...{{pascalCase name}}DataBuilder({}),
+    };
+  });
+
+  it('should be defined', () => {
+    expect(sut).toBeDefined();
+  });
+
+
+  it('should list {{lowerCase name}}s', async () => {
+    const {{dashCase name}}s = [props];
+    const output: List{{pascalCase name}}sUsecase.Output = {
+      items: {{dashCase name}}s,
+      currentPage: 1,
+      lastPage: 1,
+      perPage: 10,
+      total: 1,
+    };
+
+    const mockList{{pascalCase name}}sUseCase = {
+      execute: jest.fn().mockResolvedValue(Promise.resolve(output)),
+    };
+
+    sut['list{{pascalCase name}}sUseCase'] = mockList{{pascalCase name}}sUseCase as any;
+
+    const input: List{{pascalCase name}}sDto = {};
+    const presenter = await sut.search(input);
+    expect(presenter).toBeInstanceOf({{pascalCase name}}CollectionPresenter);
+    expect(presenter).toEqual(new {{pascalCase name}}CollectionPresenter(output));
+    expect(mockList{{pascalCase name}}sUseCase.execute).toHaveBeenCalledWith(input);
+  });
+
+  it('should return a single {{lowerCase name}} by ID', async () => {
+    const mockGet{{pascalCase name}}UseCase = {
+      execute: jest.fn().mockResolvedValue(Promise.resolve(props)),
+    };
+
+    sut['get{{pascalCase name}}UseCase'] = mockGet{{pascalCase name}}UseCase as any;
+
+    const presenter = await sut.findOne(id);
+    expect(presenter).toBeInstanceOf({{pascalCase name}}Presenter);
+    expect(presenter).toMatchObject(new {{pascalCase name}}Presenter(props));
+  });
+
+  it('should update {{lowerCase name}} data', async () => {
+    const updatedProps = { ...props, name: faker.person.fullName() };
+    const mockUpdate{{pascalCase name}}UseCase = {
+      execute: jest.fn().mockResolvedValue(Promise.resolve(updatedProps)),
+    };
+
+    sut['update{{pascalCase name}}UseCase'] = mockUpdate{{pascalCase name}}UseCase as any;
+
+    const input: Update{{pascalCase name}}Dto = { name: updatedProps.name };
+
+    const presenter = await sut.update(id, input);
+    expect(presenter).toBeInstanceOf({{pascalCase name}}Presenter);
+    expect(presenter).toMatchObject(new {{pascalCase name}}Presenter(updatedProps));
+    expect(mockUpdate{{pascalCase name}}UseCase.execute).toHaveBeenCalledWith(input);
+  });
+
+  it('should delete a {{lowerCase name}} by ID', async () => {
+    const mockDelete{{pascalCase name}}UseCase = {
+      execute: jest.fn().mockResolvedValue(Promise.resolve()),
+    };
+
+    sut['delete{{pascalCase name}}UseCase'] = mockDelete{{pascalCase name}}UseCase as any;
+
+    await sut.remove(id);
+    expect(mockDelete{{pascalCase name}}UseCase.execute).toHaveBeenCalledWith({ id });
+  });
+});

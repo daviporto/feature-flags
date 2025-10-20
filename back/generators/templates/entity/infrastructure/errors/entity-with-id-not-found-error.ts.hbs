@@ -1,0 +1,6 @@
+export class {{pascalCase name}}WithIdNotFoundError extends Error {
+  constructor(public id: string) {
+    super(`{{dashCase name}} having id ${id} not found`);
+    this.name = '{{dashCase name}}WithIdNotFoundError';
+  }
+}

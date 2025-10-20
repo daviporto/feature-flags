@@ -1,0 +1,24 @@
+import { {{pascalCase name}}Output } from '@/{{dashCase name}}/application/dtos/{{dashCase name}}-output';
+import { CollectionPresenter } from '@/shared/infrastructure/presenters/collection.presenter';
+import { List{{pascalCase name}}sUsecase } from '@/{{dashCase name}}/application/usecases/list-{{dashCase name}}s.usecase';
+import { ApiProperty, ApiExtraModels } from '@nestjs/swagger';
+
+export class {{pascalCase name}}Presenter {
+  constructor(output: {{pascalCase name}}Output) { }
+}
+
+@ApiExtraModels({{pascalCase name}}Presenter)
+export class {{pascalCase name}}CollectionPresenter extends CollectionPresenter {
+  @ApiProperty({
+    type: {{pascalCase name}}Presenter,
+    isArray: true,
+    description: 'List of {{pascalCase name}}',
+  })
+  data: {{pascalCase name}}Presenter[];
+
+  constructor(output: List{{pascalCase name}}sUsecase.Output) {
+    const { items, ...pagination } = output;
+    super(pagination);
+    this.data = items.map((item) => new {{pascalCase name}}Presenter(item));
+  }
+}

@@ -1,0 +1,19 @@
+import {
+  {{pascalCase name}}Validator,
+  {{pascalCase name}}ValidatorFactory,
+} from '../../{{dashCase name}}.validator';
+
+let sut: {{pascalCase name}}Validator;
+
+describe('{{pascalCase name}}ValidatorFields Unit Tests', () => {
+  beforeEach(() => {
+    sut = {{pascalCase name}}ValidatorFactory.create();
+  });
+
+  it('should validate without data', () => {
+    const isValid = sut.validate(null);
+
+    expect(isValid).toBeFalsy();
+    expect(sut.errors).toBeDefined();
+  });
+});

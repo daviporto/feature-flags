@@ -1,0 +1,15 @@
+import { {{pascalCase name}} } from '@prisma/client';
+import { {{pascalCase name}}Entity } from '@/{{dashCase name}}/domain/entities/{{dashCase name}}.entity';
+import { ValidationErrors } from '@/shared/domain/errors/validation-errors';
+
+export class {{pascalCase name}}ModelMapper {
+  static toEntity(model: {{pascalCase name}}): {{pascalCase name}}Entity {
+    const data = { };
+
+    try {
+      return new {{pascalCase name}}Entity(data, model.id);
+    } catch {
+      throw new ValidationErrors(`Could not load {{dashCase name}} having id ${model.id}`);
+    }
+  }
+}

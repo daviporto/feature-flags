@@ -1,0 +1,130 @@
+import { SortOrderEnum } from '@/shared/domain/repositories/searchable-repository-contracts';
+import { List{{pascalCase name}}sUsecase } from '@/{{dashCase name}}/application/usecases/list-{{dashCase name}}.usecase';
+import { {{pascalCase name}}InMemoryRepository } from '@/{{dashCase name}}/infrastructure/database/in-memory/repositories/{{dashCase name}}-in-memory.repository';
+import { {{pascalCase name}}Repository } from '@/{{dashCase name}}/domain/repositories/{{dashCase name}}.repository';
+import { {{pascalCase name}}Entity, {{pascalCase name}}Props } from '@/{{dashCase name}}/domain/entities/{{dashCase name}}.entity';
+import { {{pascalCase name}}DataBuilder } from '@/{{dashCase name}}/domain/testing/helper/{{dashCase name}}-data-builder';
+
+describe('List {{lowerCase name}}s use cases unit tests', () => {
+  function create{{pascalCase name}}Entity({{dashCase name}}Props: Partial<{{pascalCase name}}Props> = {}) {
+    return new {{pascalCase name}}Entity({{pascalCase name}}DataBuilder({{dashCase name}}Props));
+  }
+
+  let sut: List{{pascalCase name}}sUsecase.UseCase;
+  let repository: {{pascalCase name}}InMemoryRepository;
+
+  beforeEach(() => {
+    repository = new {{pascalCase name}}InMemoryRepository();
+    sut = new List{{pascalCase name}}sUsecase.UseCase(repository);
+  });
+
+  describe('test to output', () => {
+    it('should return empty result in output', () => {
+      const result = new {{pascalCase name}}Repository.SearchResult({
+        items: [],
+        total: 1,
+        currentPage: 1,
+        perPage: 1,
+        sort: null,
+        sortDir: null,
+        filter: null,
+      });
+
+      const output = sut['toOutput'](result);
+
+      expect(output).toStrictEqual({
+        items: [],
+        total: 1,
+        currentPage: 1,
+        lastPage: 1,
+        perPage: 1,
+      });
+    });
+
+    it('should return {{lowerCase name}} entity result in output', () => {
+      const entity = new {{pascalCase name}}Entity({{pascalCase name}}DataBuilder({}));
+      const result = new {{pascalCase name}}Repository.SearchResult({
+        items: [entity],
+        total: 1,
+        currentPage: 1,
+        perPage: 1,
+        sort: null,
+        sortDir: null,
+        filter: null,
+      });
+
+      const output = sut['toOutput'](result);
+
+      expect(output).toStrictEqual({
+        items: [entity.toJSON()],
+        total: 1,
+        currentPage: 1,
+        lastPage: 1,
+        perPage: 1,
+      });
+    });
+  });
+
+  it('should return sorted by created at by default', async () => {
+    const initialDate = new Date();
+    const {{dashCase name}}s = [
+      create{{pascalCase name}}Entity({ createdAt: initialDate }),
+      create{{pascalCase name}}Entity({ createdAt: new Date(initialDate.getTime() + 1) }),
+      create{{pascalCase name}}Entity({ createdAt: new Date(initialDate.getTime() + 2) }),
+    ];
+    repository.items = {{dashCase name}}s;
+
+    const result = await sut.execute({});
+
+    expect(result.total).toBe({{dashCase name}}s.length);
+    expect(result.currentPage).toBe(1);
+    expect(result.lastPage).toBe(1);
+    expect(result.perPage).toBe(10);
+
+    expect(result.items[0].createdAt.getTime()).toStrictEqual(
+      initialDate.getTime() + 2,
+    );
+
+    expect(result.items[1].createdAt.getTime()).toStrictEqual(
+      initialDate.getTime() + 1,
+    );
+    expect(result.items[2].createdAt.getTime()).toStrictEqual(
+      initialDate.getTime(),
+    );
+  });
+
+  it('should return {{dashCase name}}s filtered, paginated and sorted', async () => {
+    const {{dashCase name}}s = [
+      create{{pascalCase name}}Entity({ name: 'a' }),
+      create{{pascalCase name}}Entity({ name: 'A' }),
+      create{{pascalCase name}}Entity({ name: 'b' }),
+      create{{pascalCase name}}Entity({ name: 'c' }),
+    ];
+    repository.items = {{dashCase name}}s;
+
+    const result = await sut.execute({
+      page: 1,
+      perPage: 2,
+      sort: 'name',
+      sortDir: SortOrderEnum.ASC,
+      filter: 'a',
+    });
+
+    expect(result.total).toBe(2);
+    expect(result.currentPage).toBe(1);
+    expect(result.lastPage).toBe(1);
+    expect(result.perPage).toBe(2);
+
+    expect(result.items[0].name).toBe('A');
+    expect(result.items[1].name).toBe('a');
+  });
+
+  it.todo('should return second page when empty in pagination', async () => {
+  });
+
+  it.todo('should return items in second page when having them', async () => {
+  });
+
+  it.todo('should return empty result when no filter found', async () => {
+  });
+});

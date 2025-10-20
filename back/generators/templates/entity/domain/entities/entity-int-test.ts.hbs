@@ -1,0 +1,15 @@
+import { {{pascalCase name}}DataBuilder } from '@/{{dashCase name}}/domain/testing/helper/{{dashCase name}}-data-builder';
+import { {{pascalCase name}}Entity } from '@/{{dashCase name}}/domain/entities/{{dashCase name}}.entity';
+import { EntityValidationError } from '@/shared/domain/errors/validation-errors';
+
+describe('{{pascalCase name}} entity integration tests', () => {
+  describe('Constructor tests', () => {
+    it('should throw error with invalid name', () => {
+      const props = {
+        ...{{pascalCase name}}DataBuilder({}),
+      };
+
+      expect(() => new {{pascalCase name}}Entity(props)).toThrow(EntityValidationError);
+    });
+  });
+});

@@ -1,0 +1,11 @@
+import { {{pascalCase name}}Entity } from '@/{{dashCase name }}/domain/entities/{{dashCase name}}.entity';
+
+export type {{pascalCase name}}Output = {
+
+}
+
+export class {{pascalCase name}}OutputMapper {
+  static toOutput(entity: {{pascalCase name}}Entity): {{pascalCase name}}Output {
+    return entity.toJSON();
+  }
+}
