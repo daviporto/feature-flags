@@ -14,7 +14,7 @@ export class FeatureFlagFakeBuilder<TBuild = any> {
   private _createdAt: PropOrFactory<Date> | undefined = undefined;
   private _updatedAt: PropOrFactory<Date> | undefined = undefined;
 
-  private countObjs: number;
+  private readonly countObjs: number;
 
   private faker: Faker;
 
