@@ -3,8 +3,13 @@ import { ClassValidatorFields } from '@/shared/domain/entities/validators/class-
 import { {{pascalCase name}}Props } from '@/{{dashCase name}}/domain/entities/{{dashCase name}}.entity';
 
 class {{pascalCase name}}Rules {
-  constructor(data: {{pascalCase name}}Props) {
-  }
+    @IsOptional()
+    @IsDate()
+    createdAt: Date;
+
+    constructor(data: {{pascalCase name}}Props) {
+        Object.assign(this, data);
+    }
 }
 
 export class {{pascalCase name}}Validator extends ClassValidatorFields<{{pascalCase name}}Rules> {
