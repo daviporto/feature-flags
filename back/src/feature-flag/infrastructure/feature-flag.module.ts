@@ -1,0 +1,58 @@
+import { Module } from '@nestjs/common';
+import { FeatureFlagController } from './feature-flag.controller';
+import { FeatureFlagRepository } from '@/feature-flag/domain/repositories/feature-flag.repository';
+import { GetFeatureFlagUsecase } from '@/feature-flag/application/usecases/get-feature-flag.usecase';
+import { ListFeatureFlagsUsecase } from '@/feature-flag/application/usecases/list-feature-flag.usecase';
+import { UpdateFeatureFlagUsecase } from '@/feature-flag/application/usecases/update-feature-flag.usecase';
+import { DeleteFeatureFlagUsecase } from '@/feature-flag/application/usecases/delete-feature-flag.usecase';
+import { PrismaService } from '@/shared/infrastructure/database/prisma/prisma.service';
+import { FeatureFlagPrismaRepository } from '@/feature-flag/infrastructure/database/prisma/repositories/feature-flag-prisma.repository';
+import { AuthModule } from '@/auth/infrastructure/auth.module';
+
+@Module({
+  imports: [AuthModule],
+  controllers: [FeatureFlagController],
+  providers: [
+    {
+      provide: 'PrismaService',
+      useClass: PrismaService,
+    },
+    {
+      provide: 'FeatureFlagRepository',
+      useFactory: (prismaService: PrismaService) => {
+        return new FeatureFlagPrismaRepository(prismaService);
+      },
+      inject: ['PrismaService'],
+    },
+    {
+      provide: GetFeatureFlagUsecase.UseCase,
+      useFactory: (feature-flagRepository: FeatureFlagRepository.Repository) => {
+        return new GetFeatureFlagUsecase.UseCase(feature-flagRepository);
+      },
+      inject: ['FeatureFlagRepository'],
+    },
+    {
+      provide: ListFeatureFlagsUsecase.UseCase,
+      useFactory: (feature-flagRepository: FeatureFlagRepository.Repository) => {
+        return new ListFeatureFlagsUsecase.UseCase(feature-flagRepository);
+      },
+      inject: ['FeatureFlagRepository'],
+    },
+    {
+      provide: UpdateFeatureFlagUsecase.UseCase,
+      useFactory: (feature-flagRepository: FeatureFlagRepository.Repository) => {
+        return new UpdateFeatureFlagUsecase.UseCase(feature-flagRepository);
+      },
+      inject: ['FeatureFlagRepository'],
+    },
+    {
+      provide: DeleteFeatureFlagUsecase.UseCase,
+      useFactory: (feature-flagRepository: FeatureFlagRepository.Repository) => {
+        return new DeleteFeatureFlagUsecase.UseCase(feature-flagRepository);
+      },
+      inject: ['FeatureFlagRepository'],
+    },
+  ],
+})
+
+export class FeatureFlagModule {}
