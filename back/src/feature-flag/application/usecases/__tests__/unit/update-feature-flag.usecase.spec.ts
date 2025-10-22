@@ -5,7 +5,7 @@ import { FeatureFlagWithIdNotFoundError } from '@/feature-flag/infrastructure/er
 import { BadRequestError } from '@/shared/application/errors/bad-request-error';
 import { UpdateFeatureFlagUsecase } from '@/feature-flag/application/usecases/update-feature-flag.usecase';
 
-describe('Update featureflag use case test', () => {
+describe('Update feature flag use case test', () => {
   let sut: UpdateFeatureFlagUsecase.UseCase;
   let repository: FeatureFlagInMemoryRepository;
 
@@ -14,5 +14,5 @@ describe('Update featureflag use case test', () => {
     sut = new UpdateFeatureFlagUsecase.UseCase(repository);
   });
 
-  it.todo('should throw featureflagWithIdNotFoundError if featureflag does not exist', async () => {});
+  it.todo('should throw feature flag WithIdNotFoundError if feature flag does not exist', async () => {});
 });

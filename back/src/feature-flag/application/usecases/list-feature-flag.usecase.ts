@@ -24,8 +24,8 @@ export namespace ListFeatureFlagsUsecase {
     }
 
     private toOutput(searchResult: FeatureFlagRepository.SearchResult): Output {
-      const item = searchResult.items.map((feature-flag) =>
-        FeatureFlagOutputMapper.toOutput(feature-flag),
+      const item = searchResult.items.map((featureFlag) =>
+        FeatureFlagOutputMapper.toOutput(featureFlag),
       );
 
       return PaginationOutputMapper.toOutput(item, searchResult);
