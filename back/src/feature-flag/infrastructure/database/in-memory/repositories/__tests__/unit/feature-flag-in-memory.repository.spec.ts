@@ -1,15 +1,14 @@
-import { FeatureFlagInMemoryRepository } from '@/feature-flag/infrastructure/database/in-memory/repositories/feature-flag-in-memory.repository';
-import { FeatureFlagWithEmailNotFoundError } from '@/feature-flag/domain/errors/feature-flag-with-email-not-found-error';
-import { faker } from '@faker-js/faker';
-import { FeatureFlagDataBuilder } from '@/feature-flag/domain/testing/helper/feature-flag-data-builder';
-import { FeatureFlagEntity, FeatureFlagProps } from '@/feature-flag/domain/entities/feature-flag.entity';
-import { SortOrderEnum } from '@/shared/domain/repositories/searchable-repository-contracts';
+import {
+  FeatureFlagInMemoryRepository
+} from '@/feature-flag/infrastructure/database/in-memory/repositories/feature-flag-in-memory.repository';
+import {FeatureFlagDataBuilder} from '@/feature-flag/domain/testing/helper/feature-flag-data-builder';
+import {FeatureFlagEntity, FeatureFlagProps} from '@/feature-flag/domain/entities/feature-flag.entity';
 
-function createFeatureFlagEntity(feature-flagProps: Partial<FeatureFlagProps> = {}) {
+function createFeatureFlagEntity(featureFlagProps: Partial<FeatureFlagProps> = {}) {
   return new FeatureFlagEntity(FeatureFlagDataBuilder(feature-flagProps));
 }
 
-describe('feature-flag in memory repository', () => {
+describe('featureFlag in memory repository', () => {
   let sut: FeatureFlagInMemoryRepository;
 
   beforeEach(() => {
