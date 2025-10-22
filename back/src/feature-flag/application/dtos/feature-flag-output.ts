@@ -1,6 +1,7 @@
 import {FeatureFlagEntity} from '@/feature-flag/domain/entities/feature-flag.entity';
 
 export type FeatureFlagOutput = {
+    id: string;
     name: string;
     description: string;
     enabled: boolean;
