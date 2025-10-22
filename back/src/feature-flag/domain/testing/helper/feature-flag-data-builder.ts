@@ -8,5 +8,6 @@ export function FeatureFlagDataBuilder(props: Partial<FeatureFlagProps>) {
     enabled: props.enabled || faker.datatype.boolean(),
     userId: props.userId || faker.string.uuid(),
     createdAt: props.createdAt || new Date(),
+    updatedAt: props.updatedAt || new Date(),
   };
 }
