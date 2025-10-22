@@ -1,8 +1,8 @@
 import {FeatureFlagOutput} from '@/feature-flag/application/dtos/feature-flag-output';
 import {CollectionPresenter} from '@/shared/infrastructure/presenters/collection.presenter';
-import {ListFeatureFlagsUsecase} from '@/feature-flag/application/usecases/list-feature-flags.usecase';
-import {ApiProperty, ApiExtraModels} from '@nestjs/swagger';
+import {ApiExtraModels, ApiProperty} from '@nestjs/swagger';
 import {Transform} from "class-transformer";
+import {ListFeatureFlagsUsecase} from "@/feature-flag/application/usecases/list-feature-flag.usecase";
 
 export class FeatureFlagPresenter {
     @ApiProperty({description: 'The id of the feature flag'})
@@ -21,8 +21,9 @@ export class FeatureFlagPresenter {
     @Transform(({value}: { value: Date }) => value.toISOString())
     createdAt: Date;
 
-    @ApiProperty({nullable, description: 'The data of last feature flag update'})
+    @ApiProperty({nullable: true, description: 'The data of last feature flag update'})
     @Transform(({value}: { value: Date }) => value.toISOString())
+    updatedAt: Date;
 
 
     constructor(output: FeatureFlagOutput) {
