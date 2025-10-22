@@ -1,57 +1,132 @@
-import { FeatureFlagDataBuilder } from '@/feature-flag/domain/testing/helper/feature-flag-data-builder';
+import {FeatureFlagOutput} from '@/feature-flag/application/dtos/feature-flag-output';
 import {
   FeatureFlagCollectionPresenter,
-  FeatureFlagPresenter,
+  FeatureFlagPresenter
 } from '@/feature-flag/infrastructure/presenters/feature-flag.presenter';
-import { faker } from '@faker-js/faker';
-import { instanceToPlain } from 'class-transformer';
-import { PaginationPresenter } from '@/shared/infrastructure/presenters/pagination.presenter';
+import {faker} from '@faker-js/faker';
+import {instanceToPlain} from 'class-transformer';
+import {ListFeatureFlagsUsecase} from '@/feature-flag/application/usecases/list-feature-flags.usecase';
 
 describe('FeatureFlag presenter unit tests', () => {
-  const id = faker.string.uuid();
-  let props = { ...FeatureFlagDataBuilder({}), id };
-  let sut: FeatureFlagPresenter;
+    describe('FeatureFlagPresenter', () => {
+        const id = faker.string.uuid();
+        const name = faker.lorem.word();
+        const description = faker.lorem.sentence();
+        const enabled = faker.datatype.boolean();
+        const createdAt = new Date();
+        const updatedAt = new Date();
 
-  beforeEach(() => {
-    sut = new FeatureFlagPresenter(props);
-  });
+        let props: FeatureFlagOutput;
+        let sut: FeatureFlagPresenter;
 
-  it.todo('Constructor', () => { });
+        beforeEach(() => {
+            props = {
+                id,
+                name,
+                description,
+                enabled,
+                createdAt,
+                updatedAt,
+            };
+            sut = new FeatureFlagPresenter(props);
+        });
 
-  it('Should present the date as expected', () => {
-    const output = instanceToPlain(sut);
-  });
+        it('Constructor', () => {
+            expect(sut).toBeDefined();
+            expect(sut.id).toEqual(props.id);
+            expect(sut.name).toEqual(props.name);
+            expect(sut.description).toEqual(props.description);
+            expect(sut.enabled).toEqual(props.enabled);
+            expect(sut.createdAt).toEqual(props.createdAt);
+            expect(sut.updatedAt).toEqual(props.updatedAt);
+        });
 
-  describe('FeatureFlagCollectionPresenter', () => {
-    let sut: FeatureFlagCollectionPresenter;
+        it('Should present the data as expected with transformed dates', () => {
+            const output = instanceToPlain(sut);
 
-    it('Constructor', () => {
-      const sut = new FeatureFlagCollectionPresenter({
-        items: [props],
-        currentPage: 2,
-        lastPage: 3,
-        perPage: 10,
-        total: 30,
-      });
-
-      expect(sut).toBeDefined();
-      expect(sut).toBeInstanceOf(FeatureFlagCollectionPresenter);
-      expect(sut.data).toHaveLength(1);
-      expect(sut.data[0]).toBeInstanceOf(FeatureFlagPresenter);
-      expect(sut.meta).toBeDefined();
-      expect(sut.meta).toBeInstanceOf(PaginationPresenter);
+            expect(output).toBeDefined();
+            expect(output.id).toEqual(id);
+            expect(output.name).toEqual(name);
+            expect(output.description).toEqual(description);
+            expect(output.enabled).toEqual(enabled);
+            expect(output.createdAt).toEqual(createdAt.toISOString());
+            expect(output.updatedAt).toEqual(updatedAt.toISOString());
+        });
     });
 
-    it('Should present the date as expected', () => {
-      const sut = new FeatureFlagCollectionPresenter({
-        items: [props],
-        currentPage: 2,
-        lastPage: 3,
-        perPage: 10,
-        total: 30,
-      });
+    describe('FeatureFlagCollectionPresenter', () => {
+        let output: ListFeatureFlagsUsecase.Output;
+        let sut: FeatureFlagCollectionPresenter;
 
-      const output = instanceToPlain(sut);
+        beforeEach(() => {
+            const items = Array.from({length: 3}, (_, index) => ({
+                id: faker.string.uuid(),
+                name: faker.lorem.word(),
+                description: faker.lorem.sentence(),
+                enabled: faker.datatype.boolean(),
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            }));
+
+            output = {
+                items,
+                total: items.length,
+                currentPage: 1,
+                lastPage: 1,
+                perPage: 10,
+            };
+
+            sut = new FeatureFlagCollectionPresenter(output);
+        });
+
+        it('Constructor', () => {
+            expect(sut).toBeDefined();
+            expect(sut.data).toHaveLength(output.items.length);
+            expect(sut.data[0]).toBeInstanceOf(FeatureFlagPresenter);
+            expect(sut.meta).toEqual({
+                total: output.total,
+                currentPage: output.currentPage,
+                lastPage: output.lastPage,
+                perPage: output.perPage,
+            });
+        });
+
+        it('Should present the collection data as expected', () => {
+            const presentation = instanceToPlain(sut);
+
+            expect(presentation).toBeDefined();
+            expect(presentation.meta).toEqual({
+                total: output.total,
+                currentPage: output.currentPage,
+                lastPage: output.lastPage,
+                perPage: output.perPage,
+            });
+            expect(presentation.data).toHaveLength(output.items.length);
+
+            presentation.data.forEach((item: any, index: number) => {
+                expect(item.id).toEqual(output.items[index].id);
+                expect(item.name).toEqual(output.items[index].name);
+                expect(item.description).toEqual(output.items[index].description);
+                expect(item.enabled).toEqual(output.items[index].enabled);
+                expect(item.createdAt).toEqual(output.items[index].createdAt.toISOString());
+                expect(item.updatedAt).toEqual(output.items[index].updatedAt.toISOString());
+            });
+        });
+
+        it('Should handle empty collection', () => {
+            const emptyOutput: ListFeatureFlagsUsecase.Output = {
+                items: [],
+                total: 0,
+                currentPage: 1,
+                lastPage: 1,
+                perPage: 10,
+            };
+
+            const emptySut = new FeatureFlagCollectionPresenter(emptyOutput);
+            const presentation = instanceToPlain(emptySut);
+
+            expect(presentation.data).toHaveLength(0);
+            expect(presentation.meta.total).toEqual(0);
+        });
     });
-  });
 });
