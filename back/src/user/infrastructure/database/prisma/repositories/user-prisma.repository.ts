@@ -103,10 +103,12 @@ export class UserPrismaRepository implements UserRepository.Repository {
     return { count, models };
   }
 
-  async insert(entity: UserEntity): Promise<void> {
-    await this.prismaService.user.create({
+  async insert(entity: UserEntity): Promise<UserEntity> {
+    const user = await this.prismaService.user.create({
       data: entity.toJSON(),
     });
+
+    return UserModelMapper.toEntity(user);
   }
 
   findById(id: string): Promise<UserEntity> {
