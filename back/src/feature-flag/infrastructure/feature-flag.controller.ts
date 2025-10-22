@@ -50,7 +50,7 @@ export class FeatureFlagController {
   @Inject(AuthService)
   private authService: AuthService;
 
-  static feature-flagToResponse(output: FeatureFlagOutput): FeatureFlagPresenter {
+  static featureFlagToResponse(output: FeatureFlagOutput): FeatureFlagPresenter {
     return new FeatureFlagPresenter(output);
   }
 
@@ -82,7 +82,7 @@ export class FeatureFlagController {
   async findOne(@Param('id') id: string) {
     const output = await this.getFeatureFlagUseCase.execute({ id });
 
-    return FeatureFlagController.feature-flagToResponse(output);
+    return FeatureFlagController.featureFlagToResponse(output);
   }
 
   @ApiBearerAuth()
@@ -97,7 +97,7 @@ export class FeatureFlagController {
       ...updateFeatureFlagDto,
     });
 
-    return FeatureFlagController.feature-flagToResponse(output);
+    return FeatureFlagController.featureFlagToResponse(output);
   }
 
   @ApiBearerAuth()
