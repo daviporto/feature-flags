@@ -7,10 +7,10 @@ export abstract class InMemoryRepository<E extends Entity>
 {
   items: E[] = [];
 
-  insert(entity: E): Promise<void> {
+  insert(entity: E): Promise<E> {
     this.items.push(entity);
 
-    return Promise.resolve();
+    return Promise.resolve(entity);
   }
 
   findById(id: string): Promise<E> {
