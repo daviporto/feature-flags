@@ -1,11 +1,11 @@
 import {FeatureFlagOutput} from '@/feature-flag/application/dtos/feature-flag-output';
 import {
-  FeatureFlagCollectionPresenter,
-  FeatureFlagPresenter
+    FeatureFlagCollectionPresenter,
+    FeatureFlagPresenter
 } from '@/feature-flag/infrastructure/presenters/feature-flag.presenter';
 import {faker} from '@faker-js/faker';
 import {instanceToPlain} from 'class-transformer';
-import {ListFeatureFlagsUsecase} from '@/feature-flag/application/usecases/list-feature-flags.usecase';
+import {ListFeatureFlagsUsecase} from "@/feature-flag/application/usecases/list-feature-flag.usecase";
 
 describe('FeatureFlag presenter unit tests', () => {
     describe('FeatureFlagPresenter', () => {
@@ -15,6 +15,7 @@ describe('FeatureFlag presenter unit tests', () => {
         const enabled = faker.datatype.boolean();
         const createdAt = new Date();
         const updatedAt = new Date();
+        const userId = faker.string.uuid();
 
         let props: FeatureFlagOutput;
         let sut: FeatureFlagPresenter;
@@ -27,13 +28,13 @@ describe('FeatureFlag presenter unit tests', () => {
                 enabled,
                 createdAt,
                 updatedAt,
+                userId
             };
             sut = new FeatureFlagPresenter(props);
         });
 
         it('Constructor', () => {
             expect(sut).toBeDefined();
-            expect(sut.id).toEqual(props.id);
             expect(sut.name).toEqual(props.name);
             expect(sut.description).toEqual(props.description);
             expect(sut.enabled).toEqual(props.enabled);
