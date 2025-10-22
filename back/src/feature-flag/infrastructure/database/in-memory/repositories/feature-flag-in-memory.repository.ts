@@ -1,10 +1,7 @@
 import { FeatureFlagEntity } from '@/feature-flag/domain/entities/feature-flag.entity';
 import { FeatureFlagRepository } from '@/feature-flag/domain/repositories/feature-flag.repository';
-import { FeatureFlagWithEmailNotFoundError } from '@/feature-flag/domain/errors/feature-flag-with-email-not-found-error';
-import { EmailAlreadyInUseError } from '@/feature-flag/domain/errors/email-already-in-use-error';
 import { InMemorySearchableRepository } from '@/shared/domain/repositories/in-memory-searchable.repository';
 import { SortOrderEnum } from '@/shared/domain/repositories/searchable-repository-contracts';
-import { NotFoundError } from '@/shared/domain/errors/not-found-error';
 import { FeatureFlagWithIdNotFoundError } from '@/feature-flag/infrastructure/errors/feature-flag-with-id-not-found-error';
 
 export class FeatureFlagInMemoryRepository
