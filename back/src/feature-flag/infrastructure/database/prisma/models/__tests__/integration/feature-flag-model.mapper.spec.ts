@@ -19,7 +19,7 @@ describe('FeatureFlag model mapper integration tests', () => {
   });
 
   beforeEach(() => {
-    prismaService.feature-flag.deleteMany();
+    prismaService.featureFlag.deleteMany();
   });
 
   afterAll(async () => {
@@ -30,18 +30,17 @@ describe('FeatureFlag model mapper integration tests', () => {
     const model: FeatureFlag = Object.assign({}, props, { name: null });
 
     expect(() => FeatureFlagModelMapper.toEntity(model)).toThrow(
-      new ValidationErrors('Could not load feature-flag having id undefined'),
+      new ValidationErrors('Could not load feature flag having id undefined'),
     );
   });
 
-  it('should map featureflag model to entity', async () => {
-    const model: FeatureFlag = await prismaService.feature-flag.create({
+  it('should map feature flag model to entity', async () => {
+    const model: FeatureFlag = await prismaService.featureFlag.create({
       data: props,
     });
 
     const sut = FeatureFlagModelMapper.toEntity(model);
 
     expect(sut).toBeInstanceOf(FeatureFlagEntity);
-
   });
 });
