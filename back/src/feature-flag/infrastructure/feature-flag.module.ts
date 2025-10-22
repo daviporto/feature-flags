@@ -26,29 +26,29 @@ import { AuthModule } from '@/auth/infrastructure/auth.module';
     },
     {
       provide: GetFeatureFlagUsecase.UseCase,
-      useFactory: (feature-flagRepository: FeatureFlagRepository.Repository) => {
-        return new GetFeatureFlagUsecase.UseCase(feature-flagRepository);
+      useFactory: (featureFlagRepository: FeatureFlagRepository.Repository) => {
+        return new GetFeatureFlagUsecase.UseCase(featureFlagRepository);
       },
       inject: ['FeatureFlagRepository'],
     },
     {
       provide: ListFeatureFlagsUsecase.UseCase,
-      useFactory: (feature-flagRepository: FeatureFlagRepository.Repository) => {
-        return new ListFeatureFlagsUsecase.UseCase(feature-flagRepository);
+      useFactory: (featureFlagRepository: FeatureFlagRepository.Repository) => {
+        return new ListFeatureFlagsUsecase.UseCase(featureFlagRepository);
       },
       inject: ['FeatureFlagRepository'],
     },
     {
       provide: UpdateFeatureFlagUsecase.UseCase,
-      useFactory: (feature-flagRepository: FeatureFlagRepository.Repository) => {
-        return new UpdateFeatureFlagUsecase.UseCase(feature-flagRepository);
+      useFactory: (featureFlagRepository: FeatureFlagRepository.Repository) => {
+        return new UpdateFeatureFlagUsecase.UseCase(featureFlagRepository);
       },
       inject: ['FeatureFlagRepository'],
     },
     {
       provide: DeleteFeatureFlagUsecase.UseCase,
-      useFactory: (feature-flagRepository: FeatureFlagRepository.Repository) => {
-        return new DeleteFeatureFlagUsecase.UseCase(feature-flagRepository);
+      useFactory: (featureFlagRepository: FeatureFlagRepository.Repository) => {
+        return new DeleteFeatureFlagUsecase.UseCase(featureFlagRepository);
       },
       inject: ['FeatureFlagRepository'],
     },
