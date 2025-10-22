@@ -24,7 +24,7 @@ describe('Get feature-flag usecase integration tests', () => {
 
   beforeEach(async () => {
     sut = new GetFeatureFlagUsecase.UseCase(repository);
-    await prismaService.feature-flag.deleteMany();
+    await prismaService.featureFlag.deleteMany();
   });
 
   afterAll(async () => {
@@ -32,19 +32,19 @@ describe('Get feature-flag usecase integration tests', () => {
     await module.close();
   });
 
-  it('should throw error when featureflag not found', () => {
+  it('should throw error when feature flag not found', () => {
     const id = faker.string.uuid();
     expect(() => sut.execute({ id })).rejects.toThrow(
       new FeatureFlagWithIdNotFoundError(id),
     );
   });
 
-  it('should retrieve a featureflag', async () => {
-    const feature_flag = await prismaService.feature-flag.create({ data: FeatureFlagDataBuilder({}) });
+  it('should retrieve a feature flag', async () => {
+    const featureFlag = await prismaService.featureFlag.create({ data: FeatureFlagDataBuilder({}) });
 
-    const output = await sut.execute({ id: feature_flag.id });
+    const output = await sut.execute({ id: featureFlag.id });
 
     expect(output).toBeDefined();
-    expect(output).toMatchObject(feature_flag);
+    expect(output).toMatchObject(featureFlag);
   });
 });
