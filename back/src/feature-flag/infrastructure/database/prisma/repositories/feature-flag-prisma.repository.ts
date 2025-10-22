@@ -11,7 +11,7 @@ export class FeatureFlagPrismaRepository implements FeatureFlagRepository.Reposi
     }
 
     async insert(entity: FeatureFlagEntity): Promise<void> {
-        const featureFlag = await this.prismaService.feature - flag.create({
+        const featureFlag = await this.prismaService.featureFlag.create({
             data: entity.toJSON(),
         });
 
@@ -23,7 +23,7 @@ export class FeatureFlagPrismaRepository implements FeatureFlagRepository.Reposi
     }
 
     async findAll(): Promise<FeatureFlagEntity[]> {
-        const models = await this.prismaService.feature - flag.findMany();
+        const models = await this.prismaService.featureFlag.findMany();
 
         return models.map(FeatureFlagModelMapper.toEntity);
     }
@@ -31,7 +31,7 @@ export class FeatureFlagPrismaRepository implements FeatureFlagRepository.Reposi
     async update(entity: FeatureFlagEntity): Promise<void> {
         await this._assureFeatureFlagExists(entity.id);
 
-        await this.prismaService.feature - flag.update({
+        await this.prismaService.featureFlag.update({
             where: {id: entity.id},
             data: entity.toJSON(),
         });
@@ -40,14 +40,14 @@ export class FeatureFlagPrismaRepository implements FeatureFlagRepository.Reposi
     async delete(id: string): Promise<void> {
         await this._assureFeatureFlagExists(id);
 
-        await this.prismaService.feature - flag.delete({
+        await this.prismaService.featureFlag.delete({
             where: {id},
         });
     }
 
     protected async _get(id: string): Promise<FeatureFlagEntity> {
         try {
-            const featureFlag = await this.prismaService.feature - flag.findUnique({
+            const featureFlag = await this.prismaService.featureFlag.findUnique({
                 where: {id},
             });
 
@@ -58,7 +58,7 @@ export class FeatureFlagPrismaRepository implements FeatureFlagRepository.Reposi
     }
 
     private async _assureFeatureFlagExists(id: string) {
-        if ((await this.prismaService.feature - flag.count({where: {id}})) === 0) {
+        if ((await this.prismaService.featureFlag.count({where: {id}})) === 0) {
             throw new FeatureFlagWithIdNotFoundError(id);
         }
     }
