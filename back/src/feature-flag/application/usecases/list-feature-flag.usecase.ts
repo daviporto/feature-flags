@@ -5,12 +5,15 @@ import {
   PaginationOutput,
   PaginationOutputMapper,
 } from '@/shared/application/dtos/pagination-output';
-import { FeatureFlagOutputMapper } from '@/feature-flag/application/dtos/feature-flag-output';
+import {
+  FeatureFlagOutput,
+  FeatureFlagOutputMapper,
+} from '@/feature-flag/application/dtos/feature-flag-output';
 
 export namespace ListFeatureFlagsUsecase {
-  export type Input = SearchInput;
+  export type Input = SearchInput<FeatureFlagRepository.Filter>;
 
-  export type Output = PaginationOutput;
+  export type Output = PaginationOutput<FeatureFlagOutput>;
 
   export class UseCase implements UseCaseInterface<Input, Output> {
     constructor(private repository: FeatureFlagRepository.Repository) {}
