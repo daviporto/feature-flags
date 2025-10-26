@@ -6,6 +6,7 @@ import { FeatureFlagModelMapper } from '@/feature-flag/infrastructure/database/p
 import { SortOrderEnum } from '@/shared/domain/repositories/searchable-repository-contracts';
 import { AbstractPrismaRepository } from '@/shared/infrastructure/repository/abstract-prisma.repository';
 import { FeatureFlag, Prisma } from '@prisma/client';
+import { isUndefined } from '@nestjs/common/utils/shared.utils';
 
 export class FeatureFlagPrismaRepository
   extends AbstractPrismaRepository
@@ -155,9 +156,9 @@ export class FeatureFlagPrismaRepository
   ): Prisma.FeatureFlagWhereInput {
     const filtersObject: Prisma.FeatureFlagWhereInput = {};
 
-    if (searchInput.filter?.enabled) {
+    if (!isUndefined(searchInput.filter?.enabled)) {
       filtersObject['enabled'] = {
-        equals: searchInput.filter.enabled,
+        equals: !!searchInput.filter.enabled,
       };
     }
 
