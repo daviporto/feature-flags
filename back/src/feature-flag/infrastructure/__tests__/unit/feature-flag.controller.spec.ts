@@ -9,6 +9,8 @@ import {
   FeatureFlagPresenter,
 } from '@/feature-flag/infrastructure/presenters/feature-flag.presenter';
 import { ListFeatureFlagsUsecase } from '@/feature-flag/application/usecases/list-feature-flag.usecase';
+import { v4 } from 'uuid';
+import { CreateFeatureFlagDto } from '@/feature-flag/infrastructure/dtos/create-feature-flag.dto';
 
 describe('FeatureFlagController unit tests', () => {
   let sut: FeatureFlagController;
@@ -78,7 +80,29 @@ describe('FeatureFlagController unit tests', () => {
     expect(mockUpdateFeatureFlagUseCase.execute).toHaveBeenCalledWith(input);
   });
 
-  it('should delete a featureflag by ID', async () => {
+  it('should update create feature flag', async () => {
+    const createProps = { ...props, userId: id };
+    const mockCreateFeatureFlagUseCase = {
+      execute: jest.fn().mockResolvedValue(Promise.resolve(createProps)),
+    };
+
+    sut['createFeatureFlagUseCase'] = mockCreateFeatureFlagUseCase as any;
+
+    const input: CreateFeatureFlagDto = createProps;
+
+    const request = {
+      user: { id: v4() },
+    };
+    const presenter = await sut.create(input, request);
+    expect(presenter).toBeInstanceOf(FeatureFlagPresenter);
+    expect(presenter).toMatchObject(new FeatureFlagPresenter(createProps));
+    expect(mockCreateFeatureFlagUseCase.execute).toHaveBeenCalledWith({
+      ...input,
+      userId: request.user.id,
+    });
+  });
+
+  it('should delete a feature flag by ID', async () => {
     const mockDeleteFeatureFlagUseCase = {
       execute: jest.fn().mockResolvedValue(Promise.resolve()),
     };
