@@ -41,6 +41,10 @@ export class FeatureFlagEntity extends Entity<FeatureFlagProps> {
     return this.props.userId;
   }
 
+  get updatedAt(): Date {
+    return this.props.updatedAt;
+  }
+
   static validate(props: FeatureFlagProps) {
     const validator = FeatureFlagValidatorFactory.create();
     const isValid = validator.validate(props);
