@@ -118,6 +118,7 @@ describe('Create feature flag e2e tests', () => {
         'name must be a string',
         'description should not be empty',
         'description must be a string',
+        'enabled must be a boolean value',
         'enabled should not be empty',
       ],
       statusCode: 422,
