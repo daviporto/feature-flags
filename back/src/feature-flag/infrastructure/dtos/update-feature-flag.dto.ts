@@ -1,5 +1,5 @@
 import { UpdateFeatureFlagUsecase } from '@/feature-flag/application/usecases/update-feature-flag.usecase';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateFeatureFlagDto
@@ -26,5 +26,6 @@ export class UpdateFeatureFlagDto
     example: true,
   })
   @IsNotEmpty()
+  @IsBoolean()
   enabled: boolean;
 }
