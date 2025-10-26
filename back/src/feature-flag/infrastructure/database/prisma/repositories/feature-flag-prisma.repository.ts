@@ -14,7 +14,7 @@ export class FeatureFlagPrismaRepository
   search(
     searchInput: FeatureFlagRepository.SearchParams,
   ): Promise<FeatureFlagRepository.SearchResult> {
-    throw new Error('Method not implemented.');
+    return this.
   }
 
   async insert(entity: FeatureFlagEntity): Promise<FeatureFlagEntity> {

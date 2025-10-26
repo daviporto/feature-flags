@@ -2,12 +2,17 @@ import { SortOrderEnum } from '@/shared/domain/repositories/searchable-repositor
 import { ListFeatureFlagsUsecase } from '@/feature-flag/application/usecases/list-feature-flag.usecase';
 import { FeatureFlagInMemoryRepository } from '@/feature-flag/infrastructure/database/in-memory/repositories/feature-flag-in-memory.repository';
 import { FeatureFlagRepository } from '@/feature-flag/domain/repositories/feature-flag.repository';
-import { FeatureFlagEntity, FeatureFlagProps } from '@/feature-flag/domain/entities/feature-flag.entity';
+import {
+  FeatureFlagEntity,
+  FeatureFlagProps,
+} from '@/feature-flag/domain/entities/feature-flag.entity';
 import { FeatureFlagDataBuilder } from '@/feature-flag/domain/testing/helper/feature-flag-data-builder';
 
-describe('List featureflags use cases unit tests', () => {
-  function createFeatureFlagEntity(feature-flagProps: Partial<FeatureFlagProps> = {}) {
-    return new FeatureFlagEntity(FeatureFlagDataBuilder(feature-flagProps));
+describe('List feature flags use cases unit tests', () => {
+  function createFeatureFlagEntity(
+    featureFlagProps: Partial<FeatureFlagProps> = {},
+  ) {
+    return new FeatureFlagEntity(FeatureFlagDataBuilder(featureFlagProps));
   }
 
   let sut: ListFeatureFlagsUsecase.UseCase;
@@ -41,7 +46,7 @@ describe('List featureflags use cases unit tests', () => {
       });
     });
 
-    it('should return featureflag entity result in output', () => {
+    it('should return feature flag entity result in output', () => {
       const entity = new FeatureFlagEntity(FeatureFlagDataBuilder({}));
       const result = new FeatureFlagRepository.SearchResult({
         items: [entity],
@@ -67,16 +72,20 @@ describe('List featureflags use cases unit tests', () => {
 
   it('should return sorted by created at by default', async () => {
     const initialDate = new Date();
-    const feature-flags = [
+    const featureFlags = [
       createFeatureFlagEntity({ createdAt: initialDate }),
-      createFeatureFlagEntity({ createdAt: new Date(initialDate.getTime() + 1) }),
-      createFeatureFlagEntity({ createdAt: new Date(initialDate.getTime() + 2) }),
+      createFeatureFlagEntity({
+        createdAt: new Date(initialDate.getTime() + 1),
+      }),
+      createFeatureFlagEntity({
+        createdAt: new Date(initialDate.getTime() + 2),
+      }),
     ];
-    repository.items = feature-flags;
+    repository.items = featureFlags;
 
     const result = await sut.execute({});
 
-    expect(result.total).toBe(feature-flags.length);
+    expect(result.total).toBe(featureFlags.length);
     expect(result.currentPage).toBe(1);
     expect(result.lastPage).toBe(1);
     expect(result.perPage).toBe(10);
@@ -93,14 +102,13 @@ describe('List featureflags use cases unit tests', () => {
     );
   });
 
-  it('should return feature-flags filtered, paginated and sorted', async () => {
-    const feature-flags = [
+  it('should return featureFlags filtered, paginated and sorted', async () => {
+    repository.items = [
       createFeatureFlagEntity({ name: 'a' }),
       createFeatureFlagEntity({ name: 'A' }),
       createFeatureFlagEntity({ name: 'b' }),
       createFeatureFlagEntity({ name: 'c' }),
     ];
-    repository.items = feature-flags;
 
     const result = await sut.execute({
       page: 1,
@@ -117,14 +125,5 @@ describe('List featureflags use cases unit tests', () => {
 
     expect(result.items[0].name).toBe('A');
     expect(result.items[1].name).toBe('a');
-  });
-
-  it.todo('should return second page when empty in pagination', async () => {
-  });
-
-  it.todo('should return items in second page when having them', async () => {
-  });
-
-  it.todo('should return empty result when no filter found', async () => {
   });
 });
