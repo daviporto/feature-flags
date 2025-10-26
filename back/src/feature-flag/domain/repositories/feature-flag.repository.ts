@@ -1,4 +1,3 @@
-import { RepositoryInterface } from '@/shared/domain/repositories/repository-contracts';
 import { FeatureFlagEntity } from '@/feature-flag/domain/entities/feature-flag.entity';
 import {
   SearchParams as DefaultSearchParams,
@@ -7,11 +6,22 @@ import {
 } from '@/shared/domain/repositories/searchable-repository-contracts';
 
 export namespace FeatureFlagRepository {
-  export type Filter = string;
+  export type Filter = {
+    name?: string;
+    description?: string;
+    enabled?: boolean;
+  };
+
+  export const sortableFields = ['name', 'description', 'enabled', 'createdAt'];
+
+  export const defaultSortField = 'createdAt';
 
   export class SearchParams extends DefaultSearchParams<Filter> {}
 
-  export class SearchResult extends DefaultSearchResult<FeatureFlagEntity, Filter> {}
+  export class SearchResult extends DefaultSearchResult<
+    FeatureFlagEntity,
+    Filter
+  > {}
 
   export interface Repository
     extends SearchableRepositoryInterface<
@@ -20,5 +30,7 @@ export namespace FeatureFlagRepository {
       SearchParams,
       SearchResult
     > {
+    enable(id: string): Promise<void>;
+    disable(id: string): Promise<void>;
   }
 }

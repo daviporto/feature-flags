@@ -1,40 +1,27 @@
 import { FeatureFlagEntity } from '@/feature-flag/domain/entities/feature-flag.entity';
 import { FeatureFlagRepository } from '@/feature-flag/domain/repositories/feature-flag.repository';
-import { InMemorySearchableRepository } from '@/shared/domain/repositories/in-memory-searchable.repository';
-import { SortOrderEnum } from '@/shared/domain/repositories/searchable-repository-contracts';
+import { SearchResult } from '@/shared/domain/repositories/searchable-repository-contracts';
 import { FeatureFlagWithIdNotFoundError } from '@/feature-flag/infrastructure/errors/feature-flag-with-id-not-found-error';
+import { InMemoryRepository } from '@/shared/domain/repositories/in-memory.repository';
 
 export class FeatureFlagInMemoryRepository
-  extends InMemorySearchableRepository<FeatureFlagEntity>
+  extends InMemoryRepository<FeatureFlagEntity>
   implements FeatureFlagRepository.Repository
 {
-  sortableFields = [];
+  sortableFields: string[] = FeatureFlagRepository.sortableFields;
 
-  protected async applyFilters(
-    items: FeatureFlagEntity[],
-    filter: string | null,
-  ): Promise<FeatureFlagEntity[]> {
-    if (!filter) return items;
-
-    return items.filter((item) =>
-      item.props.name.toLowerCase().includes(filter.toLowerCase()),
-    );
-  }
-
-  protected async applySort(
-    items: FeatureFlagEntity[],
-    sort: string | null,
-    sortDir: SortOrderEnum | null,
-  ): Promise<FeatureFlagEntity[]> {
-    if (!sort) {
-      sort = 'createdAt';
-    }
-
-    if (!sortDir) {
-      sortDir = SortOrderEnum.DESC;
-    }
-
-    return super.applySort(items, sort, sortDir);
+  async search(
+    params: FeatureFlagRepository.SearchParams,
+  ): Promise<FeatureFlagRepository.SearchResult> {
+    return new SearchResult({
+      items: this.items,
+      total: this.items.length,
+      currentPage: params.page,
+      perPage: params.perPage,
+      sort: params.sort,
+      sortDir: params.sortDir,
+      filter: params.filter,
+    });
   }
 
   protected async _get(id: string): Promise<FeatureFlagEntity> {
@@ -55,5 +42,17 @@ export class FeatureFlagInMemoryRepository
     }
 
     return index;
+  }
+
+  async enable(id: string): Promise<void> {
+    const index = await this._getIndex(id);
+
+    this.items[index].enable();
+  }
+
+  async disable(id: string): Promise<void> {
+    const index = await this._getIndex(id);
+
+    this.items[index].disable();
   }
 }
