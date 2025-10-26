@@ -150,7 +150,7 @@ export class FeatureFlagPrismaRepository
   private mountFilterObjects(
     searchInput: FeatureFlagRepository.SearchParams,
   ): Prisma.FeatureFlagWhereInput {
-    const filtersObject = {};
+    const filtersObject: Prisma.FeatureFlagWhereInput = {};
 
     if (searchInput.filter?.enabled) {
       filtersObject['enabled'] = {
