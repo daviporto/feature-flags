@@ -122,7 +122,7 @@ export class UserPrismaRepository implements UserRepository.Repository {
   }
 
   async update(entity: UserEntity): Promise<void> {
-    await this._assureUserExists(entity.id);
+    await this.assureUserExists(entity.id);
 
     await this.prismaService.user.update({
       where: { id: entity.id },
@@ -131,7 +131,7 @@ export class UserPrismaRepository implements UserRepository.Repository {
   }
 
   async delete(id: string): Promise<void> {
-    await this._assureUserExists(id);
+    await this.assureUserExists(id);
 
     await this.prismaService.user.delete({
       where: { id },
@@ -150,7 +150,7 @@ export class UserPrismaRepository implements UserRepository.Repository {
     }
   }
 
-  private async _assureUserExists(id: string) {
+  public async assureUserExists(id: string) {
     if ((await this.prismaService.user.count({ where: { id } })) === 0) {
       throw new UserWithIdNotFoundError(id);
     }
