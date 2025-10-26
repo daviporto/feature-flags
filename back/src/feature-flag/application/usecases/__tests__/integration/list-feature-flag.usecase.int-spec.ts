@@ -73,8 +73,12 @@ describe('List feature flags usecase integration tests', () => {
     const arrange = ['test', 'a', 'TEST', 'b', 'TeSt'];
     for (const element of arrange) {
       const index = arrange.indexOf(element);
+      const user = await UserPrismaTestingHelper.createUser(prismaService);
       const entity = new FeatureFlagEntity({
-        ...FeatureFlagDataBuilder({ name: element }),
+        ...FeatureFlagDataBuilder({
+          name: element,
+          userId: user.id,
+        }),
         createdAt: new Date(createdAt.getTime() + index),
       });
 
@@ -87,7 +91,9 @@ describe('List feature flags usecase integration tests', () => {
       perPage: 2,
       sort: 'name',
       sortDir: SortOrderEnum.ASC,
-      filter: 'TEST',
+      filter: {
+        name: 'TEST',
+      },
     });
 
     expect(output).toMatchObject({
@@ -103,7 +109,9 @@ describe('List feature flags usecase integration tests', () => {
       perPage: 2,
       sort: 'name',
       sortDir: SortOrderEnum.ASC,
-      filter: 'TEST',
+      filter: {
+        name: 'TEST',
+      },
     });
 
     expect(output).toMatchObject({
@@ -112,6 +120,126 @@ describe('List feature flags usecase integration tests', () => {
       currentPage: 2,
       perPage: 2,
       lastPage: 2,
+    });
+  });
+
+  describe('test filters', () => {
+    it('should filter by description correctly', async () => {
+      const f1 = await FeatureFlagPrismaTestingHelper.createFeatureFlag(
+        prismaService,
+        {
+          description: 'description 1',
+        },
+      );
+
+      await FeatureFlagPrismaTestingHelper.createFeatureFlag(prismaService, {
+        description: 'description 2',
+      });
+
+      const result = await sut.execute({
+        filter: {
+          description: 'description 1',
+        },
+      });
+
+      expect(result.total).toStrictEqual(1);
+      expect(result.lastPage).toStrictEqual(1);
+      expect(result.currentPage).toStrictEqual(1);
+      expect(result.items).toHaveLength(1);
+
+      const item = result.items[0];
+
+      expect(item.description).toStrictEqual(f1.description);
+    });
+
+    it('should filter by enabled correctly', async () => {
+      const f1 = await FeatureFlagPrismaTestingHelper.createFeatureFlag(
+        prismaService,
+        {
+          enabled: true,
+        },
+      );
+
+      await FeatureFlagPrismaTestingHelper.createFeatureFlag(prismaService, {
+        enabled: false,
+      });
+
+      const result = await sut.execute({
+        filter: {
+          enabled: true,
+        },
+      });
+
+      expect(result.total).toStrictEqual(1);
+      expect(result.lastPage).toStrictEqual(1);
+      expect(result.currentPage).toStrictEqual(1);
+      expect(result.items).toHaveLength(1);
+
+      const item = result.items[0];
+
+      expect(item.enabled).toStrictEqual(f1.enabled);
+    });
+  });
+
+  it('should combine multiple filters correctly', async () => {
+    const user1 = await UserPrismaTestingHelper.createUser(prismaService);
+    const user2 = await UserPrismaTestingHelper.createUser(prismaService);
+
+    const matchingFlag1 =
+      await FeatureFlagPrismaTestingHelper.createFeatureFlag(prismaService, {
+        name: 'TEST_FLAG_1',
+        description: 'Matching description',
+        enabled: true,
+        userId: user1.id,
+      });
+
+    const matchingFlag2 =
+      await FeatureFlagPrismaTestingHelper.createFeatureFlag(prismaService, {
+        name: 'test_flag_2',
+        description: 'Matching description',
+        enabled: true,
+        userId: user2.id,
+      });
+
+    await FeatureFlagPrismaTestingHelper.createFeatureFlag(prismaService, {
+      name: 'OTHER_FLAG',
+      description: 'Different description',
+      enabled: true,
+    });
+
+    await FeatureFlagPrismaTestingHelper.createFeatureFlag(prismaService, {
+      name: 'TEST_FLAG_3',
+      description: 'Different description',
+      enabled: false,
+    });
+
+    await FeatureFlagPrismaTestingHelper.createFeatureFlag(prismaService, {
+      name: 'OTHER_FLAG_2',
+      description: 'Matching description',
+      enabled: false,
+    });
+
+    const result = await sut.execute({
+      filter: {
+        name: 'TEST',
+        description: 'Matching description',
+        enabled: true,
+      },
+    });
+
+    expect(result.total).toStrictEqual(2);
+    expect(result.lastPage).toStrictEqual(1);
+    expect(result.currentPage).toStrictEqual(1);
+    expect(result.items).toHaveLength(2);
+
+    const itemNames = result.items.map((item) => item.name).sort();
+    expect(itemNames).toContainEqual(matchingFlag1.name);
+    expect(itemNames).toContainEqual(matchingFlag2.name);
+
+    result.items.forEach((item) => {
+      expect(item.name.toLowerCase()).toContain('test');
+      expect(item.description).toBe('Matching description');
+      expect(item.enabled).toBe(true);
     });
   });
 });
