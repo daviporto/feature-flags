@@ -4,7 +4,11 @@ import { FeatureFlagModelMapper } from '@/feature-flag/infrastructure/database/p
 import { ValidationErrors } from '@/shared/domain/errors/validation-errors';
 import { FeatureFlagEntity } from '@/feature-flag/domain/entities/feature-flag.entity';
 import { FeatureFlagDataBuilder } from '@/feature-flag/domain/testing/helper/feature-flag-data-builder';
-import { setUpPrismaTest } from '@/shared/infrastructure/database/prisma/testing/set-up-prisma-test';
+import {
+  resetDatabase,
+  setUpPrismaTest,
+} from '@/shared/infrastructure/database/prisma/testing/set-up-prisma-test';
+import { FeatureFlagPrismaTestingHelper } from '@/feature-flag/infrastructure/database/prisma/testing/feature-flag-prisma.testing-helper';
 
 describe('FeatureFlag model mapper integration tests', () => {
   let prismaService: PrismaService;
@@ -12,17 +16,19 @@ describe('FeatureFlag model mapper integration tests', () => {
 
   beforeAll(async () => {
     setUpPrismaTest();
-    
+
     prismaService = new PrismaService();
     props = FeatureFlagDataBuilder({});
     await prismaService.$connect();
   });
 
-  beforeEach(() => {
-    prismaService.featureFlag.deleteMany();
+  beforeEach(async () => {
+    await resetDatabase(prismaService);
   });
 
   afterAll(async () => {
+    await resetDatabase(prismaService);
+
     await prismaService.$disconnect();
   });
 
@@ -35,9 +41,8 @@ describe('FeatureFlag model mapper integration tests', () => {
   });
 
   it('should map feature flag model to entity', async () => {
-    const model: FeatureFlag = await prismaService.featureFlag.create({
-      data: props,
-    });
+    const model: FeatureFlag =
+      await FeatureFlagPrismaTestingHelper.createFeatureFlag(prismaService);
 
     const sut = FeatureFlagModelMapper.toEntity(model);
 
