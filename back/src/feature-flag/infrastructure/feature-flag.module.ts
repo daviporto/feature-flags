@@ -8,6 +8,9 @@ import { DeleteFeatureFlagUsecase } from '@/feature-flag/application/usecases/de
 import { PrismaService } from '@/shared/infrastructure/database/prisma/prisma.service';
 import { FeatureFlagPrismaRepository } from '@/feature-flag/infrastructure/database/prisma/repositories/feature-flag-prisma.repository';
 import { AuthModule } from '@/auth/infrastructure/auth.module';
+import { CreateFeatureFlagUsecase } from '@/feature-flag/application/usecases/create-feature-flag.usecase';
+import { UserRepository } from '@/user/domain/repositories/user.repository';
+import { UserPrismaRepository } from '@/user/infrastructure/database/prisma/repositories/user-prisma.repository';
 
 @Module({
   imports: [AuthModule],
@@ -21,6 +24,13 @@ import { AuthModule } from '@/auth/infrastructure/auth.module';
       provide: 'FeatureFlagRepository',
       useFactory: (prismaService: PrismaService) => {
         return new FeatureFlagPrismaRepository(prismaService);
+      },
+      inject: ['PrismaService'],
+    },
+    {
+      provide: 'UserRepository',
+      useFactory: (prismaService: PrismaService) => {
+        return new UserPrismaRepository(prismaService);
       },
       inject: ['PrismaService'],
     },
@@ -52,7 +62,19 @@ import { AuthModule } from '@/auth/infrastructure/auth.module';
       },
       inject: ['FeatureFlagRepository'],
     },
+    {
+      provide: CreateFeatureFlagUsecase.UseCase,
+      useFactory: (
+        featureFlagRepository: FeatureFlagRepository.Repository,
+        userRepository: UserRepository.Repository,
+      ) => {
+        return new CreateFeatureFlagUsecase.UseCase(
+          featureFlagRepository,
+          userRepository,
+        );
+      },
+      inject: ['FeatureFlagRepository', 'UserRepository'],
+    },
   ],
 })
-
 export class FeatureFlagModule {}
