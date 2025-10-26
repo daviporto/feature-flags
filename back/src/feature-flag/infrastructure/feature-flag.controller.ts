@@ -6,20 +6,20 @@ import {
   HttpCode,
   Inject,
   Param,
+  Post,
   Put,
   Query,
+  Request,
   UseGuards,
 } from '@nestjs/common';
 import { UpdateFeatureFlagUsecase } from '@/feature-flag/application/usecases/update-feature-flag.usecase';
 import { GetFeatureFlagUsecase } from '@/feature-flag/application/usecases/get-feature-flag.usecase';
 import { DeleteFeatureFlagUsecase } from '@/feature-flag/application/usecases/delete-feature-flag.usecase';
-import { UpdateFeatureFlagDto } from '@/feature-flag/infrastructure/dtos/update-feature-flag.dto';
 import { FeatureFlagOutput } from '@/feature-flag/application/dtos/feature-flag-output';
 import {
   FeatureFlagCollectionPresenter,
   FeatureFlagPresenter,
 } from '@/feature-flag/infrastructure/presenters/feature-flag.presenter';
-import { AuthService } from '@/auth/infrastructure/auth.service';
 import { AuthGuard } from '@/auth/infrastructure/auth.guard';
 import {
   ApiBearerAuth,
@@ -29,12 +29,18 @@ import {
 } from '@nestjs/swagger';
 import { ListFeatureFlagsUsecase } from '@/feature-flag/application/usecases/list-feature-flag.usecase';
 import { ListFeatureFlagsDto } from '@/feature-flag/infrastructure/dtos/list-feature-flag.dto';
+import { CreateFeatureFlagDto } from '@/feature-flag/infrastructure/dtos/create-feature-flag.dto';
+import { CreateFeatureFlagUsecase } from '@/feature-flag/application/usecases/create-feature-flag.usecase';
+import { UpdateFeatureFlagDto } from '@/feature-flag/infrastructure/dtos/update-feature-flag.dto';
 
 @ApiTags('feature-flag')
 @Controller('feature-flag')
 export class FeatureFlagController {
   @Inject(UpdateFeatureFlagUsecase.UseCase)
   private updateFeatureFlagUseCase: UpdateFeatureFlagUsecase.UseCase;
+
+  @Inject(CreateFeatureFlagUsecase.UseCase)
+  private createFeatureFlagUseCase: CreateFeatureFlagUsecase.UseCase;
 
   @Inject(GetFeatureFlagUsecase.UseCase)
   private getFeatureFlagUseCase: GetFeatureFlagUsecase.UseCase;
@@ -44,9 +50,6 @@ export class FeatureFlagController {
 
   @Inject(DeleteFeatureFlagUsecase.UseCase)
   private deleteFeatureFlagUseCase: DeleteFeatureFlagUsecase.UseCase;
-
-  @Inject(AuthService)
-  private authService: AuthService;
 
   static featureFlagToResponse(
     output: FeatureFlagOutput,
@@ -99,6 +102,25 @@ export class FeatureFlagController {
       id,
       ...updateFeatureFlagDto,
     });
+
+    return FeatureFlagController.featureFlagToResponse(output);
+  }
+
+  @ApiBearerAuth()
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 422, description: 'Unprocessable Entity' })
+  @UseGuards(AuthGuard)
+  @Post()
+  async create(
+    @Body() createFeatureFlagDto: CreateFeatureFlagDto,
+    @Request() req,
+  ) {
+    const input: CreateFeatureFlagUsecase.Input = {
+      ...createFeatureFlagDto,
+      userId: req.user.id,
+    };
+
+    const output = await this.createFeatureFlagUseCase.execute(input);
 
     return FeatureFlagController.featureFlagToResponse(output);
   }
