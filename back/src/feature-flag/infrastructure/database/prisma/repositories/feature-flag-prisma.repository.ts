@@ -56,7 +56,10 @@ export class FeatureFlagPrismaRepository
 
   async insert(entity: FeatureFlagEntity): Promise<FeatureFlagEntity> {
     const featureFlag = await this.prismaService.featureFlag.create({
-      data: entity.toJSON(),
+      data: {
+        ...entity.toJSON(),
+        createdAt: new Date(),
+      },
     });
 
     return FeatureFlagModelMapper.toEntity(featureFlag);
