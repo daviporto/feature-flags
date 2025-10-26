@@ -44,6 +44,16 @@ export class FeatureFlagInMemoryRepository
     return index;
   }
 
+  assureFeatureFlagExists(id: string): Promise<void> {
+    const index = this.items.findIndex((item) => item.id === id);
+
+    if (index === -1) {
+      throw new FeatureFlagWithIdNotFoundError(id);
+    }
+
+    return Promise.resolve();
+  }
+
   async enable(id: string): Promise<void> {
     const index = await this._getIndex(id);
 

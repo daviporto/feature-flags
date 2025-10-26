@@ -31,6 +31,9 @@ export namespace FeatureFlagRepository {
       SearchResult
     > {
     enable(id: string): Promise<void>;
+
     disable(id: string): Promise<void>;
+
+    assureFeatureFlagExists(id: string): Promise<void>;
   }
 }

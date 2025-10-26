@@ -73,7 +73,7 @@ export class FeatureFlagPrismaRepository
   }
 
   async update(entity: FeatureFlagEntity): Promise<void> {
-    await this._assureFeatureFlagExists(entity.id);
+    await this.assureFeatureFlagExists(entity.id);
 
     await this.prismaService.featureFlag.update({
       where: { id: entity.id },
@@ -82,7 +82,7 @@ export class FeatureFlagPrismaRepository
   }
 
   async enable(id: string): Promise<void> {
-    await this._assureFeatureFlagExists(id);
+    await this.assureFeatureFlagExists(id);
 
     await this.prismaService.featureFlag.update({
       where: { id },
@@ -93,7 +93,7 @@ export class FeatureFlagPrismaRepository
   }
 
   async disable(id: string): Promise<void> {
-    await this._assureFeatureFlagExists(id);
+    await this.assureFeatureFlagExists(id);
 
     await this.prismaService.featureFlag.update({
       where: { id },
@@ -104,7 +104,7 @@ export class FeatureFlagPrismaRepository
   }
 
   async delete(id: string): Promise<void> {
-    await this._assureFeatureFlagExists(id);
+    await this.assureFeatureFlagExists(id);
 
     await this.prismaService.featureFlag.delete({
       where: { id },
@@ -175,7 +175,7 @@ export class FeatureFlagPrismaRepository
     return filtersObject;
   }
 
-  private async _assureFeatureFlagExists(id: string) {
+  public async assureFeatureFlagExists(id: string): Promise<void> {
     if ((await this.prismaService.featureFlag.count({ where: { id } })) === 0) {
       throw new FeatureFlagWithIdNotFoundError(id);
     }
