@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import { FeatureFlagProps } from '@/feature-flag/domain/entities/feature-flag.entity';
 import { isUndefined } from '@nestjs/common/utils/shared.utils';
 
-export function FeatureFlagDataBuilder(props: Partial<FeatureFlagProps>) {
+export function FeatureFlagDataBuilder(props: Partial<FeatureFlagProps> = {}) {
   if (isUndefined(props.enabled)) {
     props.enabled = faker.datatype.boolean();
   }
