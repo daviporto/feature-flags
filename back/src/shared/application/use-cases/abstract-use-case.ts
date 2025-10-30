@@ -12,7 +12,7 @@ export abstract class AbstractUseCase<Input, Output>
     requiredFields: string[],
   ) {
     requiredFields.forEach((field) => {
-      if (isUndefined(input[field])) {
+      if (isUndefined(input[field]) || input[field] === '') {
         throw new BadRequestError(`${field} is required`);
       }
     });
