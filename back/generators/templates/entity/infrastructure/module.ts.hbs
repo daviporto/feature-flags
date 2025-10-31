@@ -1,0 +1,58 @@
+import { Module } from '@nestjs/common';
+import { {{pascalCase name}}Controller } from './{{dashCase name}}.controller';
+import { {{pascalCase name}}Repository } from '@/{{dashCase name}}/domain/repositories/{{dashCase name}}.repository';
+import { Get{{pascalCase name}}Usecase } from '@/{{dashCase name}}/application/usecases/get-{{dashCase name}}.usecase';
+import { List{{pascalCase name}}sUsecase } from '@/{{dashCase name}}/application/usecases/list-{{dashCase name}}.usecase';
+import { Update{{pascalCase name}}Usecase } from '@/{{dashCase name}}/application/usecases/update-{{dashCase name}}.usecase';
+import { Delete{{pascalCase name}}Usecase } from '@/{{dashCase name}}/application/usecases/delete-{{dashCase name}}.usecase';
+import { PrismaService } from '@/shared/infrastructure/database/prisma/prisma.service';
+import { {{pascalCase name}}PrismaRepository } from '@/{{dashCase name}}/infrastructure/database/prisma/repositories/{{dashCase name}}-prisma.repository';
+import { AuthModule } from '@/auth/infrastructure/auth.module';
+
+@Module({
+  imports: [AuthModule],
+  controllers: [{{pascalCase name}}Controller],
+  providers: [
+    {
+      provide: 'PrismaService',
+      useClass: PrismaService,
+    },
+    {
+      provide: '{{pascalCase name}}Repository',
+      useFactory: (prismaService: PrismaService) => {
+        return new {{pascalCase name}}PrismaRepository(prismaService);
+      },
+      inject: ['PrismaService'],
+    },
+    {
+      provide: Get{{pascalCase name}}Usecase.UseCase,
+      useFactory: ({{dashCase name}}Repository: {{pascalCase name}}Repository.Repository) => {
+        return new Get{{pascalCase name}}Usecase.UseCase({{dashCase name}}Repository);
+      },
+      inject: ['{{pascalCase name}}Repository'],
+    },
+    {
+      provide: List{{pascalCase name}}sUsecase.UseCase,
+      useFactory: ({{dashCase name}}Repository: {{pascalCase name}}Repository.Repository) => {
+        return new List{{pascalCase name}}sUsecase.UseCase({{dashCase name}}Repository);
+      },
+      inject: ['{{pascalCase name}}Repository'],
+    },
+    {
+      provide: Update{{pascalCase name}}Usecase.UseCase,
+      useFactory: ({{dashCase name}}Repository: {{pascalCase name}}Repository.Repository) => {
+        return new Update{{pascalCase name}}Usecase.UseCase({{dashCase name}}Repository);
+      },
+      inject: ['{{pascalCase name}}Repository'],
+    },
+    {
+      provide: Delete{{pascalCase name}}Usecase.UseCase,
+      useFactory: ({{dashCase name}}Repository: {{pascalCase name}}Repository.Repository) => {
+        return new Delete{{pascalCase name}}Usecase.UseCase({{dashCase name}}Repository);
+      },
+      inject: ['{{pascalCase name}}Repository'],
+    },
+  ],
+})
+
+export class {{pascalCase name}}Module {}

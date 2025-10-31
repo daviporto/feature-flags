@@ -1,0 +1,38 @@
+import { {{pascalCase name}}InMemoryRepository } from '@/{{dashCase name}}/infrastructure/database/in-memory/repositories/{{dashCase name}}-in-memory.repository';
+import { Get{{pascalCase name}}Usecase } from '@/{{dashCase name}}/application/usecases/get-{{dashCase name}}.usecase';
+import { {{pascalCase name}}Entity } from '@/{{dashCase name}}/domain/entities/{{dashCase name}}.entity';
+import { Delete{{pascalCase name}}Usecase } from '@/{{dashCase name}}/application/usecases/delete-{{dashCase name}}.usecase';
+
+describe('Delete {{lowerCase name}} use case test', () => {
+  let sut: Delete{{pascalCase name}}Usecase.UseCase;
+  let repository: {{pascalCase name}}InMemoryRepository;
+
+  beforeEach(() => {
+    repository = new {{pascalCase name}}InMemoryRepository();
+    sut = new Delete{{pascalCase name}}Usecase.UseCase(repository);
+  });
+
+  it('should throw exception if {{lowerCase name}} does not exist', async () => {
+    const input = { id: 'non-existent-id' };
+
+    await expect(sut.execute(input)).rejects.toThrow(
+    );
+  });
+
+
+  it('should call repository delete with correct ID', async () => {
+    const {{snakeCase name}} = new {{pascalCase name}}Entity();
+    await repository.insert({{snakeCase name}});
+
+    const spyDelete = jest.spyOn(repository, 'delete');
+
+    const input = { id: {{snakeCase name}}.id };
+
+    expect(repository.items).toHaveLength(1)
+    await sut.execute(input);
+
+    expect(spyDelete).toHaveBeenCalledWith({{snakeCase name}}.id);
+
+    expect(repository.items).toHaveLength(0)
+  });
+});

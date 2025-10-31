@@ -1,0 +1,64 @@
+import { Prisma } from '@prisma/client';
+import { {{pascalCase name}}Entity } from '@/{{dashCase name}}/domain/entities/{{dashCase name}}.entity';
+import { {{pascalCase name}}Repository } from '@/{{dashCase name}}/domain/repositories/{{dashCase name}}.repository';
+import { PrismaService } from '@/shared/infrastructure/database/prisma/prisma.service';
+import { {{pascalCase name}}WithIdNotFoundError } from '@/{{dashCase name}}/infrastructure/errors/{{dashCase name}}-with-id-not-found-error';
+import { {{pascalCase name}}ModelMapper } from '@/{{dashCase name}}/infrastructure/database/prisma/models/{{dashCase name}}-model.mapper';
+import { SortOrderEnum } from '@/shared/domain/repositories/searchable-repository-contracts';
+
+export class {{pascalCase name}}PrismaRepository implements {{pascalCase name}}Repository.Repository {
+  constructor(private prismaService: PrismaService) {}
+
+  async insert(entity: {{pascalCase name}}Entity): Promise<void> {
+    const {{lowerCase name}} = await this.prismaService.{{dashCase name}}.create({
+      data: entity.toJSON(),
+    });
+
+    return {{pascalCase name}}ModelMapper.toEntity({{lowerCase name}});
+  }
+
+  findById(id: string): Promise<{{pascalCase name}}Entity> {
+    return this._get(id);
+  }
+
+  async findAll(): Promise<{{pascalCase name}}Entity[]> {
+    const models = await this.prismaService.{{dashCase name}}.findMany();
+
+    return models.map({{pascalCase name}}ModelMapper.toEntity);
+  }
+
+  async update(entity: {{pascalCase name}}Entity): Promise<void> {
+    await this._assure{{pascalCase name}}Exists(entity.id);
+
+    await this.prismaService.{{dashCase name}}.update({
+      where: { id: entity.id },
+      data: entity.toJSON(),
+    });
+  }
+
+  async delete(id: string): Promise<void> {
+    await this._assure{{pascalCase name}}Exists(id);
+
+    await this.prismaService.{{dashCase name}}.delete({
+      where: { id },
+    });
+  }
+
+  protected async _get(id: string): Promise<{{pascalCase name}}Entity> {
+    try {
+      const {{dashCase name}} = await this.prismaService.{{dashCase name}}.findUnique({
+        where: { id },
+      });
+
+      return {{pascalCase name}}ModelMapper.toEntity({{dashCase name}});
+    } catch {
+      throw new {{pascalCase name}}WithIdNotFoundError(id);
+    }
+  }
+
+  private async _assure{{pascalCase name}}Exists(id: string) {
+    if ((await this.prismaService.{{dashCase name}}.count({ where: { id } })) === 0) {
+      throw new {{pascalCase name}}WithIdNotFoundError(id);
+    }
+  }
+}

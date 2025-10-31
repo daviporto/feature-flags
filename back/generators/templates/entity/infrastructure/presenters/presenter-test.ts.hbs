@@ -1,0 +1,57 @@
+import { {{pascalCase name}}DataBuilder } from '@/{{dashCase name}}/domain/testing/helper/{{dashCase name}}-data-builder';
+import {
+  {{pascalCase name}}CollectionPresenter,
+  {{pascalCase name}}Presenter,
+} from '@/{{dashCase name}}/infrastructure/presenters/{{dashCase name}}.presenter';
+import { faker } from '@faker-js/faker';
+import { instanceToPlain } from 'class-transformer';
+import { PaginationPresenter } from '@/shared/infrastructure/presenters/pagination.presenter';
+
+describe('{{pascalCase name}} presenter unit tests', () => {
+  const id = faker.string.uuid();
+  let props = { ...{{pascalCase name}}DataBuilder({}), id };
+  let sut: {{pascalCase name}}Presenter;
+
+  beforeEach(() => {
+    sut = new {{pascalCase name}}Presenter(props);
+  });
+
+  it.todo('Constructor', () => { });
+
+  it('Should present the date as expected', () => {
+    const output = instanceToPlain(sut);
+  });
+
+  describe('{{pascalCase name}}CollectionPresenter', () => {
+    let sut: {{pascalCase name}}CollectionPresenter;
+
+    it('Constructor', () => {
+      const sut = new {{pascalCase name}}CollectionPresenter({
+        items: [props],
+        currentPage: 2,
+        lastPage: 3,
+        perPage: 10,
+        total: 30,
+      });
+
+      expect(sut).toBeDefined();
+      expect(sut).toBeInstanceOf({{pascalCase name}}CollectionPresenter);
+      expect(sut.data).toHaveLength(1);
+      expect(sut.data[0]).toBeInstanceOf({{pascalCase name}}Presenter);
+      expect(sut.meta).toBeDefined();
+      expect(sut.meta).toBeInstanceOf(PaginationPresenter);
+    });
+
+    it('Should present the date as expected', () => {
+      const sut = new {{pascalCase name}}CollectionPresenter({
+        items: [props],
+        currentPage: 2,
+        lastPage: 3,
+        perPage: 10,
+        total: 30,
+      });
+
+      const output = instanceToPlain(sut);
+    });
+  });
+});

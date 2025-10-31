@@ -1,0 +1,94 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { PropOrFactory } from '@/shared/domain/common';
+import { {{pascalCase name}}Entity } from '../entities/{{dashCase name}}.entity';
+import { Faker, faker } from '@faker-js/faker';
+
+export class {{pascalCase name}}FakeBuilder<TBuild = any> {
+  private _name: PropOrFactory<string> = (_index) => this.faker.word.words();
+
+  private _createdAt: PropOrFactory<Date> | undefined = undefined;
+
+  private _updatedAt: PropOrFactory<Date> | undefined = undefined;
+
+  private countObjs: number;
+
+  private faker: Faker;
+
+  private constructor(countObjs: number = 1) {
+    this.countObjs = countObjs;
+    this.faker = faker;
+  }
+
+  static the{{pascalCase name}}s(countObjs: number) {
+    return new {{pascalCase name}}FakeBuilder<{{pascalCase name}}Entity[]>(countObjs);
+  }
+
+  static a{{pascalCase name}}() {
+    return new {{pascalCase name}}FakeBuilder<{{pascalCase name}}Entity>();
+  }
+
+  withName(valueOrFactory: PropOrFactory<string>) {
+    this._name = valueOrFactory;
+    return this;
+  }
+
+  withCreatedAt(valueOrFactory: PropOrFactory<Date>) {
+    this._createdAt = valueOrFactory;
+    return this;
+  }
+
+  withUpdatedAt(valueOrFactory: PropOrFactory<Date>) {
+    this._updatedAt = valueOrFactory;
+    return this;
+  }
+
+  build(): TBuild extends {{pascalCase name}}Entity[] ? {{pascalCase name}}[] : {{pascalCase name}}{
+    const {{dashCase name}}s = new Array(this.countObjs)
+      .fill(undefined)
+      .map((_, index) => {
+        return new {{pascalCase name}}Entity({
+          name: this.callFactory(this._name, index),
+          ...(this._createdAt && {
+            createdAt: this.callFactory(this._createdAt, index),
+          }),
+          ...(this._updatedAt && {
+            updatedAt: this.callFactory(this._updatedAt, index),
+          }),
+        });
+      });
+
+    return (this.countObjs === 1 ? {{dashCase name}}s[0] : {{dashCase name}}s) as any;
+  }
+
+  get name() {
+    return this.getValue('name');
+  }
+
+  get createdAt() {
+    return this.getValue('createdAt');
+  }
+
+  get updatedAt() {
+    return this.getValue('updatedAt');
+  }
+
+  private getValue(prop: any) {
+    const optional = ['createdAt', 'updatedAt'];
+
+    const privateProp = `_${prop}` as keyof this;
+
+    if (!this[privateProp] && optional.includes(prop)) {
+      throw new Error(
+        `Property ${prop} does not have a factory, use 'with' methods`,
+      );
+    }
+
+    return this.callFactory(this[privateProp], 0);
+  }
+
+  private callFactory(factoryOrValue: PropOrFactory<any>, index: number) {
+    return typeof factoryOrValue === 'function'
+      ? factoryOrValue(index)
+      : factoryOrValue;
+  }
+}

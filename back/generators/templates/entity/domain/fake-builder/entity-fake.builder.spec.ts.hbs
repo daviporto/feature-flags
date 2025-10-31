@@ -1,0 +1,165 @@
+import { {{pascalCase name}}Entity } from '@/{{dashCase name}}/domain/entities/{{dashCase name}}.entity';
+import { {{pascalCase name}}FakeBuilder } from '@/{{dashCase name}}/domain/fake-builder/{{dashCase name}}-fake.builder';
+
+describe('{{pascalCase name}}FakeBuilder Unit Tests', () => {
+  describe('code prop', () => {
+    const faker = {{pascalCase name}}FakeBuilder.a{{pascalCase name}}();
+
+    it('_code should be a function', () => {
+      expect(typeof faker['_code']).toBe('function');
+    });
+
+
+  describe('name prop', () => {
+    const faker = {{pascalCase name}}FakeBuilder.a{{pascalCase name}}();
+
+    it('_name should be a function', () => {
+      expect(typeof faker['_name']).toBe('function');
+    });
+
+    it('withName()', () => {
+      const {{dashCase name}}Name = 'Introduction to Programming';
+      const $this = faker.withName({{dashCase name}}Name);
+
+      expect($this).toBeInstanceOf({{pascalCase name}}FakeBuilder);
+      expect(faker['_name']).toBe({{dashCase name}}Name);
+
+      faker.withName(() => {{dashCase name}}Name);
+
+      //@ts-expect-error name is callable
+      expect(faker['_name']()).toBe({{dashCase name}}Name);
+
+      expect(faker.name).toBe({{dashCase name}}Name);
+    });
+
+    it('should pass index to name factory', () => {
+      faker.withName((index) => `{{pascalCase name}} ${index}`);
+      const {{dashCase name}} = faker.build();
+
+      expect({{dashCase name}}.name).toBe('{{pascalCase name}} 0');
+
+      const fakerMany = {{pascalCase name}}FakeBuilder.the{{pascalCase name}}s(2);
+      fakerMany.withName((index) => `{{pascalCase name}} ${index}`);
+
+      const {{dashCase name}}s = fakerMany.build();
+
+      expect({{dashCase name}}s[0].name).toBe('{{pascalCase name}} 0');
+      expect({{dashCase name}}s[1].name).toBe('{{pascalCase name}} 1');
+    });
+
+  describe('createdAt prop', () => {
+    const faker = {{pascalCase name}}FakeBuilder.a{{pascalCase name}}();
+
+    test('should throw error when any with methods has been called', () => {
+      const faker{{pascalCase name}} = {{pascalCase name}}FakeBuilder.a{{pascalCase name}}();
+
+      expect(() => faker{{pascalCase name}}.createdAt).toThrow(
+        new Error(
+          'Property createdAt does not have a factory, use \'with\' methods',
+        ),
+      );
+    });
+
+    test('should be undefined', () => {
+      expect(faker['_createdAt']).toBeUndefined();
+    });
+
+    test('withCreatedAt()', () => {
+      const date = new Date();
+      const $this = faker.withCreatedAt(date);
+
+      expect($this).toBeInstanceOf({{pascalCase name}}FakeBuilder);
+      expect(faker['_createdAt']).toBe(date);
+
+      faker.withCreatedAt(() => date);
+
+      //@ts-expect-error _createdAt is a callable
+      expect(faker['_createdAt']()).toBe(date);
+      expect(faker.createdAt).toBe(date);
+    });
+
+    test('should pass index to createdAt factory', () => {
+      const date = new Date();
+      faker.withCreatedAt((index) => new Date(date.getTime() + index + 2));
+
+      const {{dashCase name}} = faker.build();
+      expect({{dashCase name}}.createdAt.getTime()).toBe(date.getTime() + 2);
+
+      const fakerMany = {{pascalCase name}}FakeBuilder.the{{pascalCase name}}s(2);
+      fakerMany.withCreatedAt((index) => new Date(date.getTime() + index + 2));
+      const {{dashCase name}}s = fakerMany.build();
+
+      expect({{dashCase name}}s[0].createdAt.getTime()).toBe(date.getTime() + 2);
+      expect({{dashCase name}}s[1].createdAt.getTime()).toBe(date.getTime() + 3);
+    });
+  });
+
+  describe('updatedAt prop', () => {
+    const faker = {{pascalCase name}}FakeBuilder.a{{pascalCase name}}();
+
+    test('should throw error when any with methods has been called', () => {
+      const faker{{pascalCase name}} = {{pascalCase name}}FakeBuilder.a{{pascalCase name}}();
+
+      expect(() => faker{{pascalCase name}}.updatedAt).toThrow(
+        new Error(
+          'Property updatedAt does not have a factory, use \'with\' methods',
+        ),
+      );
+    });
+
+    test('should be undefined', () => {
+      expect(faker['_updatedAt']).toBeUndefined();
+    });
+
+    test('withUpdatedAt()', () => {
+      const date = new Date();
+      const $this = faker.withUpdatedAt(date);
+
+      expect($this).toBeInstanceOf({{pascalCase name}}FakeBuilder);
+      expect(faker['_updatedAt']).toBe(date);
+
+      faker.withUpdatedAt(() => date);
+
+      //@ts-expect-error _updatedAt is a callable
+      expect(faker['_updatedAt']()).toBe(date);
+      expect(faker.updatedAt).toBe(date);
+    });
+
+    test('should pass index to updatedAt factory', () => {
+      const date = new Date();
+      faker.withUpdatedAt((index) => new Date(date.getTime() + index + 2));
+
+      const {{dashCase name}} = faker.build();
+      expect({{dashCase name}}.updatedAt.getTime()).toBe(date.getTime() + 2);
+
+      const fakerMany = {{pascalCase name}}FakeBuilder.the{{pascalCase name}}s(2);
+      fakerMany.withUpdatedAt((index) => new Date(date.getTime() + index + 2));
+      const {{dashCase name}}s = fakerMany.build();
+
+      expect({{dashCase name}}s[0].updatedAt.getTime()).toBe(date.getTime() + 2);
+      expect({{dashCase name}}s[1].updatedAt.getTime()).toBe(date.getTime() + 3);
+    });
+  });
+
+  describe('build() method', () => {
+    it('should create a single {{dashCase name}} when count = 1', () => {
+      const faker = {{pascalCase name}}FakeBuilder.a{{pascalCase name}}();
+      const {{dashCase name}} = faker.build();
+
+      expect({{dashCase name}}).toBeInstanceOf({{pascalCase name}}Entity);
+      expect({{dashCase name}}.code).toBeDefined();
+      expect({{dashCase name}}.name).toBeDefined();
+    });
+
+    it('should create multiple {{dashCase name}}s when count > 1', () => {
+      const count = 2;
+      const faker = {{pascalCase name}}FakeBuilder.the{{pascalCase name}}s(count);
+      const {{dashCase name}}s = faker.build();
+
+      expect({{dashCase name}}s).toHaveLength(count);
+      expect({{dashCase name}}s[0]).toBeInstanceOf({{pascalCase name}}Entity);
+      expect({{dashCase name}}s[1]).toBeInstanceOf({{pascalCase name}}Entity);
+      expect({{dashCase name}}s[0].code).not.toBe({{dashCase name}}s[1].code);
+    });
+  });
+});

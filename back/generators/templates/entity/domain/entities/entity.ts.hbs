@@ -1,0 +1,32 @@
+import { Entity } from '@/shared/domain/entities/entity';
+import { {{pascalCase name}}ValidatorFactory } from '@/{{dashCase name}}/domain/validators/{{dashCase name}}.validator';
+import { EntityValidationError } from '@/shared/domain/errors/validation-errors';
+
+export type {{pascalCase name}}Props = {
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+export class {{pascalCase name}}Entity extends Entity<{{pascalCase name}}Props> {
+  constructor(
+    public readonly props: {{pascalCase name}}Props,
+    id?: string,
+  ) {
+    {{pascalCase name}}Entity.validate(props);
+    super(props, id);
+    this.props.createdAt = this.props.createdAt ?? new Date();
+  }
+
+  get createdAt(): Date {
+    return this.props.createdAt;
+  }
+
+  static validate(props: {{pascalCase name}}Props) {
+    const validator = {{pascalCase name}}ValidatorFactory.create();
+    const isValid = validator.validate(props);
+
+    if (!isValid) {
+      throw new EntityValidationError(validator.errors);
+    }
+  }
+}

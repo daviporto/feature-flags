@@ -1,0 +1,47 @@
+import { {{pascalCase name}}InMemoryRepository } from '@/{{dashCase name}}/infrastructure/database/in-memory/repositories/{{dashCase name}}-in-memory.repository';
+import { Get{{pascalCase name}}Usecase } from '@/{{dashCase name}}/application/usecases/get-{{dashCase name}}.usecase';
+import { {{pascalCase name}}Entity } from '@/{{dashCase name}}/domain/entities/{{dashCase name}}.entity';
+import { {{pascalCase name}}DataBuilder } from '@/{{dashCase name}}/domain/testing/helper/{{dashCase name}}-data-builder';
+import { {{pascalCase name}}WithIdNotFoundError } from '@/{{dashCase name}}/infrastructure/errors/{{dashCase name}}-with-id-not-found-error';
+
+describe('Get {{lowerCase name}} use case test', () => {
+  let sut: Get{{pascalCase name}}Usecase.UseCase;
+  let repository: {{pascalCase name}}InMemoryRepository;
+
+  beforeEach(() => {
+    repository = new {{pascalCase name}}InMemoryRepository();
+    sut = new Get{{pascalCase name}}Usecase.UseCase(repository);
+  });
+
+  it('should throw {{pascalCase name}}WithEmailNotFoundError if {{dashCase name}} does not exist', async () => {
+    const input = { id: 'non-existent-id' };
+
+    await expect(sut.execute(input)).rejects.toThrow(
+      new {{pascalCase name}}WithIdNotFoundError(input.id),
+    );
+  });
+
+  it('should return {{lowerCase name}} details if {{lowerCase name}} exists', async () => {
+    const {{dashCase name}} = new {{pascalCase name}}Entity({{pascalCase name}}DataBuilder({}));
+    await repository.insert({{dashCase name}});
+
+    const input = { id: {{dashCase name}}.id };
+
+    const result = await sut.execute(input);
+
+    expect(result).toStrictEqual({{dashCase name}}.toJSON());
+  });
+
+  it('should call repository findById with correct ID', async () => {
+    const {{snakeCase name}} = new {{pascalCase name}}Entity({{pascalCase name}}DataBuilder({}));
+    await repository.insert({{dashCase name}});
+
+    const spyFindById = jest.spyOn(repository, 'findById');
+
+    const input = { id: {{snakeCase name}}.id };
+
+    await sut.execute(input);
+
+    expect(spyFindById).toHaveBeenCalledWith({{snakeCase name}}.id);
+  });
+});

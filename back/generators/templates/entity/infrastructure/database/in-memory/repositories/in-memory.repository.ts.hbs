@@ -1,0 +1,62 @@
+import { {{pascalCase name}}Entity } from '@/{{dashCase name}}/domain/entities/{{dashCase name}}.entity';
+import { {{pascalCase name}}Repository } from '@/{{dashCase name}}/domain/repositories/{{dashCase name}}.repository';
+import { {{pascalCase name}}WithEmailNotFoundError } from '@/{{dashCase name}}/domain/errors/{{dashCase name}}-with-email-not-found-error';
+import { EmailAlreadyInUseError } from '@/{{dashCase name}}/domain/errors/email-already-in-use-error';
+import { InMemorySearchableRepository } from '@/shared/domain/repositories/in-memory-searchable.repository';
+import { SortOrderEnum } from '@/shared/domain/repositories/searchable-repository-contracts';
+import { NotFoundError } from '@/shared/domain/errors/not-found-error';
+import { {{pascalCase name}}WithIdNotFoundError } from '@/{{dashCase name}}/infrastructure/errors/{{dashCase name}}-with-id-not-found-error';
+
+export class {{pascalCase name}}InMemoryRepository
+  extends InMemorySearchableRepository<{{pascalCase name}}Entity>
+  implements {{pascalCase name}}Repository.Repository
+{
+  sortableFields = [];
+
+  protected async applyFilters(
+    items: {{pascalCase name}}Entity[],
+    filter: string | null,
+  ): Promise<{{pascalCase name}}Entity[]> {
+    if (!filter) return items;
+
+    return items.filter((item) =>
+      item.props.name.toLowerCase().includes(filter.toLowerCase()),
+    );
+  }
+
+  protected async applySort(
+    items: {{pascalCase name}}Entity[],
+    sort: string | null,
+    sortDir: SortOrderEnum | null,
+  ): Promise<{{pascalCase name}}Entity[]> {
+    if (!sort) {
+      sort = 'createdAt';
+    }
+
+    if (!sortDir) {
+      sortDir = SortOrderEnum.DESC;
+    }
+
+    return super.applySort(items, sort, sortDir);
+  }
+
+  protected async _get(id: string): Promise<{{pascalCase name}}Entity> {
+    const item = this.items.find((item) => item.id === id);
+
+    if (!item) {
+      throw new {{pascalCase name}}WithIdNotFoundError(id);
+    }
+
+    return item;
+  }
+
+  protected async _getIndex(id: string): Promise<number> {
+    const index = this.items.findIndex((item) => item.id === id);
+
+    if (index === -1) {
+      throw new {{pascalCase name}}WithIdNotFoundError(id);
+    }
+
+    return index;
+  }
+}

@@ -1,0 +1,18 @@
+import { {{pascalCase name}}InMemoryRepository } from '@/{{dashCase name}}/infrastructure/database/in-memory/repositories/{{dashCase name}}-in-memory.repository';
+import { {{pascalCase name}}Entity } from '@/{{dashCase name}}/domain/entities/{{dashCase name}}.entity';
+import { {{pascalCase name}}DataBuilder } from '@/{{dashCase name}}/domain/testing/helper/{{dashCase name}}-data-builder';
+import { {{pascalCase name}}WithIdNotFoundError } from '@/{{dashCase name}}/infrastructure/errors/{{dashCase name}}-with-id-not-found-error';
+import { BadRequestError } from '@/shared/application/errors/bad-request-error';
+import { Update{{pascalCase name}}Usecase } from '@/{{dashCase name}}/application/usecases/update-{{dashCase name}}.usecase';
+
+describe('Update {{lowerCase name}} use case test', () => {
+  let sut: Update{{pascalCase name}}Usecase.UseCase;
+  let repository: {{pascalCase name}}InMemoryRepository;
+
+  beforeEach(() => {
+    repository = new {{pascalCase name}}InMemoryRepository();
+    sut = new Update{{pascalCase name}}Usecase.UseCase(repository);
+  });
+
+  it.todo('should throw {{lowerCase name}}WithIdNotFoundError if {{lowerCase name}} does not exist', async () => {});
+});

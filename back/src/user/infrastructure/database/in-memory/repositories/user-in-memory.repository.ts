@@ -4,7 +4,6 @@ import { UserWithEmailNotFoundError } from '@/user/domain/errors/user-with-email
 import { EmailAlreadyInUseError } from '@/user/domain/errors/email-already-in-use-error';
 import { InMemorySearchableRepository } from '@/shared/domain/repositories/in-memory-searchable.repository';
 import { SortOrderEnum } from '@/shared/domain/repositories/searchable-repository-contracts';
-import { NotFoundError } from '@/shared/domain/errors/not-found-error';
 import { UserWithIdNotFoundError } from '@/user/infrastructure/errors/user-with-id-not-found-error';
 
 export class UserInMemoryRepository
@@ -27,6 +26,16 @@ export class UserInMemoryRepository
     if (user) {
       throw new EmailAlreadyInUseError(email);
     }
+  }
+
+  async assureUserExists(userId: string): Promise<void> {
+    const user = this.items.find((user) => user.id === userId);
+
+    if (!user) {
+      throw new UserWithIdNotFoundError(userId);
+    }
+
+    return Promise.resolve();
   }
 
   protected async applyFilters(

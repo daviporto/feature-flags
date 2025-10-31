@@ -1,0 +1,113 @@
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Inject,
+  Param,
+  Patch,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
+import { Update{{pascalCase name}}Usecase } from '@/{{dashCase name}}/application/usecases/update-{{dashCase name}}.usecase';
+import { Get{{pascalCase name}}Usecase } from '@/{{dashCase name}}/application/usecases/get-{{dashCase name}}.usecase';
+import { List{{pascalCase name}}sUsecase } from '@/{{dashCase name}}/application/usecases/list-{{dashCase name}}s.usecase';
+import { Delete{{pascalCase name}}Usecase } from '@/{{dashCase name}}/application/usecases/delete-{{dashCase name}}.usecase';
+import { List{{pascalCase name}}sDto } from '@/{{dashCase name}}/infrastructure/dtos/list-{{dashCase name}}s.dto';
+import { Update{{pascalCase name}}Dto } from '@/{{dashCase name}}/infrastructure/dtos/update-{{dashCase name}}.dto';
+import { {{pascalCase name}}Output } from '@/{{dashCase name}}/application/dtos/{{dashCase name}}-output';
+import {
+  {{pascalCase name}}CollectionPresenter,
+  {{pascalCase name}}Presenter,
+} from '@/{{dashCase name}}/infrastructure/presenters/{{dashCase name}}.presenter';
+import { AuthService } from '@/auth/infrastructure/auth.service';
+import { AuthGuard } from '@/auth/infrastructure/auth.guard';
+import {
+  ApiBearerAuth,
+  ApiResponse,
+  ApiTags,
+  ApiOkResponse,
+} from '@nestjs/swagger';
+
+@ApiTags('{{dashCase name}}')
+@Controller('{{dashCase name}}')
+export class {{pascalCase name}}Controller {
+  @Inject(Update{{pascalCase name}}Usecase.UseCase)
+  private update{{pascalCase name}}UseCase: Update{{pascalCase name}}Usecase.UseCase;
+
+  @Inject(Get{{pascalCase name}}Usecase.UseCase)
+  private get{{pascalCase name}}UseCase: Get{{pascalCase name}}Usecase.UseCase;
+
+  @Inject(List{{pascalCase name}}sUsecase.UseCase)
+  private list{{pascalCase name}}sUseCase: List{{pascalCase name}}sUsecase.UseCase;
+
+  @Inject(Delete{{pascalCase name}}Usecase.UseCase)
+  private delete{{pascalCase name}}UseCase: Delete{{pascalCase name}}Usecase.UseCase;
+
+  @Inject(AuthService)
+  private authService: AuthService;
+
+  static {{dashCase name}}ToResponse(output: {{pascalCase name}}Output): {{pascalCase name}}Presenter {
+    return new {{pascalCase name}}Presenter(output);
+  }
+
+  static list{{pascalCase name}}ToResponse(
+    output: List{{pascalCase name}}sUsecase.Output,
+  ): {{pascalCase name}}CollectionPresenter {
+    return new {{pascalCase name}}CollectionPresenter(output);
+  }
+
+  @ApiOkResponse({
+    description: 'The {{pascalCase name}} has been successfully created.',
+    type: {{pascalCase name}}CollectionPresenter,
+  })
+  @ApiResponse({ status: 422, description: 'Unprocessable Entity' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @UseGuards(AuthGuard)
+  @Get()
+  async search(@Query() searchParams: List{{pascalCase name}}sDto) {
+    const result = await this.list{{pascalCase name}}sUseCase.execute(searchParams);
+
+    return {{pascalCase name}}Controller.list{{pascalCase name}}ToResponse(result);
+  }
+
+  @ApiBearerAuth()
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 404, description: '{{pascalCase name}} not found' })
+  @UseGuards(AuthGuard)
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    const output = await this.get{{pascalCase name}}UseCase.execute({ id });
+
+    return {{pascalCase name}}Controller.{{dashCase name}}ToResponse(output);
+  }
+
+  @ApiBearerAuth()
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 422, description: 'Unprocessable Entity' })
+  @ApiResponse({ status: 404, description: '{{pascalCase name}} not found' })
+  @UseGuards(AuthGuard)
+  @Put(':id')
+  async update(@Param('id') id: string, @Body() update{{pascalCase name}}Dto: Update{{pascalCase name}}Dto) {
+    const output = await this.update{{pascalCase name}}UseCase.execute({
+      id,
+      ...update{{pascalCase name}}Dto,
+    });
+
+    return {{pascalCase name}}Controller.{{dashCase name}}ToResponse(output);
+  }
+
+  @ApiBearerAuth()
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 404, description: '{{pascalCase name}} not found' })
+  @ApiResponse({ status: 204, description: '{{pascalCase name}} deleted' })
+  @UseGuards(AuthGuard)
+  @HttpCode(204)
+  @Delete(':id')
+  async remove(@Param('id') id: string) {
+    await this.delete{{pascalCase name}}UseCase.execute({ id });
+  }
+}

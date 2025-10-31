@@ -1,0 +1,10 @@
+import { faker } from '@faker-js/faker';
+import { {{pascalCase name}}Props } from '@/{{dashCase name}}/domain/entities/{{dashCase name}}.entity';
+
+export function {{pascalCase name}}DataBuilder(props: Partial<{{pascalCase name}}Props>) {
+  return {
+    name: props.name || faker.string.alphanumeric(),
+    createdAt: props.createdAt || new Date(),
+    updatedAt: props.createdAt || new Date(),
+  };
+}

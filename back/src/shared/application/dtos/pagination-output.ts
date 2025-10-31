@@ -12,7 +12,7 @@ export type PaginationOutput<Item = any> = {
 export class PaginationOutputMapper {
   static toOutput<Item = any>(
     items: Item[],
-    result: SearchResult<Entity>,
+    result: SearchResult<Entity, any>,
   ): PaginationOutput<Item> {
     return {
       items,

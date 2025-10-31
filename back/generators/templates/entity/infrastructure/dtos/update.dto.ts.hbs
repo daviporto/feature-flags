@@ -1,0 +1,10 @@
+import { Update{{pascalCase name}}Usecase } from '@/{{dashCase name}}/application/usecases/update-{{dashCase name}}.usecase';
+import { IsNotEmpty, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+
+export class Update{{pascalCase name}}Dto implements Omit<Update{{pascalCase name}}Usecase.Input, 'id'> {
+  @ApiProperty({ description: 'The name of the {{dashCase name}}' })
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+}
