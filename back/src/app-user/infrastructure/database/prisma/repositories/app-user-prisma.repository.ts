@@ -11,10 +11,12 @@ export class AppUserPrismaRepository
   extends AbstractPrismaRepository
   implements AppUserRepository.Repository
 {
+  sortableFields = AppUserRepository.sortableFields;
+
   constructor(protected prismaService: PrismaService) {
     super(prismaService);
   }
-  sortableFields: string[];
+
   async search(
     searchInput: AppUserRepository.SearchParams,
   ): Promise<AppUserRepository.SearchResult> {
