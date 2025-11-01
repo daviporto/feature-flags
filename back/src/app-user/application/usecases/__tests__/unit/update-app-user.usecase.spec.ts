@@ -113,11 +113,9 @@ describe('Update appuser use case test', () => {
 
     expect(output).toBeDefined();
     expect(output.id).toBe(appUser.id);
-    // Due to the bug in implementation, name gets the value of externalId
-    expect(output.name).toBe(newExternalId);
+    expect(output.name).toBe(newName);
     expect(output.email).toBe(newEmail);
-    // Due to the bug in implementation, externalId gets the value of name
-    expect(output.externalId).toBe(newName);
+    expect(output.externalId).toBe(newExternalId);
     expect(output.updatedAt).toBeDefined();
   });
 });
