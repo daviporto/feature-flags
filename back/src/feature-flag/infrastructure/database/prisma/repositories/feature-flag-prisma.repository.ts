@@ -49,8 +49,8 @@ export class FeatureFlagPrismaRepository
         searchInput.perPage && searchInput.perPage > 0
           ? searchInput.perPage
           : 10,
-      sort: searchInput.sort,
-      sortDir: searchInput.sortDir,
+      sort: field,
+      sortDir: orderBy,
       filter: searchInput.filter,
     });
   }

@@ -7,6 +7,6 @@ export function setUpPrismaTest() {
 
 export async function resetDatabase(prismaService: PrismaClient) {
   await prismaService.$executeRaw`TRUNCATE TABLE 
-    users, feature_flags, user_feature_flags, audit_logs
+    users, app_users, feature_flags, user_feature_flags, audit_logs
     CASCADE`;
 }

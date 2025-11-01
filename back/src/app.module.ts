@@ -3,10 +3,18 @@ import { EnvConfigModule } from './shared/infrastructure/env-config/env-config.m
 import { UserModule } from './user/infrastructure/user.module';
 import { DatabaseModule } from './shared/infrastructure/database/database.module';
 import { AuthModule } from './auth/infrastructure/auth.module';
-import {FeatureFlagModule} from "@/feature-flag/infrastructure/feature-flag.module";
+import { FeatureFlagModule } from '@/feature-flag/infrastructure/feature-flag.module';
+import { AppUserModule } from '@/app-user/infrastructure/app-user.module';
 
 @Module({
-  imports: [EnvConfigModule, UserModule, DatabaseModule, AuthModule, FeatureFlagModule],
+  imports: [
+    EnvConfigModule,
+    UserModule,
+    DatabaseModule,
+    AuthModule,
+    FeatureFlagModule,
+    AppUserModule,
+  ],
   controllers: [],
   providers: [],
 })

@@ -40,8 +40,8 @@ export class UserValidator extends ClassValidatorFields<UserRules> {
   }
 }
 
-export class UserValidatorFactory{
-  static create(): UserValidator{
+export class UserValidatorFactory {
+  static create(): UserValidator {
     return new UserValidator();
   }
 }

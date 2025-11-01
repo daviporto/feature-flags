@@ -1,7 +1,10 @@
 import { PrismaClient } from '@prisma/client';
 import { {{pascalCase name}}PrismaRepository } from '@/{{dashCase name}}/infrastructure/database/prisma/repositories/{{dashCase name}}-prisma.repository';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setUpPrismaTest } from '@/shared/infrastructure/database/prisma/testing/set-up-prisma-test';
+import {
+resetDatabase,
+setUpPrismaTest,
+} from '@/shared/infrastructure/database/prisma/testing/set-up-prisma-test';
 import { DatabaseModule } from '@/shared/infrastructure/database/database.module';
 import { Get{{pascalCase name}}Usecase } from '@/{{dashCase name}}/application/usecases/get-{{dashCase name}}.usecase';
 import { faker } from '@faker-js/faker';
@@ -24,7 +27,7 @@ describe('Get {{dashCase name}} usecase integration tests', () => {
 
   beforeEach(async () => {
     sut = new Get{{pascalCase name}}Usecase.UseCase(repository);
-    await prismaService.{{dashCase name}}.deleteMany();
+    await resetDatabase(prismaService);
   });
 
   afterAll(async () => {

@@ -5,9 +5,8 @@ import request from 'supertest';
 import { UserWithIdNotFoundError } from '@/user/infrastructure/errors/user-with-id-not-found-error';
 import { NotFoundErrorFilter } from '@/shared/infrastructure/exception-filters/not-found-error/not-found-error.filter';
 import { UserWithEmailNotFoundError } from '@/user/domain/errors/user-with-email-not-found-error';
-import {
-  FeatureFlagWithIdNotFoundError
-} from '@/feature-flag/infrastructure/errors/feature-flag-with-id-not-found-error';
+import { FeatureFlagWithIdNotFoundError } from '@/feature-flag/infrastructure/errors/feature-flag-with-id-not-found-error';
+import { AppUserWithIdNotFoundError } from '@/app-user/infrastructure/errors/app-user-with-id-not-found-error';
 
 const id = faker.string.uuid();
 const email = faker.internet.email();
@@ -27,6 +26,10 @@ class StubController {
   @Get('/feature-flag')
   featureFlagException() {
     throw new FeatureFlagWithIdNotFoundError(id);
+  }
+  @Get('/app-user')
+  appUserException() {
+    throw new AppUserWithIdNotFoundError(id);
   }
 }
 
@@ -82,6 +85,17 @@ describe('ConflictErrorFilter', () => {
         statusCode: 404,
         error: 'Not Found',
         message: `Feature flag having id ${id} not found`,
+      });
+  });
+
+  it('should catch app user not found error correctly', async () => {
+    await request(app.getHttpServer())
+      .get('/stub/app-user')
+      .expect(404)
+      .expect({
+        statusCode: 404,
+        error: 'Not Found',
+        message: `App User having id ${id} not found`,
       });
   });
 });

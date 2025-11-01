@@ -1,7 +1,10 @@
 import { PrismaClient } from '@prisma/client';
 import { {{pascalCase name}}PrismaRepository } from '@/{{dashCase name}}/infrastructure/database/prisma/repositories/{{dashCase name}}-prisma.repository';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setUpPrismaTest } from '@/shared/infrastructure/database/prisma/testing/set-up-prisma-test';
+import {
+resetDatabase,
+setUpPrismaTest,
+} from '@/shared/infrastructure/database/prisma/testing/set-up-prisma-test';
 import { DatabaseModule } from '@/shared/infrastructure/database/database.module';
 import { {{pascalCase name}}DataBuilder } from '@/{{dashCase name}}/domain/testing/helper/{{dashCase name}}-data-builder';
 import { {{pascalCase name}}WithIdNotFoundError } from '@/{{dashCase name}}/infrastructure/errors/{{dashCase name}}-with-id-not-found-error';
@@ -25,7 +28,7 @@ describe('Update {{dashCase name}} usecase integration tests', () => {
 
   beforeEach(async () => {
     sut = new Update{{pascalCase name}}Usecase.UseCase(repository);
-    await prismaService.{{dashCase name}}.deleteMany();
+    await resetDatabase(prismaService);
   });
 
   afterAll(async () => {
