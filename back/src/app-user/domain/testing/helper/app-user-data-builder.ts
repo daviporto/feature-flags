@@ -7,5 +7,6 @@ export function AppUserDataBuilder(props: Partial<AppUserProps> = {}) {
     email: props.email || faker.internet.email(),
     externalId: props.externalId || faker.string.uuid(),
     createdAt: props.createdAt || new Date(),
+    updatedAt: props.updatedAt || new Date(),
   };
 }
