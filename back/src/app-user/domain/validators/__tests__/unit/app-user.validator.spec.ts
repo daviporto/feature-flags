@@ -136,7 +136,7 @@ describe('AppUser Unit Tests', () => {
     it('Should validate externalId being greater than 255', () => {
       const isValid = sut.validate({
         ...AppUserDataBuilder({}),
-        externalId: 'a'.repeat(101),
+        externalId: 'a'.repeat(256),
       });
 
       expect(isValid).toBeFalsy();
