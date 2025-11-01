@@ -9,7 +9,7 @@ export namespace AppUserRepository {
   export type Filter = {
     name?: string;
     email?: string;
-    externalId?: boolean;
+    externalId?: string;
   };
 
   export const sortableFields = ['name', 'email', 'externalId', 'createdAt'];
