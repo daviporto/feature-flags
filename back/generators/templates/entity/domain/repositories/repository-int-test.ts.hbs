@@ -1,4 +1,7 @@
-import { setUpPrismaTest } from '@/shared/infrastructure/database/prisma/testing/set-up-prisma-test';
+import {
+resetDatabase,
+setUpPrismaTest,
+} from '@/shared/infrastructure/database/prisma/testing/set-up-prisma-test';
 import { {{pascalCase name}}DataBuilder } from '@/{{dashCase name}}/domain/testing/helper/{{dashCase name}}-data-builder';
 import { PrismaClient } from '@prisma/client';
 import { {{pascalCase name}}PrismaRepository } from '@/{{dashCase name}}/infrastructure/database/prisma/repositories/{{dashCase name}}-prisma.repository';
@@ -25,7 +28,7 @@ describe('{{pascalCase name}} prisma repository integration tests', () => {
 
   beforeEach(async () => {
     sut = new {{pascalCase name}}PrismaRepository(prismaService as any);
-    await prismaService.{{dashCase name}}.deleteMany();
+    await resetDatabase(prismaService);
   });
 
   afterAll(async () => {
