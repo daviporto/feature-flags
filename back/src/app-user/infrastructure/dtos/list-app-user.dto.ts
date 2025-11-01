@@ -1,8 +1,9 @@
 import { IsIn, IsOptional } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { SortOrderEnum } from '@/shared/domain/repositories/searchable-repository-contracts';
+import { ListAppUsersUsecase } from '@/app-user/application/usecases/list-app-user.usecase';
 
-export class ListAppUsersDto implements ListAppUserUsecase.Input {
+export class ListAppUsersDto implements ListAppUsersUsecase.Input {
   @ApiPropertyOptional({ description: 'The page number' })
   @IsOptional()
   page?: number;
