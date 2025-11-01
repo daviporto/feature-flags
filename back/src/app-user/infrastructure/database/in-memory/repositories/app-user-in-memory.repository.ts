@@ -43,4 +43,14 @@ export class AppUserInMemoryRepository
 
     return index;
   }
+
+  assureAppUserExists(id: string): Promise<void> {
+    const index = this.items.findIndex((item) => item.id === id);
+
+    if (index === -1) {
+      throw new AppUserWithIdNotFoundError(id);
+    }
+
+    return Promise.resolve();
+  }
 }

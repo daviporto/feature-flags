@@ -29,5 +29,7 @@ export namespace AppUserRepository {
       Filter,
       SearchParams,
       SearchResult
-    > {}
+    > {
+    assureAppUserExists(id: string): Promise<void>;
+  }
 }

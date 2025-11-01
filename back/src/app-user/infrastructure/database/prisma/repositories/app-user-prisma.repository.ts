@@ -97,7 +97,7 @@ export class AppUserPrismaRepository
   }
 
   async update(entity: AppUserEntity): Promise<void> {
-    await this._assureAppUserExists(entity.id);
+    await this.assureAppUserExists(entity.id);
 
     await this.prismaService.appUser.update({
       where: { id: entity.id },
@@ -106,7 +106,7 @@ export class AppUserPrismaRepository
   }
 
   async delete(id: string): Promise<void> {
-    await this._assureAppUserExists(id);
+    await this.assureAppUserExists(id);
 
     await this.prismaService.appUser.delete({
       where: { id },
@@ -125,7 +125,7 @@ export class AppUserPrismaRepository
     }
   }
 
-  private async _assureAppUserExists(id: string) {
+  public async assureAppUserExists(id: string): Promise<void> {
     if ((await this.prismaService.appUser.count({ where: { id } })) === 0) {
       throw new AppUserWithIdNotFoundError(id);
     }
