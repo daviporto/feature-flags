@@ -24,6 +24,10 @@ export class AppUserEntity extends Entity<AppUserProps> {
     return this.props.createdAt;
   }
 
+  get updatedAt(): Date | undefined {
+    return this.props.updatedAt;
+  }
+
   static validate(props: AppUserProps) {
     const validator = AppUserValidatorFactory.create();
     const isValid = validator.validate(props);
