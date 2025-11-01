@@ -49,8 +49,7 @@ describe('Create feature flag e2e tests', () => {
       enabled: faker.datatype.boolean(),
     };
 
-    await prismaService.featureFlag.deleteMany();
-    await prismaService.user.deleteMany();
+    await resetDatabase(prismaService);
 
     const signUpDto: SignUpDto = {
       name: faker.person.fullName(),
