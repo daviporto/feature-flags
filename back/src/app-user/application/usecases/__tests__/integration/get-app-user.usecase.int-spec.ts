@@ -11,7 +11,7 @@ import { faker } from '@faker-js/faker';
 import { AppUserWithIdNotFoundError } from '@/app-user/infrastructure/errors/app-user-with-id-not-found-error';
 import { AppUserDataBuilder } from '@/app-user/domain/testing/helper/app-user-data-builder';
 
-describe('Get app-user usecase integration tests', () => {
+describe('Get app user usecase integration tests', () => {
   const prismaService = new PrismaClient();
   let repository: AppUserPrismaRepository;
   let sut: GetAppUserUsecase.UseCase;
