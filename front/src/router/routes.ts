@@ -13,10 +13,20 @@ const routes: RouteRecordRaw[] = [
     component: () => import('pages/SignInPage.vue'),
   },
   {
+    path: '/feature-flags',
+    name: Routes.FEATURE_FLAGS,
+    component: () => import('pages/FeatureFlagPage.vue'),
+  },
+  {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: false },
     children: [
+      {
+        path: '/feature-flags',
+        name: Routes.FEATURE_FLAGS,
+        component: () => import('pages/FeatureFlagPage.vue'),
+      },
       {
         path: '',
         component: () => import('pages/IndexPage.vue'),
