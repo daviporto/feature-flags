@@ -39,6 +39,29 @@
           </div>
         </div>
 
+        <div class="search-section">
+          <q-input
+            v-model="searchQuery"
+            outlined
+            placeholder="Search flags by name, description, or ID..."
+            class="search-input"
+            bg-color="white"
+            :input-style="{ color: 'black' }"
+          >
+            <template v-slot:prepend>
+              <q-icon name="search" color="primary" />
+            </template>
+            <template v-slot:append>
+              <q-icon
+                v-if="searchQuery"
+                name="close"
+                class="cursor-pointer"
+                @click="searchQuery = ''"
+              />
+            </template>
+          </q-input>
+        </div>
+
         <!-- Stats Cards -->
         <div class="stats-section">
           <div class="stat-card">
@@ -75,16 +98,30 @@
           <div v-if="featureFlags.length === 0" class="empty-state">
             <div class="empty-icon">
               <q-icon name="flag" size="80px" color="grey-5" />
+              <q-icon :name="searchQuery ? 'search_off' : 'flag'" size="80px" color="grey-5" />
             </div>
-            <h3 class="empty-title">No feature flags yet</h3>
+            <h3 class="empty-title">
+              {{ searchQuery ? 'No flags found' : 'No feature flags yet' }}
+            </h3>
             <p class="empty-text">Create your first feature flag to get started</p>
             <q-btn
+              v-if="!searchQuery"
               unelevated
               label="Create First Flag"
               color="primary"
               icon="add"
               size="md"
               @click="showCreateDialog = true"
+            />
+
+            <q-btn
+              v-else
+              outline
+              label="Clear Search"
+              color="primary"
+              icon="clear"
+              size="md"
+              @click="searchQuery = ''"
             />
           </div>
 
@@ -334,6 +371,7 @@ const showCreateDialog = ref(false);
 const showEditDialog = ref(false);
 const loadingCreate = ref(false);
 const loadingEdit = ref(false);
+const searchQuery = ref('');
 
 const newFlag = ref({
   name: '',
@@ -695,6 +733,37 @@ const handleLogout = async () => {
   color: #7f8c8d;
   font-weight: 500;
   margin-top: 0.25rem;
+}
+
+.search-section {
+  margin-bottom: 2rem;
+}
+
+.search-input {
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+
+  :deep(.q-field__control) {
+    border-radius: 16px;
+    height: 56px;
+  }
+
+  :deep(.q-field__prepend) {
+    padding-left: 1rem;
+  }
+
+  :deep(.q-field__append) {
+    padding-right: 1rem;
+  }
+
+  &:hover {
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.12);
+  }
+
+  :deep(.q-field--focused) {
+    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.3);
+  }
 }
 
 .flags-grid {
