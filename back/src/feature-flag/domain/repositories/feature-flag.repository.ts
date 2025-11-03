@@ -12,7 +12,7 @@ export namespace FeatureFlagRepository {
     enabled?: boolean;
   };
 
-  export const sortableFields = ['name', 'description', 'enabled'];
+  export const sortableFields = ['name', 'description', 'enabled', 'createdAt'];
 
   export const defaultSortField = 'createdAt';
 

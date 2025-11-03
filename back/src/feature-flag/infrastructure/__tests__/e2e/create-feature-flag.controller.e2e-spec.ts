@@ -3,7 +3,10 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureFlagRepository } from '@/feature-flag/domain/repositories/feature-flag.repository';
 import { PrismaClient } from '@prisma/client';
-import { setUpPrismaTest } from '@/shared/infrastructure/database/prisma/testing/set-up-prisma-test';
+import {
+  resetDatabase,
+  setUpPrismaTest,
+} from '@/shared/infrastructure/database/prisma/testing/set-up-prisma-test';
 import { FeatureFlagModule } from '@/feature-flag/infrastructure/feature-flag.module';
 import { EnvConfigModule } from '@/shared/infrastructure/env-config/env-config.module';
 import { DatabaseModule } from '@/shared/infrastructure/database/database.module';
@@ -49,8 +52,7 @@ describe('Create feature flag e2e tests', () => {
       enabled: faker.datatype.boolean(),
     };
 
-    await prismaService.featureFlag.deleteMany();
-    await prismaService.user.deleteMany();
+    await resetDatabase(prismaService);
 
     const signUpDto: SignUpDto = {
       name: faker.person.fullName(),

@@ -52,6 +52,8 @@ export class FeatureFlagCollectionPresenter extends CollectionPresenter {
   constructor(output: ListFeatureFlagsUsecase.Output) {
     const { items, ...pagination } = output;
     super(pagination);
-    this.data = items.map((item) => new FeatureFlagPresenter(item));
+    this.data = items.map(
+      (item: FeatureFlagOutput) => new FeatureFlagPresenter(item),
+    );
   }
 }

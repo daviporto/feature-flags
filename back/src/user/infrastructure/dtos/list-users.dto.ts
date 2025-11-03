@@ -1,10 +1,7 @@
-import { SignupUsecase } from '@/user/application/usecases/sign-up.usecase';
 import { ListUsersUsecase } from '@/user/application/usecases/list-users.usecase';
 import { SortOrderEnum } from '@/shared/domain/repositories/searchable-repository-contracts';
-import { UserRepository } from '@/user/domain/repositories/user.repository';
-import Filter = UserRepository.Filter;
-import { IsIn, IsOptional } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsOptional } from 'class-validator';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class ListUsersDto implements ListUsersUsecase.Input {
   @ApiPropertyOptional({ description: 'The page number' })
@@ -16,8 +13,7 @@ export class ListUsersDto implements ListUsersUsecase.Input {
   perPage?: number;
 
   @ApiPropertyOptional({
-    description:
-      'The field that should be used for sorting',
+    description: 'The field that should be used for sorting',
     enum: ['name', 'createdAt'],
   })
   @IsOptional()
