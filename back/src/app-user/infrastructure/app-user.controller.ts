@@ -9,12 +9,14 @@ import {
   Put,
   Query,
   UseGuards,
+  Post,
 } from '@nestjs/common';
 import { UpdateAppUserUsecase } from '@/app-user/application/usecases/update-app-user.usecase';
 import { GetAppUserUsecase } from '@/app-user/application/usecases/get-app-user.usecase';
 import { DeleteAppUserUsecase } from '@/app-user/application/usecases/delete-app-user.usecase';
 import { UpdateAppUserDto } from '@/app-user/infrastructure/dtos/update-app-user.dto';
 import { AppUserOutput } from '@/app-user/application/dtos/app-user-output';
+import { CreateAppUserUsecase } from '../application/usecases/create-app-user.usecase';
 import {
   AppUserCollectionPresenter,
   AppUserPresenter,
@@ -29,12 +31,16 @@ import {
 } from '@nestjs/swagger';
 import { ListAppUsersUsecase } from '@/app-user/application/usecases/list-app-user.usecase';
 import { ListAppUsersDto } from '@/app-user/infrastructure/dtos/list-app-user.dto';
+import { CreateAppUserDto } from './dtos/create-app-user.dto';
 
 @ApiTags('app-user')
 @Controller('app-user')
 export class AppUserController {
   @Inject(UpdateAppUserUsecase.UseCase)
   private updateAppUserUseCase: UpdateAppUserUsecase.UseCase;
+
+  @Inject(CreateAppUserUsecase.UseCase)
+  private createAppUserUseCase: CreateAppUserUsecase.UseCase;
 
   @Inject(GetAppUserUsecase.UseCase)
   private getAppUserUseCase: GetAppUserUsecase.UseCase;
@@ -100,6 +106,22 @@ export class AppUserController {
 
     return AppUserController.appUserToResponse(output);
   }
+
+  @ApiResponse({ status: 201, description: 'App user created' })
+  @ApiResponse({ status: 422, description: 'Unprocessable Entity' })
+  @Post()
+  async create(
+    @Body() createAppUserDto: CreateAppUserDto,
+  ) {
+    const input: CreateAppUserUsecase.Input = {
+      ...createAppUserDto
+    };
+
+    const output = await this.createAppUserUseCase.execute(input);
+
+    return AppUserController.appUserToResponse(output);
+  }
+
 
   @ApiBearerAuth()
   @ApiResponse({ status: 401, description: 'Unauthorized' })
