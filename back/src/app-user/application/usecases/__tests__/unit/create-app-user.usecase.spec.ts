@@ -1,11 +1,11 @@
 import { BadRequestError } from '@/shared/application/errors/bad-request-error';
 import { v4 } from 'uuid';
 import { InvalidUuidError } from '@/shared/application/errors/invalid-uuid-error';
-import { UserWithIdNotFoundError } from '@/user/infrastructure/errors/user-with-id-not-found-error';
 import { CreateAppUserUsecase } from '@/app-user/application/usecases/create-app-user.usecase';
 import { AppUserInMemoryRepository } from '@/app-user/infrastructure/database/in-memory/repositories/app-user-in-memory.repository';
 import { AppUserDataBuilder } from '@/app-user/domain/testing/helper/app-user-data-builder';
 import { AppUserEntity } from '@/app-user/domain/entities/app-user.entity';
+import { AppUserWithIdNotFoundError } from '@/app-user/infrastructure/errors/app-user-with-id-not-found-error';
 
 describe('Create app user use case test', () => {
   let sut: CreateAppUserUsecase.UseCase;
@@ -23,13 +23,13 @@ describe('Create app user use case test', () => {
     const input: CreateAppUserUsecase.Input = {
       name: ff.name,
       email: ff.email,
-      externalId: 'not a valid uuid'
+      externalId: 'not a valid uuid',
     };
 
     await expect(() => sut.execute(input)).rejects.toThrow(InvalidUuidError);
   });
 
-  it('should throw userWithIdNotFoundError if user does not exist', async () => {
+  it('should throw appUserWithIdNotFoundError if user does not exist', async () => {
     const ff = new AppUserEntity(AppUserDataBuilder());
 
     const input = {
@@ -38,8 +38,8 @@ describe('Create app user use case test', () => {
       email: ff.email,
     };
 
-    await expect(() => sut.execute(input)).rejects.toThrow(
-      UserWithIdNotFoundError,
+    await expect(sut.execute(input)).rejects.toThrow(
+      AppUserWithIdNotFoundError,
     );
   });
 

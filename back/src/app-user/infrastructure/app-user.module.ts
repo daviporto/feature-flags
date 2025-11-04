@@ -55,15 +55,11 @@ import { CreateAppUserUsecase } from '../application/usecases/create-app-user.us
     },
     {
       provide: CreateAppUserUsecase.UseCase,
-      useFactory: (
-        appUserRepository: AppUserRepository.Repository,
-      ) => {
-        return new CreateAppUserUsecase.UseCase(
-          appUserRepository,
-        );
+      useFactory: (appUserRepository: AppUserRepository.Repository) => {
+        return new CreateAppUserUsecase.UseCase(appUserRepository);
       },
       inject: ['AppUserRepository'],
     },
   ],
 })
-export class AppUserModule { }
+export class AppUserModule {}

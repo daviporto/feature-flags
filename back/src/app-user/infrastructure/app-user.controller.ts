@@ -110,18 +110,15 @@ export class AppUserController {
   @ApiResponse({ status: 201, description: 'App user created' })
   @ApiResponse({ status: 422, description: 'Unprocessable Entity' })
   @Post()
-  async create(
-    @Body() createAppUserDto: CreateAppUserDto,
-  ) {
+  async create(@Body() createAppUserDto: CreateAppUserDto) {
     const input: CreateAppUserUsecase.Input = {
-      ...createAppUserDto
+      ...createAppUserDto,
     };
 
     const output = await this.createAppUserUseCase.execute(input);
 
     return AppUserController.appUserToResponse(output);
   }
-
 
   @ApiBearerAuth()
   @ApiResponse({ status: 401, description: 'Unauthorized' })

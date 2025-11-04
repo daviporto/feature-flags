@@ -5,13 +5,13 @@ import {
   setUpPrismaTest,
 } from '@/shared/infrastructure/database/prisma/testing/set-up-prisma-test';
 import { DatabaseModule } from '@/shared/infrastructure/database/database.module';
-import { UserPrismaTestingHelper } from '@/user/infrastructure/database/prisma/testing/user-prisma.testing-helper';
 import { AppUserPrismaRepository } from '@/app-user/infrastructure/database/prisma/repositories/app-user-prisma.repository';
 import { CreateAppUserUsecase } from '@/app-user/application/usecases/create-app-user.usecase';
 import { AppUserEntity } from '@/app-user/domain/entities/app-user.entity';
 import { AppUserDataBuilder } from '@/app-user/domain/testing/helper/app-user-data-builder';
 import { v4 } from 'uuid';
-import { UserWithIdNotFoundError } from '@/user/infrastructure/errors/user-with-id-not-found-error';
+import { AppUserWithIdNotFoundError } from '@/app-user/infrastructure/errors/app-user-with-id-not-found-error';
+import { AppUserPrismaTestingHelper } from '@/app-user/infrastructure/database/prisma/testing/app-user-prisma.testing-helper';
 
 describe('Create App User usecase integration tests', () => {
   const prismaService = new PrismaClient();
@@ -51,17 +51,17 @@ describe('Create App User usecase integration tests', () => {
       email: ff.email,
     };
 
-    await expect(() => sut.execute(input)).rejects.toThrow(
-      UserWithIdNotFoundError,
+    await expect(sut.execute(input)).rejects.toThrow(
+      AppUserWithIdNotFoundError,
     );
   });
 
   it('should create a app user', async () => {
-    const user = await UserPrismaTestingHelper.createUser(prismaService);
+    const user = await AppUserPrismaTestingHelper.createAppUser(prismaService);
 
     const input: CreateAppUserUsecase.Input = {
       externalId: user.id,
-      email: "alan.turing@email.com",
+      email: 'alan.turing@email.com',
       name: 'Alan Turing',
     };
 
