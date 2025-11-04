@@ -10,6 +10,7 @@ import {
   Query,
   UseGuards,
   Post,
+  Request,
 } from '@nestjs/common';
 import { UpdateAppUserUsecase } from '@/app-user/application/usecases/update-app-user.usecase';
 import { GetAppUserUsecase } from '@/app-user/application/usecases/get-app-user.usecase';
@@ -107,12 +108,15 @@ export class AppUserController {
     return AppUserController.appUserToResponse(output);
   }
 
+  @ApiBearerAuth()
   @ApiResponse({ status: 201, description: 'App user created' })
   @ApiResponse({ status: 422, description: 'Unprocessable Entity' })
+  @UseGuards(AuthGuard)
   @Post()
-  async create(@Body() createAppUserDto: CreateAppUserDto) {
+  async create(@Body() createAppUserDto: CreateAppUserDto, @Request() req) {
     const input: CreateAppUserUsecase.Input = {
       ...createAppUserDto,
+      externalId: req.user.id,
     };
 
     const output = await this.createAppUserUseCase.execute(input);

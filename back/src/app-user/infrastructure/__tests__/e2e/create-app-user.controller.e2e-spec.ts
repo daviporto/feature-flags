@@ -15,12 +15,14 @@ import { CreateAppUserDto } from '@/app-user/infrastructure/dtos/create-app-user
 import { AppUserController } from '@/app-user/infrastructure/app-user.controller';
 import { AppUserModule } from '@/app-user/infrastructure/app-user.module';
 import { faker } from '@faker-js/faker';
+import { AuthService } from '@/auth/infrastructure/auth.service';
 
 describe('Create app user e2e tests', () => {
   let app: INestApplication;
   let module: TestingModule;
   let appUserRepository: AppUserRepository.Repository;
   let createAppUserDto: CreateAppUserDto;
+  let authToken: string;
   const prismaService = new PrismaClient();
 
   beforeAll(async () => {
@@ -49,11 +51,16 @@ describe('Create app user e2e tests', () => {
     };
 
     await resetDatabase(prismaService);
+
+    const authService = module.get(AuthService);
+    const tokenObj = await authService.generateJwt(createAppUserDto.externalId);
+    authToken = `Bearer ${tokenObj.accessToken}`;
   });
 
   it('should create a app user', async () => {
     const response = await request(app.getHttpServer())
       .post('/app-user')
+      .set('Authorization', authToken)
       .send(createAppUserDto)
       .expect(201);
 
@@ -85,6 +92,7 @@ describe('Create app user e2e tests', () => {
   it('should return error when no parameter in body', async () => {
     const response = await request(app.getHttpServer())
       .post('/app-user')
+      .set('Authorization', authToken)
       .send()
       .expect(422);
 
@@ -107,6 +115,7 @@ describe('Create app user e2e tests', () => {
   it('should return error when name is not a string', async () => {
     const response = await request(app.getHttpServer())
       .post('/app-user')
+      .set('Authorization', authToken)
       .send({
         ...createAppUserDto,
         name: 123 as any,
@@ -124,6 +133,7 @@ describe('Create app user e2e tests', () => {
   it('should return error when email is not a string', async () => {
     const response = await request(app.getHttpServer())
       .post('/app-user')
+      .set('Authorization', authToken)
       .send({
         ...createAppUserDto,
         email: 123 as any,
@@ -141,6 +151,7 @@ describe('Create app user e2e tests', () => {
   it('should return error with invalid property', async () => {
     const response = await request(app.getHttpServer())
       .post('/app-user')
+      .set('Authorization', authToken)
       .send({
         ...createAppUserDto,
         invalid: 'invalid',

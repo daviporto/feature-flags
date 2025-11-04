@@ -10,6 +10,7 @@ import {
   AppUserPresenter,
 } from '@/app-user/infrastructure/presenters/app-user.presenter';
 import { ListAppUsersUsecase } from '@/app-user/application/usecases/list-app-user.usecase';
+import { v4 } from 'uuid';
 
 describe('AppUserController unit tests', () => {
   let sut: AppUserController;
@@ -98,11 +99,16 @@ describe('AppUserController unit tests', () => {
 
     const input: CreateAppUserDto = createProps;
 
-    const presenter = await sut.create(input);
+    const request = {
+      user: { id: v4() },
+    };
+
+    const presenter = await sut.create(input, request);
     expect(presenter).toBeInstanceOf(AppUserPresenter);
     expect(presenter).toMatchObject(new AppUserPresenter(createProps));
     expect(mockCreateAppUserUseCase.execute).toHaveBeenCalledWith({
       ...input,
+      externalId: request.user.id,
     });
   });
 
