@@ -8,6 +8,7 @@ import { DeleteAppUserUsecase } from '@/app-user/application/usecases/delete-app
 import { PrismaService } from '@/shared/infrastructure/database/prisma/prisma.service';
 import { AppUserPrismaRepository } from '@/app-user/infrastructure/database/prisma/repositories/app-user-prisma.repository';
 import { AuthModule } from '@/auth/infrastructure/auth.module';
+import { CreateAppUserUsecase } from '@/app-user/application/usecases/create-app-user.usecase';
 
 @Module({
   imports: [AuthModule],
@@ -49,6 +50,13 @@ import { AuthModule } from '@/auth/infrastructure/auth.module';
       provide: DeleteAppUserUsecase.UseCase,
       useFactory: (appUserRepository: AppUserRepository.Repository) => {
         return new DeleteAppUserUsecase.UseCase(appUserRepository);
+      },
+      inject: ['AppUserRepository'],
+    },
+    {
+      provide: CreateAppUserUsecase.UseCase,
+      useFactory: (appUserRepository: AppUserRepository.Repository) => {
+        return new CreateAppUserUsecase.UseCase(appUserRepository);
       },
       inject: ['AppUserRepository'],
     },

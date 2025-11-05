@@ -3,6 +3,7 @@ import { AppUserOutput } from '@/app-user/application/dtos/app-user-output';
 import { AppUserDataBuilder } from '@/app-user/domain/testing/helper/app-user-data-builder';
 import { ListAppUsersDto } from '@/app-user/infrastructure/dtos/list-app-user.dto';
 import { UpdateAppUserDto } from '@/app-user/infrastructure/dtos/update-app-user.dto';
+import { CreateAppUserDto } from '@/app-user/infrastructure/dtos/create-app-user.dto';
 import { faker } from '@faker-js/faker';
 import {
   AppUserCollectionPresenter,
@@ -83,6 +84,24 @@ describe('AppUserController unit tests', () => {
     expect(presenter).toEqual(new AppUserPresenter(updatedProps));
     expect(mockUpdateAppUserUseCase.execute).toHaveBeenCalledWith({
       id,
+      ...input,
+    });
+  });
+
+  it('should create app user', async () => {
+    const createProps = { ...props };
+    const mockCreateAppUserUseCase = {
+      execute: jest.fn().mockResolvedValue(Promise.resolve(createProps)),
+    };
+
+    sut['createAppUserUseCase'] = mockCreateAppUserUseCase as any;
+
+    const input: CreateAppUserDto = createProps;
+
+    const presenter = await sut.create(input);
+    expect(presenter).toBeInstanceOf(AppUserPresenter);
+    expect(presenter).toMatchObject(new AppUserPresenter(createProps));
+    expect(mockCreateAppUserUseCase.execute).toHaveBeenCalledWith({
       ...input,
     });
   });
