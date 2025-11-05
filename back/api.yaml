@@ -228,6 +228,167 @@ paths:
         - user
       security:
         - bearer: []
+  /feature-flag:
+    get:
+      operationId: FeatureFlagController_search
+      parameters:
+        - name: page
+          required: false
+          in: query
+          description: The page number
+          example: 1
+          schema:
+            type: number
+        - name: perPage
+          required: false
+          in: query
+          description: The number of items per page
+          example: 10
+          schema:
+            type: number
+        - name: sort
+          required: false
+          in: query
+          description: The field that should be used for sorting
+          example: name
+          schema:
+            nullable: true
+            enum:
+              - name
+              - createdAt
+            type: string
+        - name: sortDir
+          required: false
+          in: query
+          description: The sort direction
+          example: asc
+          schema:
+            nullable: true
+            enum:
+              - asc
+              - desc
+            type: string
+        - name: filter
+          required: false
+          in: query
+          description: The filter to apply to the search
+          example:
+            name: feature
+            description: user feature
+            enabled: true
+          schema:
+            nullable: true
+      responses:
+        '200':
+          description: The FeatureFlag has been successfully created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeatureFlagCollectionPresenter'
+        '401':
+          description: Unauthorized
+        '422':
+          description: Unprocessable Entity
+      tags:
+        - feature-flag
+    post:
+      operationId: FeatureFlagController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFeatureFlagDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeatureFlagPresenter'
+        '401':
+          description: Unauthorized
+        '422':
+          description: Unprocessable Entity
+      tags:
+        - feature-flag
+      security:
+        - bearer: []
+  /feature-flag/{id}:
+    get:
+      operationId: FeatureFlagController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeatureFlagPresenter'
+        '401':
+          description: Unauthorized
+        '404':
+          description: FeatureFlag not found
+      tags:
+        - feature-flag
+      security:
+        - bearer: []
+    put:
+      operationId: FeatureFlagController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateFeatureFlagDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeatureFlagPresenter'
+        '401':
+          description: Unauthorized
+        '404':
+          description: FeatureFlag not found
+        '422':
+          description: Unprocessable Entity
+      tags:
+        - feature-flag
+      security:
+        - bearer: []
+    delete:
+      operationId: FeatureFlagController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '204':
+          description: FeatureFlag deleted
+        '401':
+          description: Unauthorized
+        '404':
+          description: FeatureFlag not found
+      tags:
+        - feature-flag
+      security:
+        - bearer: []
 info:
   title: Nest Auth Api
   description: The Nest Api support creating deleting editing and authenticating users
@@ -339,3 +500,82 @@ components:
       required:
         - oldPassword
         - newPassword
+    FeatureFlagPresenter:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The id of the feature flag
+        name:
+          type: string
+          description: The name of the feature flag
+        description:
+          type: string
+          description: The description of the feature flag
+        enabled:
+          type: boolean
+          description: The status of the feature flag, if is active or not
+        createdAt:
+          format: date-time
+          type: string
+          description: The date when the feature flag was created
+        updatedAt:
+          format: date-time
+          type: string
+          nullable: true
+          description: The data of last feature flag update
+      required:
+        - id
+        - name
+        - description
+        - enabled
+        - createdAt
+        - updatedAt
+    FeatureFlagCollectionPresenter:
+      type: object
+      properties:
+        data:
+          description: List of FeatureFlags
+          type: array
+          items:
+            $ref: '#/components/schemas/FeatureFlagPresenter'
+      required:
+        - data
+    UpdateFeatureFlagDto:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the feature flag
+          example: new-feature-flag
+        description:
+          type: string
+          description: The description of the feature flag
+          example: This flag enables the new user dashboard
+        enabled:
+          type: boolean
+          description: Whether the feature flag is enabled
+          example: true
+      required:
+        - name
+        - description
+        - enabled
+    CreateFeatureFlagDto:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the feature flag
+          example: new-feature-flag
+        description:
+          type: string
+          description: The description of the feature flag
+          example: This flag enables the new user dashboard
+        enabled:
+          type: boolean
+          description: Whether the feature flag is enabled
+          example: true
+      required:
+        - name
+        - description
+        - enabled
