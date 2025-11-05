@@ -16,6 +16,7 @@ import { AppUserController } from '@/app-user/infrastructure/app-user.controller
 import { AppUserModule } from '@/app-user/infrastructure/app-user.module';
 import { faker } from '@faker-js/faker';
 import { AuthService } from '@/auth/infrastructure/auth.service';
+import { SignUpDto } from '@/user/infrastructure/dtos/sign-up.dto';
 
 describe('Create app user e2e tests', () => {
   let app: INestApplication;
@@ -29,9 +30,9 @@ describe('Create app user e2e tests', () => {
     setUpPrismaTest();
     module = await Test.createTestingModule({
       imports: [
+        AppUserModule,
         EnvConfigModule,
         DatabaseModule.forTest(prismaService),
-        AppUserModule,
       ],
     }).compile();
 
@@ -52,8 +53,15 @@ describe('Create app user e2e tests', () => {
 
     await resetDatabase(prismaService);
 
+    const signUpDto: SignUpDto = {
+      name: faker.person.fullName(),
+      email: faker.internet.email(),
+      password: faker.internet.password(),
+    };
+
+    const userCreated = await prismaService.user.create({ data: signUpDto });
     const authService = module.get(AuthService);
-    const tokenObj = await authService.generateJwt(createAppUserDto.externalId);
+    const tokenObj = await authService.generateJwt(userCreated.id);
     authToken = `Bearer ${tokenObj.accessToken}`;
   });
 
@@ -67,9 +75,10 @@ describe('Create app user e2e tests', () => {
     expect(response.body).toHaveProperty('data');
 
     expect(Object.keys(response.body.data)).toStrictEqual([
-      'externalId',
+      'id',
       'name',
       'email',
+      'externalId',
       'createdAt',
       'updatedAt',
     ]);

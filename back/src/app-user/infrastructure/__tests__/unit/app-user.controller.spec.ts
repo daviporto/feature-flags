@@ -10,7 +10,6 @@ import {
   AppUserPresenter,
 } from '@/app-user/infrastructure/presenters/app-user.presenter';
 import { ListAppUsersUsecase } from '@/app-user/application/usecases/list-app-user.usecase';
-import { v4 } from 'uuid';
 
 describe('AppUserController unit tests', () => {
   let sut: AppUserController;
@@ -90,7 +89,7 @@ describe('AppUserController unit tests', () => {
   });
 
   it('should create app user', async () => {
-    const createProps = { ...props, externalId: id };
+    const createProps = { ...props };
     const mockCreateAppUserUseCase = {
       execute: jest.fn().mockResolvedValue(Promise.resolve(createProps)),
     };
@@ -99,16 +98,11 @@ describe('AppUserController unit tests', () => {
 
     const input: CreateAppUserDto = createProps;
 
-    const request = {
-      user: { id: v4() },
-    };
-
-    const presenter = await sut.create(input, request);
+    const presenter = await sut.create(input);
     expect(presenter).toBeInstanceOf(AppUserPresenter);
     expect(presenter).toMatchObject(new AppUserPresenter(createProps));
     expect(mockCreateAppUserUseCase.execute).toHaveBeenCalledWith({
       ...input,
-      externalId: request.user.id,
     });
   });
 

@@ -8,7 +8,6 @@ import { AppUserEntity } from '@/app-user/domain/entities/app-user.entity';
 import { isUUID } from 'class-validator';
 import { InvalidUuidError } from '@/shared/application/errors/invalid-uuid-error';
 import { AppUserRepository } from '@/app-user/domain/repositories/app-user.repository';
-import { AppUserWithIdNotFoundError } from '@/app-user/infrastructure/errors/app-user-with-id-not-found-error';
 
 export namespace CreateAppUserUsecase {
   export type Input = {
@@ -32,12 +31,6 @@ export namespace CreateAppUserUsecase {
 
       if (!isUUID(input.externalId)) {
         throw new InvalidUuidError(input.externalId);
-      }
-
-      const existingAppUser = await this.repository.findById(input.externalId);
-
-      if (!existingAppUser) {
-        throw new AppUserWithIdNotFoundError(input.externalId);
       }
 
       const AppUser = new AppUserEntity(input);

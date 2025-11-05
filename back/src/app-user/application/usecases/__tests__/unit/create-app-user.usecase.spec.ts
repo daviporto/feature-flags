@@ -29,7 +29,7 @@ describe('Create app user use case test', () => {
     await expect(() => sut.execute(input)).rejects.toThrow(InvalidUuidError);
   });
 
-  it('should throw appUserWithIdNotFoundError if user does not exist', async () => {
+  it('should create an app user if it does not exist', async () => {
     const ff = new AppUserEntity(AppUserDataBuilder());
 
     const input = {
@@ -38,9 +38,20 @@ describe('Create app user use case test', () => {
       email: ff.email,
     };
 
-    await expect(sut.execute(input)).rejects.toThrow(
-      AppUserWithIdNotFoundError,
-    );
+    const output = await sut.execute(input);
+
+    expect(output).toMatchObject({
+      name: input.name,
+      email: input.email,
+      externalId: input.externalId,
+    });
+
+    const all = await repository.findAll();
+    expect(all.length).toBe(1);
+    expect(all[0]).toBeInstanceOf(AppUserEntity);
+    expect(all[0].name).toBe(input.name);
+    expect(all[0].email).toBe(input.email);
+    expect(all[0].externalId).toBe(input.externalId);
   });
 
   describe('missing parameters', () => {

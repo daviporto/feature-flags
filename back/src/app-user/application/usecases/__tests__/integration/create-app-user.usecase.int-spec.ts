@@ -10,7 +10,6 @@ import { CreateAppUserUsecase } from '@/app-user/application/usecases/create-app
 import { AppUserEntity } from '@/app-user/domain/entities/app-user.entity';
 import { AppUserDataBuilder } from '@/app-user/domain/testing/helper/app-user-data-builder';
 import { v4 } from 'uuid';
-import { AppUserWithIdNotFoundError } from '@/app-user/infrastructure/errors/app-user-with-id-not-found-error';
 import { AppUserPrismaTestingHelper } from '@/app-user/infrastructure/database/prisma/testing/app-user-prisma.testing-helper';
 
 describe('Create App User usecase integration tests', () => {
@@ -42,18 +41,29 @@ describe('Create App User usecase integration tests', () => {
     await module.close();
   });
 
-  it('should throw error when app user not found', async () => {
+  it('should create an app user when it does not exist', async () => {
     const ff = new AppUserEntity(AppUserDataBuilder());
 
     const input = {
       externalId: v4(),
       name: ff.name,
       email: ff.email,
-    };
+    } as const;
 
-    await expect(sut.execute(input)).rejects.toThrow(
-      AppUserWithIdNotFoundError,
-    );
+    const created = await sut.execute(input);
+
+    expect(created).toMatchObject({
+      name: input.name,
+      email: input.email,
+      externalId: input.externalId,
+    });
+
+    const appUserFromDb = await repository.findById(created.id);
+    expect(appUserFromDb).not.toBeNull();
+    expect(appUserFromDb.name).toBe(input.name);
+    expect(appUserFromDb.email).toBe(input.email);
+    expect(appUserFromDb.externalId).toBe(input.externalId);
+    expect(appUserFromDb.createdAt).not.toBeNull();
   });
 
   it('should create a app user', async () => {
