@@ -6,7 +6,7 @@ import { UserDataBuilder } from '@/user/domain/testing/helper/user-data-builder'
 
 let sut: UserValidator;
 
-describe('ClassValidatorFields Integration Tests', () => {
+describe('ClassValidatorFields Unit Tests', () => {
   beforeEach(() => {
     sut = UserValidatorFactory.create();
   });

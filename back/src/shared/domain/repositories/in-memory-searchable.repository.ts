@@ -1,6 +1,4 @@
-import { RepositoryInterface } from '@/shared/domain/repositories/repository-contracts';
 import { Entity } from '@/shared/domain/entities/entity';
-import { NotFoundError } from '@/shared/domain/errors/not-found-error';
 import {
   SearchableRepositoryInterface,
   SearchParams,

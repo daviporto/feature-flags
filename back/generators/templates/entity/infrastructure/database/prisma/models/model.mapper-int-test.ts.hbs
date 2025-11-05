@@ -1,4 +1,7 @@
-import { PrismaService } from '@/shared/infrastructure/database/prisma/prisma.service';
+import {
+resetDatabase,
+setUpPrismaTest,
+} from '@/shared/infrastructure/database/prisma/testing/set-up-prisma-test';
 import { {{pascalCase name}} } from '@prisma/client';
 import { {{pascalCase name}}ModelMapper } from '@/{{dashCase name}}/infrastructure/database/prisma/models/{{dashCase name}}-model.mapper';
 import { ValidationErrors } from '@/shared/domain/errors/validation-errors';
@@ -19,7 +22,7 @@ describe('{{pascalCase name}} model mapper integration tests', () => {
   });
 
   beforeEach(() => {
-    prismaService.{{dashCase name}}.deleteMany();
+    await resetDatabase(prismaService);
   });
 
   afterAll(async () => {

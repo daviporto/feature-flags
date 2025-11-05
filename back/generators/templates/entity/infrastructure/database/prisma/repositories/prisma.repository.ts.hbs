@@ -9,7 +9,7 @@ import { SortOrderEnum } from '@/shared/domain/repositories/searchable-repositor
 export class {{pascalCase name}}PrismaRepository implements {{pascalCase name}}Repository.Repository {
   constructor(private prismaService: PrismaService) {}
 
-  async insert(entity: {{pascalCase name}}Entity): Promise<void> {
+  async insert(entity: {{pascalCase name}}Entity): Promise<{{pascalCase name}}Entity> {
     const {{lowerCase name}} = await this.prismaService.{{dashCase name}}.create({
       data: entity.toJSON(),
     });
