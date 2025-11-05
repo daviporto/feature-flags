@@ -361,7 +361,8 @@ import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
 import axios from 'axios';
-import { FeatureFlag } from 'src/types/feature-flag';
+import type { FeatureFlag } from 'src/types/feature-flag';
+import { useFeatureFlagsStore } from 'src/stores/feature-flag';
 
 const router = useRouter();
 const $q = useQuasar();
@@ -372,6 +373,7 @@ const showEditDialog = ref(false);
 const loadingCreate = ref(false);
 const loadingEdit = ref(false);
 const searchQuery = ref('');
+const featureFlagsStore = useFeatureFlagsStore();
 
 const newFlag = ref({
   name: '',
@@ -399,38 +401,14 @@ const copyToClipboard = async (text: string) => {
   });
 };
 
-onMounted(() => {
-  fetchFeatureFlags();
+onMounted(async () => {
+  await fetchFeatureFlags();
 });
 
-const fetchFeatureFlags = () => {
+const fetchFeatureFlags = async () => {
   try {
-    const flags: FeatureFlag[] = [
-      {
-        id: 'a6c71df0-bb2a-458d-ab16-d6e93a672763',
-        userId: 'a6c71df0-bb2a-458d-ab16-d6e93a672763',
-        name: 'New Checkout Flow',
-        description: 'Enable the redesigned checkout experience with one-click purchasing',
-        enabled: true,
-        createdAt: new Date('2025-11-02'),
-      },
-      {
-        id: '79346d04-a632-4971-a694-73a4ecb246be',
-        userId: 'a6c71df0-bb2a-458d-ab16-d6e93a672763',
-        name: 'Dark Mode',
-        description: 'Allow users to switch to dark theme across the application',
-        enabled: true,
-        createdAt: new Date('2025-11-02'),
-      },
-      {
-        id: '3f8a9b2c-1d4e-4567-89ab-cdef01234567',
-        userId: 'a6c71df0-bb2a-458d-ab16-d6e93a672763',
-        name: 'AI Recommendations',
-        description: 'Show personalized product recommendations powered by machine learning',
-        enabled: false,
-        createdAt: new Date('2025-11-02'),
-      },
-    ];
+    const flags = await featureFlagsStore.listFeatureFlags();
+    console.log(flags)
     featureFlags.value = flags;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
@@ -445,21 +423,12 @@ const fetchFeatureFlags = () => {
 const handleCreateFlag = async () => {
   try {
     loadingCreate.value = true;
-    const token = localStorage.getItem('authToken');
-
-    await axios.post(
-      'http://localhost:3000/api/feature-flags',
-      {
-        name: newFlag.value.name,
-        description: newFlag.value.description,
-        enabled: newFlag.value.enabled,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    );
+    const data = {
+      name: newFlag.value.name,
+      description: newFlag.value.description,
+      enabled: newFlag.value.enabled,
+    }
+    await featureFlagsStore.createFeatureFlag(data);
 
     $q.notify({
       type: 'positive',
@@ -474,9 +443,10 @@ const handleCreateFlag = async () => {
       enabled: false,
     };
     showCreateDialog.value = false;
-    fetchFeatureFlags();
+    await fetchFeatureFlags();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
+    console.log(error)
     $q.notify({
       type: 'negative',
       message: error.response?.data?.message || 'Failed to create feature flag',
@@ -518,7 +488,7 @@ const handleEditFlag = async () => {
     });
 
     showEditDialog.value = false;
-    fetchFeatureFlags();
+    await fetchFeatureFlags();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     $q.notify({
@@ -563,22 +533,27 @@ const toggleFlag = async (flag: FeatureFlag) => {
   }
 };
 
-const deleteFlag = (flagId: string) => {
-  console.log(flagId);
-  $q.dialog({
-    title: 'Delete Feature Flag',
-    message: 'Are you sure you want to delete this feature flag? This action cannot be undone.',
-    persistent: true,
-    ok: {
-      label: 'Delete',
-      color: 'negative',
-      unelevated: true,
-    },
-    cancel: {
-      label: 'Cancel',
-      flat: true,
-    },
-  });
+const deleteFlag = async (flagId: string) => {
+  try {
+    await featureFlagsStore.deleteFeatureFlag(flagId)
+
+    $q.notify({
+      type: 'positive',
+      message: 'Feature flag deleted successfully',
+      position: 'top',
+      icon: 'check_circle',
+    })
+
+    await fetchFeatureFlags();
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch(error: any) {
+    $q.notify({
+      type: 'negative',
+      message: error.response?.data?.message || 'Failed to delete feature flag',
+      position: 'top',
+    });
+  }
 };
 
 const viewFlagDetails = (flag: FeatureFlag) => {

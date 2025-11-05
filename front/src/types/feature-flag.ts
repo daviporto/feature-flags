@@ -1,9 +1,14 @@
-export type FeatureFlag = {
+export interface FeatureFlag {
   id: string;
   name: string;
   description: string;
   enabled: boolean;
-  userId: string;
   createdAt?: Date;
   updatedAt?: Date;
-};
+}
+
+export interface CreateFeatureFlagData {
+  name: string;
+  description: string;
+  enabled: boolean;
+}
