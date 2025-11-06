@@ -12,3 +12,9 @@ export interface CreateFeatureFlagData {
   description: string;
   enabled: boolean;
 }
+
+export interface UpdateFeatureFlagData {
+  name: string;
+  description: string;
+  enabled: boolean;
+}

@@ -408,7 +408,7 @@ onMounted(async () => {
 const fetchFeatureFlags = async () => {
   try {
     const flags = await featureFlagsStore.listFeatureFlags();
-    console.log(flags)
+    console.log(flags);
     featureFlags.value = flags;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
@@ -427,7 +427,7 @@ const handleCreateFlag = async () => {
       name: newFlag.value.name,
       description: newFlag.value.description,
       enabled: newFlag.value.enabled,
-    }
+    };
     await featureFlagsStore.createFeatureFlag(data);
 
     $q.notify({
@@ -446,7 +446,7 @@ const handleCreateFlag = async () => {
     await fetchFeatureFlags();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    console.log(error)
+    console.log(error);
     $q.notify({
       type: 'negative',
       message: error.response?.data?.message || 'Failed to create feature flag',
@@ -465,20 +465,13 @@ const editFlag = (flag: FeatureFlag) => {
 const handleEditFlag = async () => {
   try {
     loadingEdit.value = true;
-    const token = localStorage.getItem('authToken');
-
-    await axios.put(
-      `http://localhost:3000/api/feature-flags/${editingFlag.value.id}`,
-      {
-        name: editingFlag.value.name,
-        description: editingFlag.value.description,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    );
+    const data = {
+      name: editingFlag.value.name,
+      description: editingFlag.value.description,
+      enabled: editingFlag.value.enabled
+    }
+    const flagId = editingFlag.value.id;
+    await featureFlagsStore.updateFeatureFlag(flagId, data)
 
     $q.notify({
       type: 'positive',
@@ -535,19 +528,19 @@ const toggleFlag = async (flag: FeatureFlag) => {
 
 const deleteFlag = async (flagId: string) => {
   try {
-    await featureFlagsStore.deleteFeatureFlag(flagId)
+    await featureFlagsStore.deleteFeatureFlag(flagId);
 
     $q.notify({
       type: 'positive',
       message: 'Feature flag deleted successfully',
       position: 'top',
       icon: 'check_circle',
-    })
+    });
 
     await fetchFeatureFlags();
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch(error: any) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
     $q.notify({
       type: 'negative',
       message: error.response?.data?.message || 'Failed to delete feature flag',
