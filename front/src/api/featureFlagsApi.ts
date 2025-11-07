@@ -17,8 +17,12 @@ export const deleteFeatureFlag = async (flagId : string) : Promise<void> => {
     await getAxiosWithAuth().delete(`/feature-flag/${flagId}`)
 }
 
-export const updateFeatureFlagApi = async (flagId : string, data : UpdateFeatureFlagData) : Promise<UpdateFeatureFlagData> => {
+export const updateFeatureFlag = async (flagId : string, data : UpdateFeatureFlagData) : Promise<UpdateFeatureFlagData> => {
     const response = await getAxiosWithAuth().put(`/feature-flag/${flagId}`, data)
 
     return response.data
+}
+
+export const toggleFeatureFlag = async (flagId : string, data : UpdateFeatureFlagData) : Promise<void> => {
+    await getAxiosWithAuth().put(`/feature-flag/${flagId}`, data)
 }

@@ -360,7 +360,6 @@
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
-import axios from 'axios';
 import type { FeatureFlag } from 'src/types/feature-flag';
 import { useFeatureFlagsStore } from 'src/stores/feature-flag';
 
@@ -469,6 +468,7 @@ const handleEditFlag = async () => {
       enabled: editingFlag.value.enabled
     }
     const flagId = editingFlag.value.id;
+
     await featureFlagsStore.update(flagId, data)
 
     $q.notify({
@@ -494,17 +494,14 @@ const handleEditFlag = async () => {
 
 const toggleFlag = async (flag: FeatureFlag) => {
   try {
-    const token = localStorage.getItem('authToken');
+    const flagId = flag.id;
+    const data = {
+      name: flag.name,
+      description: flag.description,
+      enabled: !flag.enabled
+    }
 
-    await axios.put(
-      `http://localhost:3000/api/feature-flags/${flag.id}/toggle`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    );
+    await featureFlagsStore.toggle(flagId, data)
 
     flag.enabled = !flag.enabled;
 

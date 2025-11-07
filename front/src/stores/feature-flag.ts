@@ -1,5 +1,5 @@
 import { acceptHMRUpdate, defineStore } from "pinia";
-import { createFeatureFlag, searchFeatureFlag , deleteFeatureFlag, updateFeatureFlagApi} from "src/api/featureFlagsApi";
+import { createFeatureFlag, searchFeatureFlag , deleteFeatureFlag, updateFeatureFlag, toggleFeatureFlag} from "src/api/featureFlagsApi";
 import type { CreateFeatureFlagData, FeatureFlag, UpdateFeatureFlagData } from "src/types/feature-flag";
 
 export const useFeatureFlagsStore = defineStore('feature-flag', {
@@ -18,9 +18,12 @@ export const useFeatureFlagsStore = defineStore('feature-flag', {
             await deleteFeatureFlag(flagId);
         },
         async update (flagId : string, data : UpdateFeatureFlagData) : Promise<UpdateFeatureFlagData> {
-            const result = await updateFeatureFlagApi(flagId, data);
+            const result = await updateFeatureFlag(flagId, data);
 
             return result;    
+        },
+        async toggle (flagId : string, data : UpdateFeatureFlagData) : Promise<void> {
+            await toggleFeatureFlag(flagId, data)
         }
     }
 })
