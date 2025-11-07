@@ -410,14 +410,14 @@
             <div class="form-field">
               <label class="field-label">Created at</label>
               <div class="text-body2">
-                {{ selectedFlag.createdAt}}
+                {{ formatDate(selectedFlag.createdAt)}}
               </div>
             </div>
 
             <div class="form-field">
               <label class="field-label">Last update</label>
               <div class="text-body2">
-                {{ selectedFlag.updatedAt}}
+                {{ formatDate(selectedFlag.updatedAt)}}
               </div>
             </div>
 
@@ -471,6 +471,19 @@ const editingFlag = ref<FeatureFlag>({
 
 const enabledCount = computed(() => featureFlags.value.filter((f) => f.enabled).length);
 const disabledCount = computed(() => featureFlags.value.filter((f) => !f.enabled).length);
+
+const formatDate = (input?: string | Date): string => {
+  if (!input) return '—';
+  const date = input instanceof Date ? input : new Date(input);
+
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+
+  return `${month}/${day}/${year} ${hours}:${minutes}`;
+};
 
 const copyToClipboard = async (text: string) => {
   await navigator.clipboard.writeText(text);
