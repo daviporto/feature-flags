@@ -353,6 +353,73 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+
+    <!-- Details Dialog -->
+    <q-dialog v-model="showDetailsDialog" transition-show="slide-up" transition-hide="slide-down">
+      <q-card class="dialog-card">
+        <q-card-section class="dialog-header">
+          <div class="dialog-title-section">
+            <q-icon name="info" size="32px" color="white" class="q-mr-sm" />
+            <div>
+              <div class="dialog-title">Feature Flag Details</div>
+              <div class="dialog-subtitle">Detailed information about the flag</div>
+            </div>
+          </div>
+        </q-card-section>
+
+        <q-separator />
+
+        <q-card-section class="dialog-content">
+          <div v-if="selectedFlag">
+            <div class="form-field">
+              <label class="field-label">Name</label>
+              <div class="text-body1">{{ selectedFlag.name }}</div>
+            </div>
+
+            <div class="form-field">
+              <label class="field-label">Description</label>
+              <div class="text-body2">
+                {{ selectedFlag.description || 'No description provided' }}
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label class="field-label">Status</label>
+              <q-badge
+                :color="selectedFlag.enabled ? 'positive' : 'grey'"
+                align="middle"
+                class="q-ml-sm"
+              >
+                {{ selectedFlag.enabled ? 'Enabled' : 'Disabled' }}
+              </q-badge>
+            </div>
+
+            <div class="form-field">
+              <label class="field-label">Created at</label>
+              <div class="text-body2">
+                {{ selectedFlag.createdAt}}
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label class="field-label">Last update</label>
+              <div class="text-body2">
+                {{ selectedFlag.updatedAt}}
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label class="field-label">Flag ID</label>
+              <div class="text-body2">{{ selectedFlag.id }}</div>
+            </div>
+          </div>
+        </q-card-section>
+
+        <q-card-actions align="right" class="q-pa-md">
+          <q-btn flat label="Close" color="primary" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -367,12 +434,14 @@ const router = useRouter();
 const $q = useQuasar();
 
 const featureFlags = ref<FeatureFlag[]>([]);
+const selectedFlag = ref<FeatureFlag | null>(null);
 const showCreateDialog = ref(false);
 const showEditDialog = ref(false);
 const loadingCreate = ref(false);
 const loadingEdit = ref(false);
 const searchQuery = ref('');
 const featureFlagsStore = useFeatureFlagsStore();
+const showDetailsDialog = ref(false);
 
 const newFlag = ref({
   name: '',
@@ -545,6 +614,9 @@ const deleteFlag = async (flagId: string) => {
 };
 
 const viewFlagDetails = (flag: FeatureFlag) => {
+  selectedFlag.value = flag;
+  showDetailsDialog.value = true;
+  
   $q.notify({
     type: 'info',
     message: `Viewing details for: ${flag.name}`,
