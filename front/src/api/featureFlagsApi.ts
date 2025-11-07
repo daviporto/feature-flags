@@ -1,7 +1,3 @@
-//post - create
-//get - search
-//put - update
-
 import { getAxiosWithAuth } from "src/boot/axios"
 import type { CreateFeatureFlagData, FeatureFlag, UpdateFeatureFlagData } from "src/types/feature-flag"
 

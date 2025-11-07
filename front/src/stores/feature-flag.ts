@@ -9,15 +9,15 @@ export const useFeatureFlagsStore = defineStore('feature-flag', {
 
             return result;
         },
-        async createFeatureFlag (data : CreateFeatureFlagData) : Promise<FeatureFlag> {
+        async create (data : CreateFeatureFlagData) : Promise<FeatureFlag> {
             const result = await createFeatureFlag(data);
 
             return result;
         },
-        async deleteFeatureFlag (flagId : string) : Promise<void> {
+        async delete (flagId : string) : Promise<void> {
             await deleteFeatureFlag(flagId);
         },
-        async updateFeatureFlag (flagId : string, data : UpdateFeatureFlagData) : Promise<UpdateFeatureFlagData> {
+        async update (flagId : string, data : UpdateFeatureFlagData) : Promise<UpdateFeatureFlagData> {
             const result = await updateFeatureFlagApi(flagId, data);
 
             return result;    

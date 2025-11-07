@@ -381,7 +381,7 @@ const newFlag = ref({
   enabled: false,
 });
 
-const editingFlag = ref<Pick<FeatureFlag, 'id' | 'name' | 'description' | 'enabled'>>({
+const editingFlag = ref<FeatureFlag>({
   id: '',
   name: '',
   description: '',
@@ -408,7 +408,6 @@ onMounted(async () => {
 const fetchFeatureFlags = async () => {
   try {
     const flags = await featureFlagsStore.listFeatureFlags();
-    console.log(flags);
     featureFlags.value = flags;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
@@ -428,7 +427,7 @@ const handleCreateFlag = async () => {
       description: newFlag.value.description,
       enabled: newFlag.value.enabled,
     };
-    await featureFlagsStore.createFeatureFlag(data);
+    await featureFlagsStore.create(data);
 
     $q.notify({
       type: 'positive',
@@ -446,7 +445,6 @@ const handleCreateFlag = async () => {
     await fetchFeatureFlags();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    console.log(error);
     $q.notify({
       type: 'negative',
       message: error.response?.data?.message || 'Failed to create feature flag',
@@ -471,7 +469,7 @@ const handleEditFlag = async () => {
       enabled: editingFlag.value.enabled
     }
     const flagId = editingFlag.value.id;
-    await featureFlagsStore.updateFeatureFlag(flagId, data)
+    await featureFlagsStore.update(flagId, data)
 
     $q.notify({
       type: 'positive',
@@ -528,7 +526,7 @@ const toggleFlag = async (flag: FeatureFlag) => {
 
 const deleteFlag = async (flagId: string) => {
   try {
-    await featureFlagsStore.deleteFeatureFlag(flagId);
+    await featureFlagsStore.delete(flagId);
 
     $q.notify({
       type: 'positive',
