@@ -356,7 +356,7 @@
 
     <!-- Details Dialog -->
     <q-dialog v-model="showDetailsDialog" transition-show="slide-up" transition-hide="slide-down">
-      <q-card class="dialog-card">
+      <q-card class="dialog-card details-dialog">
         <q-card-section class="dialog-header">
           <div class="dialog-title-section">
             <q-icon name="info" size="32px" color="white" class="q-mr-sm" />
@@ -385,13 +385,26 @@
 
             <div class="form-field">
               <label class="field-label">Status</label>
-              <q-badge
-                :color="selectedFlag.enabled ? 'positive' : 'grey'"
-                align="middle"
-                class="q-ml-sm"
-              >
-                {{ selectedFlag.enabled ? 'Enabled' : 'Disabled' }}
-              </q-badge>
+              <transition name="fade">
+                <q-badge
+                  v-if="selectedFlag.enabled"
+                  color="positive"
+                  align="middle"
+                  class="q-ml-sm"
+                  key="enabled"
+                >
+                  Enabled
+                </q-badge>
+                <q-badge
+                  v-else
+                  color="grey"
+                  align="middle"
+                  class="q-ml-sm"
+                  key="disabled"
+                >
+                  Disabled
+                </q-badge>
+              </transition>
             </div>
 
             <div class="form-field">
@@ -616,12 +629,6 @@ const deleteFlag = async (flagId: string) => {
 const viewFlagDetails = (flag: FeatureFlag) => {
   selectedFlag.value = flag;
   showDetailsDialog.value = true;
-  
-  $q.notify({
-    type: 'info',
-    message: `Viewing details for: ${flag.name}`,
-    position: 'top',
-  });
 };
 
 const handleLogout = async () => {
@@ -1018,6 +1025,38 @@ const handleLogout = async () => {
   padding: 2rem;
 }
 
+.dialog-card.details-dialog {
+  background: white;
+  color: #2c3e50;
+}
+
+.details-dialog .dialog-header {
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.details-dialog .dialog-title-section q-icon {
+  color: #667eea;
+}
+
+.details-dialog .dialog-content {
+  background: white;
+  color: #2c3e50;
+}
+
+.details-dialog .field-label {
+  color: #34495e;
+}
+
+.details-dialog .text-body2,
+.details-dialog .text-body1 {
+  color: #2c3e50;
+}
+
 .form-field {
   margin-bottom: 1.5rem;
 }
@@ -1035,6 +1074,19 @@ const handleLogout = async () => {
   flex-direction: column;
   gap: 0.75rem;
   margin-top: 2rem;
+}
+
+.fade-enter-active {
+  transition: opacity 0.8s ease, transform 0.6s ease;
+}
+
+.fade-leave-active {
+  transition: opacity 1s ease, transform 0.8s ease;
+}
+
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+  transform: scale(0.9);
 }
 
 @media (max-width: 768px) {
