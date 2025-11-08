@@ -7,5 +7,6 @@ export function UserDataBuilder(props: Partial<UserProps>) {
     email: props.email || faker.internet.email(),
     password: props.password || faker.internet.password(),
     createdAt: props.createdAt || new Date(),
+    api_token: props.api_token || faker.string.uuid(),
   };
 }

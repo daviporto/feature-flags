@@ -7,6 +7,7 @@ export type UserProps = {
   email: string;
   password: string;
   createdAt?: Date;
+  api_token?: string;
 };
 
 export class UserEntity extends Entity<UserProps> {
@@ -51,6 +52,10 @@ export class UserEntity extends Entity<UserProps> {
 
   get createdAt(): Date {
     return this.props.createdAt;
+  }
+
+  get api_token() {
+    return this.props.api_token;
   }
 
   static validate(props: UserProps) {

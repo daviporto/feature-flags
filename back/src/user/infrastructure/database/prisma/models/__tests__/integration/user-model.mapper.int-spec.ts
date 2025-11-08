@@ -12,7 +12,7 @@ describe('User model mapper integration tests', () => {
 
   beforeAll(async () => {
     setUpPrismaTest();
-    
+
     prismaService = new PrismaService();
     props = UserDataBuilder({});
     await prismaService.$connect();
@@ -48,5 +48,6 @@ describe('User model mapper integration tests', () => {
     expect(sut.email).toBe(model.email);
     expect(sut.password).toBe(model.password);
     expect(sut.createdAt).toBe(model.createdAt);
+    expect(sut.api_token).toBe(model.api_token);
   });
 });

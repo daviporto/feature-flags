@@ -10,7 +10,7 @@ export class UserPrismaTestingHelper {
   ): Promise<User> {
     return prisma.user.create({
       data: {
-        ...UserDataBuilder(props)
+        ...UserDataBuilder(props),
       },
     });
   }
