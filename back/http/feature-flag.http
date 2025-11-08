@@ -1,0 +1,26 @@
+### Get Feature Flags
+GET {{host}}/feature-flag?filter[enabled]=0
+Authorization: Bearer {{token}}
+
+> {%
+    client.test('sucess response', () => {
+        client.assert(response.status === 200, 'response status is not 200')
+    })
+%}
+
+### Get Feature Flags
+POST {{host}}/feature-flag
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "test 4",
+  "description": "test ff",
+  "enabled": true
+}
+
+> {%
+    client.test('sucess response', () => {
+        client.assert(response.status === 200, 'response status is not 200')
+    })
+%}
