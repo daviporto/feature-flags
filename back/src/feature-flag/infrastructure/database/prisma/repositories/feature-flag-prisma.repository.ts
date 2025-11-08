@@ -157,8 +157,13 @@ export class FeatureFlagPrismaRepository
     const filtersObject: Prisma.FeatureFlagWhereInput = {};
 
     if (!isUndefined(searchInput.filter?.enabled)) {
+      const enabledBool =
+        typeof searchInput.filter.enabled === 'string'
+          ? searchInput.filter.enabled !== '0'
+          : Boolean(searchInput.filter.enabled);
+
       filtersObject['enabled'] = {
-        equals: !!searchInput.filter.enabled,
+        equals: enabledBool,
       };
     }
 
