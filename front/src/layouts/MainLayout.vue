@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch} from 'vue';
+import { ref, watch } from 'vue';
 import { useAuthStore } from 'stores/auth';
 import { useRouter } from 'vue-router';
 import { Routes } from 'src/enums/Routes';
@@ -14,9 +14,16 @@ const logout = async () => {
   await router.push({ name: Routes.SIGN_IN });
 };
 
-watch(() => router.currentRoute.value, () => {
-  drawer.value = false;
-});
+watch(
+  () => router.currentRoute.value,
+  () => {
+    drawer.value = false;
+  },
+);
+
+const copyToClipboard = async (text: string) => {
+  await navigator.clipboard.writeText(text);
+};
 </script>
 
 <template>
@@ -24,9 +31,9 @@ watch(() => router.currentRoute.value, () => {
     <q-header elevated>
       <q-toolbar>
         <q-space />
-        <q-toolbar-title
-          @click="$router.push({ name: Routes.HOME })"
-        > {{ $t('common.pageTitle') }}</q-toolbar-title>
+        <q-toolbar-title @click="$router.push({ name: Routes.HOME })">
+          {{ $t('common.pageTitle') }}</q-toolbar-title
+        >
         <q-btn icon="account_circle" round flat dense @click="drawer = !drawer"></q-btn>
       </q-toolbar>
     </q-header>
@@ -59,6 +66,15 @@ watch(() => router.currentRoute.value, () => {
             </q-item-section>
             <q-item-section>
               {{ $t('auth.updateName.title') }}
+            </q-item-section>
+          </q-item>
+
+          <q-item clickable v-ripple @click="copyToClipboard(authStore.user?.api_token!)">
+            <q-item-section avatar>
+              <q-icon name="content_copy"></q-icon>
+            </q-item-section>
+            <q-item-section>
+              {{ $t('auth.token.title') }}
             </q-item-section>
           </q-item>
         </q-list>
