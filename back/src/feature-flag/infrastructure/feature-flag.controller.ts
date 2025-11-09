@@ -32,6 +32,9 @@ import { ListFeatureFlagsDto } from '@/feature-flag/infrastructure/dtos/list-fea
 import { CreateFeatureFlagDto } from '@/feature-flag/infrastructure/dtos/create-feature-flag.dto';
 import { CreateFeatureFlagUsecase } from '@/feature-flag/application/usecases/create-feature-flag.usecase';
 import { UpdateFeatureFlagDto } from '@/feature-flag/infrastructure/dtos/update-feature-flag.dto';
+import { ClientUserGuard } from './client-user.guard';
+import { ClientFeatureFlagsDto } from './dtos/client-feature-flag.dto';
+import { ClientFeatureFlagUsecase } from '../application/usecases/client-feature-flag.usecase';
 
 @ApiTags('feature-flag')
 @Controller('feature-flag')
@@ -50,6 +53,9 @@ export class FeatureFlagController {
 
   @Inject(DeleteFeatureFlagUsecase.UseCase)
   private deleteFeatureFlagUseCase: DeleteFeatureFlagUsecase.UseCase;
+
+  @Inject(ClientFeatureFlagUsecase.UseCase)
+  private clientFeatureFlagUseCase: ClientFeatureFlagUsecase.UseCase;
 
   static featureFlagToResponse(
     output: FeatureFlagOutput,
@@ -134,5 +140,15 @@ export class FeatureFlagController {
   @Delete(':id')
   async remove(@Param('id') id: string) {
     await this.deleteFeatureFlagUseCase.execute({ id });
+  }
+
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 404, description: 'FeatureFlag not found' })
+  @UseGuards(ClientUserGuard)
+  @Get('client')
+  async clientFeatureFlags(@Query() searchParams: ClientFeatureFlagsDto) {
+    const output = await this.clientFeatureFlagUseCase.execute(searchParams);
+
+    return FeatureFlagController.featureFlagToResponse(output);
   }
 }
