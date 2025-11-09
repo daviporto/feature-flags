@@ -5,6 +5,7 @@ import { UserDataBuilder } from '@/user/domain/testing/helper/user-data-builder'
 import { UserEntity, UserProps } from '@/user/domain/entities/user.entity';
 import { EmailAlreadyInUseError } from '@/user/domain/errors/email-already-in-use-error';
 import { SortOrderEnum } from '@/shared/domain/repositories/searchable-repository-contracts';
+import { UserWithApiTokenNotFoundError } from '@/user/domain/errors/user-with-api-token-not-found-error';
 
 function createUserEntity(userProps: Partial<UserProps> = {}) {
   return new UserEntity(UserDataBuilder(userProps));
@@ -17,15 +18,25 @@ describe('user in memory repository', () => {
     sut = new UserInMemoryRepository();
   });
 
+  it('should throw exception when using findByApiToken with invalid user api token', () => {
+    expect(sut.findByApiToken('invalid api token')).rejects.toThrow(
+      UserWithApiTokenNotFoundError,
+    );
+  });
+
   it('should throw exception when using findByEmail without user', () => {
-    expect(sut.findByEmail('non existent')).rejects.toThrow(UserWithEmailNotFoundError);
+    expect(sut.findByEmail('non existent')).rejects.toThrow(
+      UserWithEmailNotFoundError,
+    );
   });
 
   it('should throw exception when there users but none with the desired email', async () => {
     const user = createUserEntity();
     await sut.insert(user);
 
-    expect(sut.findByEmail('non existent')).rejects.toThrow(UserWithEmailNotFoundError);
+    expect(sut.findByEmail('non existent')).rejects.toThrow(
+      UserWithEmailNotFoundError,
+    );
   });
 
   it('should return user when using findByEmail with user', async () => {
@@ -37,11 +48,22 @@ describe('user in memory repository', () => {
     expect(result).toStrictEqual(user);
   });
 
+  it('should return the user when there is a valid api token for this one', async () => {
+    const user = createUserEntity();
+    await sut.insert(user);
+
+    const result = await sut.findByApiToken(user.api_token);
+
+    expect(result).toStrictEqual(user);
+  });
+
   it('should throw exception when using emailExists with user', async () => {
     const user = createUserEntity();
     await sut.insert(user);
 
-    expect(sut.assureEmailIsAvailableToUse(user.email)).rejects.toThrow(EmailAlreadyInUseError);
+    expect(sut.assureEmailIsAvailableToUse(user.email)).rejects.toThrow(
+      EmailAlreadyInUseError,
+    );
   });
 
   it('should not throw exception when using emailExists without user', async () => {
@@ -131,7 +153,11 @@ describe('user in memory repository', () => {
         createUserEntity({ createdAt: new Date('2023-01-02') }),
       ];
 
-      const result = await sut['applySort'](items, 'createdAt', SortOrderEnum.ASC);
+      const result = await sut['applySort'](
+        items,
+        'createdAt',
+        SortOrderEnum.ASC,
+      );
 
       expect(result[0].props.createdAt).toStrictEqual(new Date('2023-01-01'));
       expect(result[1].props.createdAt).toStrictEqual(new Date('2023-01-02'));

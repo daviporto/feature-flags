@@ -21,6 +21,8 @@ export namespace UserRepository {
     > {
     findByEmail(email: string): Promise<UserEntity>;
 
+    findByApiToken(api_token: string): Promise<UserEntity>;
+
     assureEmailIsAvailableToUse(email: string): Promise<void>;
 
     assureUserExists(userId: string): Promise<void>;

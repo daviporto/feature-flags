@@ -7,11 +7,26 @@ import { UserModelMapper } from '@/user/infrastructure/database/prisma/models/us
 import { SortOrderEnum } from '@/shared/domain/repositories/searchable-repository-contracts';
 import { UserWithEmailNotFoundError } from '@/user/domain/errors/user-with-email-not-found-error';
 import { EmailAlreadyInUseError } from '@/user/domain/errors/email-already-in-use-error';
+import { UserWithApiTokenNotFoundError } from '@/user/domain/errors/user-with-api-token-not-found-error';
 
 export class UserPrismaRepository implements UserRepository.Repository {
   sortableFields: string[] = ['name', 'createdAt'];
 
   constructor(private prismaService: PrismaService) {}
+
+  async findByApiToken(api_token: string): Promise<UserEntity> {
+    try {
+      const user = await this.prismaService.user.findFirst({
+        where: {
+          api_token,
+        },
+      });
+
+      return UserModelMapper.toEntity(user);
+    } catch {
+      throw new UserWithApiTokenNotFoundError(api_token);
+    }
+  }
 
   async findByEmail(email: string): Promise<UserEntity> {
     try {
