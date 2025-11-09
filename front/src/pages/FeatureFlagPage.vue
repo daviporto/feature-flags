@@ -197,6 +197,15 @@
                 <q-btn
                   flat
                   dense
+                  label="Add User"
+                  icon="person_add"
+                  color="secondary"
+                  class="footer-btn"
+                  @click="openAddUserDialog(flag)"
+                />
+                <q-btn
+                  flat
+                  dense
                   label="Delete"
                   icon="delete"
                   color="negative"
@@ -354,6 +363,84 @@
       </q-card>
     </q-dialog>
 
+    <!-- Add User Dialog -->
+    <q-dialog v-model="showAddUserDialog" transition-show="slide-up" transition-hide="slide-down">
+      <q-card class="dialog-card">
+        <q-card-section class="dialog-header">
+          <div class="dialog-title-section">
+            <q-icon name="person_add" size="32px" color="primary" class="q-mr-sm" />
+            <div>
+              <div class="dialog-title">Add User to Flag</div>
+              <div class="dialog-subtitle">
+                Select a user to add to {{ selectedFlagForUser?.name }}
+              </div>
+            </div>
+          </div>
+          <q-btn icon="close" flat round dense @click="showAddUserDialog = false" />
+        </q-card-section>
+
+        <q-separator />
+
+        <q-card-section class="dialog-content">
+          <div v-if="loadingAppUsers" class="text-center q-pa-md">
+            <q-spinner color="primary" size="3em" />
+            <div class="q-mt-md">Loading users...</div>
+          </div>
+          <div v-else-if="appUsers.length === 0" class="text-center q-pa-md">
+            <q-icon name="person_off" size="48px" color="grey-5" />
+            <div class="q-mt-md text-grey-6">No app users available</div>
+          </div>
+          <q-form v-else @submit.prevent="handleAddUserToFlag">
+            <div class="form-field">
+              <label class="field-label">Select User *</label>
+              <q-select
+                v-model="selectedUserId"
+                :options="appUsers"
+                option-label="name"
+                option-value="id"
+                emit-value
+                map-options
+                outlined
+                dense
+                placeholder="Choose a user..."
+                :rules="[(val: string | null | undefined) => !!val || 'User is required']"
+              >
+                <template v-slot:option="scope">
+                  <q-item v-bind="scope.itemProps">
+                    <q-item-section>
+                      <q-item-label>{{ scope.opt.name }}</q-item-label>
+                      <q-item-label caption>{{ scope.opt.email }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </template>
+              </q-select>
+            </div>
+
+            <div class="form-actions">
+              <q-btn
+                type="submit"
+                unelevated
+                label="Add User"
+                color="primary"
+                icon="add"
+                class="full-width"
+                size="lg"
+                :loading="loadingAddUser"
+              />
+              <q-btn
+                label="Cancel"
+                outline
+                color="grey-7"
+                class="full-width"
+                size="lg"
+                @click="showAddUserDialog = false"
+              />
+            </div>
+          </q-form>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
     <!-- Details Dialog -->
     <q-dialog v-model="showDetailsDialog" transition-show="slide-up" transition-hide="slide-down">
       <q-card class="dialog-card details-dialog">
@@ -395,13 +482,7 @@
                 >
                   Enabled
                 </q-badge>
-                <q-badge
-                  v-else
-                  color="grey"
-                  align="middle"
-                  class="q-ml-sm"
-                  key="disabled"
-                >
+                <q-badge v-else color="grey" align="middle" class="q-ml-sm" key="disabled">
                   Disabled
                 </q-badge>
               </transition>
@@ -410,14 +491,14 @@
             <div class="form-field">
               <label class="field-label">Created at</label>
               <div class="text-body2">
-                {{ formatDate(selectedFlag.createdAt)}}
+                {{ formatDate(selectedFlag.createdAt) }}
               </div>
             </div>
 
             <div class="form-field">
               <label class="field-label">Last update</label>
               <div class="text-body2">
-                {{ formatDate(selectedFlag.updatedAt)}}
+                {{ formatDate(selectedFlag.updatedAt) }}
               </div>
             </div>
 
@@ -441,20 +522,29 @@ import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
 import type { FeatureFlag } from 'src/types/feature-flag';
+import type { AppUser } from 'src/types/app-user';
 import { useFeatureFlagsStore } from 'src/stores/feature-flag';
+import { listAppUsers } from 'src/api/appUserApi';
+import { createUserFeatureFlag } from 'src/api/userFeatureFlagsApi';
 
 const router = useRouter();
 const $q = useQuasar();
 
 const featureFlags = ref<FeatureFlag[]>([]);
 const selectedFlag = ref<FeatureFlag | null>(null);
+const selectedFlagForUser = ref<FeatureFlag | null>(null);
 const showCreateDialog = ref(false);
 const showEditDialog = ref(false);
+const showAddUserDialog = ref(false);
 const loadingCreate = ref(false);
 const loadingEdit = ref(false);
+const loadingAddUser = ref(false);
+const loadingAppUsers = ref(false);
 const searchQuery = ref('');
 const featureFlagsStore = useFeatureFlagsStore();
 const showDetailsDialog = ref(false);
+const appUsers = ref<AppUser[]>([]);
+const selectedUserId = ref<string>('');
 
 const newFlag = ref({
   name: '',
@@ -560,11 +650,11 @@ const handleEditFlag = async () => {
     const data = {
       name: editingFlag.value.name,
       description: editingFlag.value.description,
-      enabled: editingFlag.value.enabled
-    }
+      enabled: editingFlag.value.enabled,
+    };
     const flagId = editingFlag.value.id;
 
-    await featureFlagsStore.update(flagId, data)
+    await featureFlagsStore.update(flagId, data);
 
     $q.notify({
       type: 'positive',
@@ -593,10 +683,10 @@ const toggleFlag = async (flag: FeatureFlag) => {
     const data = {
       name: flag.name,
       description: flag.description,
-      enabled: !flag.enabled
-    }
+      enabled: !flag.enabled,
+    };
 
-    await featureFlagsStore.toggle(flagId, data)
+    await featureFlagsStore.toggle(flagId, data);
 
     flag.enabled = !flag.enabled;
 
@@ -642,6 +732,70 @@ const deleteFlag = async (flagId: string) => {
 const viewFlagDetails = (flag: FeatureFlag) => {
   selectedFlag.value = flag;
   showDetailsDialog.value = true;
+};
+
+const openAddUserDialog = async (flag: FeatureFlag) => {
+  selectedFlagForUser.value = flag;
+  selectedUserId.value = '';
+  showAddUserDialog.value = true;
+
+  if (appUsers.value.length === 0) {
+    await fetchAppUsers();
+  }
+};
+
+const fetchAppUsers = async () => {
+  try {
+    loadingAppUsers.value = true;
+    const users = await listAppUsers();
+    appUsers.value = users;
+  } catch (error: unknown) {
+    const message =
+      (error as { response?: { data?: { message?: string } } })?.response
+        ?.data?.message || 'Failed to fetch app users';
+    $q.notify({
+      type: 'negative',
+      message,
+      position: 'top',
+    });
+  } finally {
+    loadingAppUsers.value = false;
+  }
+};
+
+const handleAddUserToFlag = async () => {
+  if (!selectedFlagForUser.value || !selectedUserId.value) {
+    return;
+  }
+
+  try {
+    loadingAddUser.value = true;
+    await createUserFeatureFlag({
+      featureFlagId: selectedFlagForUser.value.id,
+      userId: selectedUserId.value,
+      enabled: true,
+    });
+
+    $q.notify({
+      type: 'positive',
+      message: 'User added to feature flag successfully',
+      position: 'top',
+      icon: 'check_circle',
+    });
+
+    showAddUserDialog.value = false;
+    selectedUserId.value = '';
+    selectedFlagForUser.value = null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    $q.notify({
+      type: 'negative',
+      message: error.response?.data?.message || 'Failed to add user to feature flag',
+      position: 'top',
+    });
+  } finally {
+    loadingAddUser.value = false;
+  }
 };
 
 const handleLogout = async () => {
@@ -1090,14 +1244,19 @@ const handleLogout = async () => {
 }
 
 .fade-enter-active {
-  transition: opacity 0.8s ease, transform 0.6s ease;
+  transition:
+    opacity 0.8s ease,
+    transform 0.6s ease;
 }
 
 .fade-leave-active {
-  transition: opacity 1s ease, transform 0.8s ease;
+  transition:
+    opacity 1s ease,
+    transform 0.8s ease;
 }
 
-.fade-enter-from, .fade-leave-to {
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
   transform: scale(0.9);
 }
