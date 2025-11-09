@@ -28,10 +28,10 @@ const copyToClipboard = async (text: string) => {
 
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
+    <q-header class="glass-header">
       <q-toolbar>
         <q-space />
-        <q-toolbar-title @click="$router.push({ name: Routes.HOME })">
+        <q-toolbar-title @click="$router.push({ name: Routes.FEATURE_FLAGS })">
           {{ $t('common.pageTitle') }}</q-toolbar-title
         >
         <q-btn icon="account_circle" round flat dense @click="drawer = !drawer"></q-btn>
@@ -86,3 +86,12 @@ const copyToClipboard = async (text: string) => {
     </q-page-container>
   </q-layout>
 </template>
+
+<style lang="scss">
+.glass-header {
+  background: white;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1) !important;
+  color: #1976d2;
+}
+</style>
