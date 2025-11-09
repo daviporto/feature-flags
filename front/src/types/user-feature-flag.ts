@@ -4,3 +4,10 @@ export interface CreateUserFeatureFlagData {
   enabled?: boolean;
 }
 
+export interface UserFeatureFlag {
+  id: string;
+  featureFlagId: string;
+  userId: string;
+  enabled: boolean;
+}
+

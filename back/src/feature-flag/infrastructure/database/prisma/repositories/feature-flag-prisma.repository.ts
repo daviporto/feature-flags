@@ -181,6 +181,14 @@ export class FeatureFlagPrismaRepository
       };
     }
 
+    if (searchInput.filter?.userId) {
+      filtersObject['targetUsers'] = {
+        some: {
+          userId: searchInput.filter.userId,
+        },
+      };
+    }
+
     return filtersObject;
   }
 

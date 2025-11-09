@@ -163,6 +163,18 @@ export class UserFeatureFlagsPrismaRepository
       };
     }
 
+    if (!isUndefined(searchInput.filter?.featureFlagId)) {
+      filtersObject['featureFlagId'] = {
+        equals: searchInput.filter.featureFlagId,
+      };
+    }
+
+    if (!isUndefined(searchInput.filter?.userId)) {
+      filtersObject['userId'] = {
+        equals: searchInput.filter.userId,
+      };
+    }
+
     return filtersObject;
   }
 

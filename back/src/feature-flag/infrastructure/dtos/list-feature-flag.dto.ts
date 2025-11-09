@@ -41,6 +41,7 @@ export class ListFeatureFlagsDto implements ListFeatureFlagsUsecase.Input {
       name: 'feature',
       description: 'user feature',
       enabled: true,
+      userId: 'uuid',
     },
   })
   @IsOptional()
@@ -48,5 +49,6 @@ export class ListFeatureFlagsDto implements ListFeatureFlagsUsecase.Input {
     name?: string;
     description?: string;
     enabled?: boolean;
+    userId?: string;
   } | null;
 }

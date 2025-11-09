@@ -10,6 +10,7 @@ export namespace FeatureFlagRepository {
     name?: string;
     description?: string;
     enabled?: boolean;
+    userId?: string;
   };
 
   export const sortableFields = ['name', 'description', 'enabled', 'createdAt'];
