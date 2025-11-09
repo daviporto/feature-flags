@@ -182,4 +182,12 @@ export class UserController {
   async remove(@Param('id') id: string) {
     await this.deleteUserUseCase.execute({ id });
   }
+
+  @ApiBearerAuth()
+  @Post('verifyToken')
+  async verifyToken(@Body() { token }: { token: string }) {
+    const result = await this.authService.verifyJwt(token);
+
+    return result;
+  }
 }
