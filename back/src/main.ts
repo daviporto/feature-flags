@@ -6,11 +6,16 @@ import {
 import { AppModule } from './app.module';
 import { applyGlobalConfig } from '@/global-config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import qs from 'qs';
 
 async function bootstrap() {
+  const adapter = new FastifyAdapter({
+    querystringParser: (str) => qs.parse(str),
+  });
+
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter(),
+    adapter,
   );
 
   app.enableCors({

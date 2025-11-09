@@ -255,6 +255,8 @@
                 placeholder="e.g., new-checkout-flow"
                 outlined
                 dense
+                class="form-border"
+                :input-style="{ color: 'black' }"
                 :rules="[(val) => !!val || 'Name is required']"
               />
             </div>
@@ -266,6 +268,8 @@
                 placeholder="Describe what this flag controls..."
                 outlined
                 dense
+                class="form-border"
+                :input-style="{ color: 'black' }"
                 type="textarea"
                 rows="3"
               />
@@ -276,6 +280,7 @@
                 v-model="newFlag.enabled"
                 label="Enable by default"
                 color="positive"
+                class="custom-toggle"
                 size="lg"
               />
             </div>
@@ -329,13 +334,23 @@
                 v-model="editingFlag.name"
                 outlined
                 dense
+                class="form-border"
+                :input-style="{ color: 'black' }"
                 :rules="[(val) => !!val || 'Name is required']"
               />
             </div>
 
             <div class="form-field">
               <label class="field-label">Description</label>
-              <q-input v-model="editingFlag.description" outlined dense type="textarea" rows="3" />
+              <q-input
+                v-model="editingFlag.description"
+                outlined
+                dense
+                class="form-border"
+                :input-style="{ color: 'black' }"
+                type="textarea"
+                rows="3"
+              />
             </div>
 
             <div class="form-actions">
@@ -443,7 +458,7 @@
 
     <!-- Details Dialog -->
     <q-dialog v-model="showDetailsDialog" transition-show="slide-up" transition-hide="slide-down">
-      <q-card class="dialog-card details-dialog">
+      <q-card class="dialog-card">
         <q-card-section class="dialog-header">
           <div class="dialog-title-section">
             <q-icon name="info" size="32px" color="white" class="q-mr-sm" />
@@ -452,6 +467,7 @@
               <div class="dialog-subtitle">Detailed information about the flag</div>
             </div>
           </div>
+          <q-btn icon="close" flat round dense @click="showDetailsDialog = false" />
         </q-card-section>
 
         <q-separator />
@@ -508,10 +524,6 @@
             </div>
           </div>
         </q-card-section>
-
-        <q-card-actions align="right" class="q-pa-md">
-          <q-btn flat label="Close" color="primary" v-close-popup />
-        </q-card-actions>
       </q-card>
     </q-dialog>
   </div>
@@ -751,8 +763,8 @@ const fetchAppUsers = async () => {
     appUsers.value = users;
   } catch (error: unknown) {
     const message =
-      (error as { response?: { data?: { message?: string } } })?.response
-        ?.data?.message || 'Failed to fetch app users';
+      (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+      'Failed to fetch app users';
     $q.notify({
       type: 'negative',
       message,
@@ -1026,9 +1038,12 @@ const handleLogout = async () => {
   background: white;
   border-radius: 16px;
   overflow: hidden;
-  transition: all 0.3s ease;
   position: relative;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+
+  transition:
+    transform 0.5s ease,
+    border-left-color 0.5s ease;
 
   &:hover {
     transform: translateY(-8px);
@@ -1047,7 +1062,7 @@ const handleLogout = async () => {
   width: 8px;
   height: 100%;
   background: #e0e0e0;
-  transition: all 0.3s ease;
+  transition: background 0.5s ease;
 
   &.active {
     background: linear-gradient(180deg, #38ef7d 0%, #11998e 100%);
@@ -1126,6 +1141,20 @@ const handleLogout = async () => {
   font-family: 'Courier New', monospace;
 }
 
+.custom-toggle {
+  :deep(.q-toggle__track) {
+    background: #e0e0e0;
+    opacity: 1;
+    transition: background 0.3s ease;
+  }
+
+  :deep(.q-toggle__inner:not(.q-toggle__inner--truthy) .q-toggle__thumb) {
+    border: 1px;
+    background-color: #c7c7c7 !important;
+    border-radius: 16px;
+  }
+}
+
 .toggle-section {
   display: flex;
   align-items: center;
@@ -1190,6 +1219,8 @@ const handleLogout = async () => {
 
 .dialog-content {
   padding: 2rem;
+  background: white;
+  color: #2c3e50;
 }
 
 .dialog-card.details-dialog {
@@ -1197,31 +1228,37 @@ const handleLogout = async () => {
   color: #2c3e50;
 }
 
-.details-dialog .dialog-header {
-  padding: 1.5rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+.form-border {
+  border-radius: 16px;
 
-.details-dialog .dialog-title-section q-icon {
-  color: #667eea;
-}
+  :deep(.q-field__control) {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border-radius: 16px;
+    color: rgba(102, 126, 234, 0.3);
+    transition: box-shadow 0.3s ease;
+  }
 
-.details-dialog .dialog-content {
-  background: white;
-  color: #2c3e50;
-}
+  :deep(.q-field__control:hover) {
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.12);
+  }
 
-.details-dialog .field-label {
-  color: #34495e;
-}
+  :deep(.q-field--focused .q-field__control) {
+    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.3);
+  }
 
-.details-dialog .text-body2,
-.details-dialog .text-body1 {
-  color: #2c3e50;
+  :deep(.q-toggle__inner:not(.q-toggle__inner--truthy) .q-toggle__thumb) {
+    transition:
+      background-color 0.6s ease,
+      border-color 0.6s ease;
+  }
+
+  :deep(.q-toggle__inner:not(.q-toggle__inner--truthy) .q-toggle__track) {
+    transition: background-color 0.6s ease;
+  }
+
+  :deep(.q-toggle__thumb) {
+    transition: transform 0.6s ease;
+  }
 }
 
 .form-field {
