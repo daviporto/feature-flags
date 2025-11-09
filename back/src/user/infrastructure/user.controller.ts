@@ -92,7 +92,7 @@ export class UserController {
     const output = await this.singInUseCase.execute(signIn);
     const token = await this.authService.generateJwt(output.id);
 
-    return new LogInUserPresenter(output, token.accessToken);
+    return new LogInUserPresenter(output, token.accessToken, output.api_token);
   }
 
   @ApiBearerAuth()

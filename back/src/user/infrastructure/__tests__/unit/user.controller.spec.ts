@@ -72,7 +72,9 @@ describe('UserController unit tests', () => {
 
     const presenter = await sut.login(input);
     expect(presenter).toBeInstanceOf(LogInUserPresenter);
-    expect(presenter).toMatchObject(new LogInUserPresenter(props, token));
+    expect(presenter).toMatchObject(
+      new LogInUserPresenter(props, token, props.api_token),
+    );
     expect(mockSignInUseCase.execute).toHaveBeenCalledWith(input);
     expect(mockAuthService.generateJwt).toHaveBeenCalled();
   });

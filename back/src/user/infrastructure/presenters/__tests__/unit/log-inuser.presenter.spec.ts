@@ -1,11 +1,6 @@
 import { UserDataBuilder } from '@/user/domain/testing/helper/user-data-builder';
-import {
-  UserCollectionPresenter,
-  UserPresenter,
-} from '@/user/infrastructure/presenters/user.presenter';
 import { faker } from '@faker-js/faker';
 import { instanceToPlain } from 'class-transformer';
-import { PaginationPresenter } from '@/shared/infrastructure/presenters/pagination.presenter';
 import { LogInUserPresenter } from '@/user/infrastructure/presenters/log-in-user.presenter';
 
 describe('User presenter unit tests', () => {
@@ -15,7 +10,7 @@ describe('User presenter unit tests', () => {
   let sut: LogInUserPresenter;
 
   beforeEach(() => {
-    sut = new LogInUserPresenter(props, token);
+    sut = new LogInUserPresenter(props, token, props.api_token);
   });
 
   it('Constructor', () => {

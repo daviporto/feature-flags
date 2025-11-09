@@ -20,6 +20,10 @@ watch(
     drawer.value = false;
   },
 );
+
+const copyToClipboard = async (text: string) => {
+  await navigator.clipboard.writeText(text);
+};
 </script>
 
 <template>
@@ -62,6 +66,15 @@ watch(
             </q-item-section>
             <q-item-section>
               {{ $t('auth.updateName.title') }}
+            </q-item-section>
+          </q-item>
+
+          <q-item clickable v-ripple @click="copyToClipboard(authStore.user?.api_token!)">
+            <q-item-section avatar>
+              <q-icon name="content_copy"></q-icon>
+            </q-item-section>
+            <q-item-section>
+              {{ $t('auth.token.title') }}
             </q-item-section>
           </q-item>
         </q-list>

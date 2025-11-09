@@ -72,6 +72,7 @@ describe('Log in user e2e tests', () => {
       'email',
       'createdAt',
       'token',
+      'api_token',
     ]);
 
     const data = response.body.data;
@@ -82,7 +83,11 @@ describe('Log in user e2e tests', () => {
 
     const user = await repository.findById(response.body.data.id);
 
-    const presenter = new LogInUserPresenter(user.toJSON(), data.token);
+    const presenter = new LogInUserPresenter(
+      user.toJSON(),
+      data.token,
+      user.api_token,
+    );
     const serialized = instanceToPlain(presenter);
 
     expect(response.body.data).toStrictEqual(serialized);

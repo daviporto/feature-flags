@@ -3,7 +3,8 @@ export interface User {
   name: string;
   email: string;
   createdAt: string;
-  token?: ?string;
+  token?: string;
+  api_token?: string;
 }
 
 export interface SignupData {
