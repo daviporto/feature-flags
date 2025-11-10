@@ -11,6 +11,7 @@ import { AuthModule } from '@/auth/infrastructure/auth.module';
 import { CreateFeatureFlagUsecase } from '@/feature-flag/application/usecases/create-feature-flag.usecase';
 import { UserRepository } from '@/user/domain/repositories/user.repository';
 import { UserPrismaRepository } from '@/user/infrastructure/database/prisma/repositories/user-prisma.repository';
+import { ListFeatureFlagsByIdsUsecase } from '@/feature-flag/application/usecases/list-feature-flags-by-ids.usecase';
 
 @Module({
   imports: [AuthModule],
@@ -45,6 +46,13 @@ import { UserPrismaRepository } from '@/user/infrastructure/database/prisma/repo
       provide: ListFeatureFlagsUsecase.UseCase,
       useFactory: (featureFlagRepository: FeatureFlagRepository.Repository) => {
         return new ListFeatureFlagsUsecase.UseCase(featureFlagRepository);
+      },
+      inject: ['FeatureFlagRepository'],
+    },
+    {
+      provide: ListFeatureFlagsByIdsUsecase.UseCase,
+      useFactory: (featureFlagRepository: FeatureFlagRepository.Repository) => {
+        return new ListFeatureFlagsByIdsUsecase.UseCase(featureFlagRepository);
       },
       inject: ['FeatureFlagRepository'],
     },

@@ -36,5 +36,7 @@ export namespace FeatureFlagRepository {
     disable(id: string): Promise<void>;
 
     assureFeatureFlagExists(id: string): Promise<void>;
+
+    findByIds(ids: string[], appUserId?: string): Promise<FeatureFlagEntity[]>;
   }
 }

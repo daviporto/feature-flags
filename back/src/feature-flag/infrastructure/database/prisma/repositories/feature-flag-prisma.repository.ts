@@ -76,6 +76,49 @@ export class FeatureFlagPrismaRepository
     return models.map(FeatureFlagModelMapper.toEntity);
   }
 
+  async findByIds(
+    ids: string[],
+    appUserId?: string,
+  ): Promise<FeatureFlagEntity[]> {
+    if (!ids?.length) {
+      return [];
+    }
+
+    const uniqueIds = Array.from(
+      new Set(
+        ids
+          .map((id) => id?.trim())
+          .filter((id): id is string => Boolean(id?.length)),
+      ),
+    );
+
+    if (!uniqueIds.length) {
+      return [];
+    }
+
+    const where: Prisma.FeatureFlagWhereInput = {
+      id: {
+        in: uniqueIds,
+      },
+    };
+
+    const normalizedAppUserId = appUserId?.trim();
+
+    if (normalizedAppUserId) {
+      where['targetUsers'] = {
+        some: {
+          userId: normalizedAppUserId,
+        },
+      };
+    }
+
+    const models = await this.prismaService.featureFlag.findMany({
+      where,
+    });
+
+    return models.map(FeatureFlagModelMapper.toEntity);
+  }
+
   async update(entity: FeatureFlagEntity): Promise<void> {
     await this.assureFeatureFlagExists(entity.id);
 
