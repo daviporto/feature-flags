@@ -1,21 +1,5 @@
 <template>
   <div class="feature-flags-container">
-    <q-header elevated class="glass-header">
-      <q-toolbar class="q-px-lg">
-        <div class="row items-center q-gutter-sm">
-          <q-icon name="flag" size="28px" color="primary" />
-          <q-toolbar-title class="text-weight-bold">Feature Flags</q-toolbar-title>
-        </div>
-        <q-space />
-        <q-btn flat round dense icon="settings" class="q-mr-sm" @click="$router.push('/configure')">
-          <q-tooltip>Settings</q-tooltip>
-        </q-btn>
-        <q-btn flat round dense icon="logout" @click="handleLogout">
-          <q-tooltip>Logout</q-tooltip>
-        </q-btn>
-      </q-toolbar>
-    </q-header>
-
     <q-page class="page-content">
       <div class="content-wrapper">
         <!-- Header Section -->
@@ -56,10 +40,17 @@
                 v-if="searchQuery"
                 name="close"
                 class="cursor-pointer"
-                @click="searchQuery = ''"
+                @click="searchQuery = ''; fetchFeatureFlags()"
               />
             </template>
           </q-input>
+          <q-btn 
+            label="search"
+            class="search-button"
+            dense
+            color="primary"
+            size="lg"
+            @click="fetchFeatureFlags()" />
         </div>
 
         <!-- Stats Cards -->
@@ -246,6 +237,8 @@
                 placeholder="e.g., new-checkout-flow"
                 outlined
                 dense
+                class="form-border"
+                :input-style="{ color: 'black' }"
                 :rules="[(val) => !!val || 'Name is required']"
               />
             </div>
@@ -257,6 +250,8 @@
                 placeholder="Describe what this flag controls..."
                 outlined
                 dense
+                class="form-border"
+                :input-style="{ color: 'black' }"
                 type="textarea"
                 rows="3"
               />
@@ -267,6 +262,7 @@
                 v-model="newFlag.enabled"
                 label="Enable by default"
                 color="positive"
+                class="custom-toggle"
                 size="lg"
               />
             </div>
@@ -320,13 +316,23 @@
                 v-model="editingFlag.name"
                 outlined
                 dense
+                class="form-border"
+                :input-style="{ color: 'black' }"
                 :rules="[(val) => !!val || 'Name is required']"
               />
             </div>
 
             <div class="form-field">
               <label class="field-label">Description</label>
-              <q-input v-model="editingFlag.description" outlined dense type="textarea" rows="3" />
+              <q-input
+                v-model="editingFlag.description"
+                outlined
+                dense
+                class="form-border"
+                :input-style="{ color: 'black' }"
+                type="textarea"
+                rows="3"
+              />
             </div>
 
             <div class="form-actions">
@@ -353,27 +359,97 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+
+    <!-- Details Dialog -->
+    <q-dialog v-model="showDetailsDialog" transition-show="slide-up" transition-hide="slide-down">
+      <q-card class="dialog-card">
+        <q-card-section class="dialog-header">
+          <div class="dialog-title-section">
+            <q-icon name="info" size="32px" color="white" class="q-mr-sm" />
+            <div>
+              <div class="dialog-title">Feature Flag Details</div>
+              <div class="dialog-subtitle">Detailed information about the flag</div>
+            </div>
+          </div>
+          <q-btn icon="close" flat round dense @click="showDetailsDialog = false" />
+        </q-card-section>
+
+        <q-separator />
+
+        <q-card-section class="dialog-content">
+          <div v-if="selectedFlag">
+            <div class="form-field">
+              <label class="field-label">Name</label>
+              <div class="text-body1">{{ selectedFlag.name }}</div>
+            </div>
+
+            <div class="form-field">
+              <label class="field-label">Description</label>
+              <div class="text-body2">
+                {{ selectedFlag.description || 'No description provided' }}
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label class="field-label">Status</label>
+              <transition name="fade">
+                <q-badge
+                  v-if="selectedFlag.enabled"
+                  color="positive"
+                  align="middle"
+                  class="q-ml-sm"
+                  key="enabled"
+                >
+                  Enabled
+                </q-badge>
+                <q-badge v-else color="grey" align="middle" class="q-ml-sm" key="disabled">
+                  Disabled
+                </q-badge>
+              </transition>
+            </div>
+
+            <div class="form-field">
+              <label class="field-label">Created at</label>
+              <div class="text-body2">
+                {{ formatDate(selectedFlag.createdAt) }}
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label class="field-label">Last update</label>
+              <div class="text-body2">
+                {{ formatDate(selectedFlag.updatedAt) }}
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label class="field-label">Flag ID</label>
+              <div class="text-body2">{{ selectedFlag.id }}</div>
+            </div>
+          </div>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
-import { useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
-import axios from 'axios';
 import type { FeatureFlag } from 'src/types/feature-flag';
 import { useFeatureFlagsStore } from 'src/stores/feature-flag';
 
-const router = useRouter();
 const $q = useQuasar();
 
 const featureFlags = ref<FeatureFlag[]>([]);
+const selectedFlag = ref<FeatureFlag | null>(null);
 const showCreateDialog = ref(false);
 const showEditDialog = ref(false);
 const loadingCreate = ref(false);
 const loadingEdit = ref(false);
 const searchQuery = ref('');
 const featureFlagsStore = useFeatureFlagsStore();
+const showDetailsDialog = ref(false);
 
 const newFlag = ref({
   name: '',
@@ -381,7 +457,7 @@ const newFlag = ref({
   enabled: false,
 });
 
-const editingFlag = ref<Pick<FeatureFlag, 'id' | 'name' | 'description' | 'enabled'>>({
+const editingFlag = ref<FeatureFlag>({
   id: '',
   name: '',
   description: '',
@@ -390,6 +466,19 @@ const editingFlag = ref<Pick<FeatureFlag, 'id' | 'name' | 'description' | 'enabl
 
 const enabledCount = computed(() => featureFlags.value.filter((f) => f.enabled).length);
 const disabledCount = computed(() => featureFlags.value.filter((f) => !f.enabled).length);
+
+const formatDate = (input?: string | Date): string => {
+  if (!input) return '—';
+  const date = input instanceof Date ? input : new Date(input);
+
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+
+  return `${month}/${day}/${year} ${hours}:${minutes}`;
+};
 
 const copyToClipboard = async (text: string) => {
   await navigator.clipboard.writeText(text);
@@ -407,8 +496,7 @@ onMounted(async () => {
 
 const fetchFeatureFlags = async () => {
   try {
-    const flags = await featureFlagsStore.listFeatureFlags();
-    console.log(flags);
+    const flags = await featureFlagsStore.listFeatureFlags(searchQuery.value);
     featureFlags.value = flags;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
@@ -428,7 +516,7 @@ const handleCreateFlag = async () => {
       description: newFlag.value.description,
       enabled: newFlag.value.enabled,
     };
-    await featureFlagsStore.createFeatureFlag(data);
+    await featureFlagsStore.create(data);
 
     $q.notify({
       type: 'positive',
@@ -446,7 +534,6 @@ const handleCreateFlag = async () => {
     await fetchFeatureFlags();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    console.log(error);
     $q.notify({
       type: 'negative',
       message: error.response?.data?.message || 'Failed to create feature flag',
@@ -468,10 +555,11 @@ const handleEditFlag = async () => {
     const data = {
       name: editingFlag.value.name,
       description: editingFlag.value.description,
-      enabled: editingFlag.value.enabled
-    }
+      enabled: editingFlag.value.enabled,
+    };
     const flagId = editingFlag.value.id;
-    await featureFlagsStore.updateFeatureFlag(flagId, data)
+
+    await featureFlagsStore.update(flagId, data);
 
     $q.notify({
       type: 'positive',
@@ -496,26 +584,17 @@ const handleEditFlag = async () => {
 
 const toggleFlag = async (flag: FeatureFlag) => {
   try {
-    const token = localStorage.getItem('authToken');
+    const flagId = flag.id;
+    const data = {
+      name: flag.name,
+      description: flag.description,
+      enabled: !flag.enabled,
+    };
 
-    await axios.put(
-      `http://localhost:3000/api/feature-flags/${flag.id}/toggle`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    );
+    await featureFlagsStore.toggle(flagId, data);
 
     flag.enabled = !flag.enabled;
 
-    $q.notify({
-      type: 'positive',
-      message: `Feature flag ${flag.enabled ? 'enabled' : 'disabled'}`,
-      position: 'top',
-      icon: flag.enabled ? 'check_circle' : 'cancel',
-    });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     $q.notify({
@@ -528,7 +607,7 @@ const toggleFlag = async (flag: FeatureFlag) => {
 
 const deleteFlag = async (flagId: string) => {
   try {
-    await featureFlagsStore.deleteFeatureFlag(flagId);
+    await featureFlagsStore.delete(flagId);
 
     $q.notify({
       type: 'positive',
@@ -550,17 +629,8 @@ const deleteFlag = async (flagId: string) => {
 };
 
 const viewFlagDetails = (flag: FeatureFlag) => {
-  $q.notify({
-    type: 'info',
-    message: `Viewing details for: ${flag.name}`,
-    position: 'top',
-  });
-};
-
-const handleLogout = async () => {
-  localStorage.removeItem('authToken');
-  localStorage.removeItem('user');
-  await router.push('/login');
+  selectedFlag.value = flag;
+  showDetailsDialog.value = true;
 };
 </script>
 
@@ -704,10 +774,12 @@ const handleLogout = async () => {
 }
 
 .search-section {
+  display: flex;
   margin-bottom: 2rem;
 }
 
 .search-input {
+  width: 100%;
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
@@ -731,6 +803,22 @@ const handleLogout = async () => {
 
   :deep(.q-field--focused) {
     box-shadow: 0 8px 30px rgba(102, 126, 234, 0.3);
+  }
+}
+
+.search-button {
+  font-weight: 600;
+  padding: 0.75rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  color: white;
+  margin-left: 10px;
+  font-size: 15px;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
   }
 }
 
@@ -785,9 +873,12 @@ const handleLogout = async () => {
   background: white;
   border-radius: 16px;
   overflow: hidden;
-  transition: all 0.3s ease;
   position: relative;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+
+  transition:
+    transform 0.5s ease,
+    border-left-color 0.5s ease;
 
   &:hover {
     transform: translateY(-8px);
@@ -806,7 +897,7 @@ const handleLogout = async () => {
   width: 8px;
   height: 100%;
   background: #e0e0e0;
-  transition: all 0.3s ease;
+  transition: background 0.5s ease;
 
   &.active {
     background: linear-gradient(180deg, #38ef7d 0%, #11998e 100%);
@@ -885,6 +976,20 @@ const handleLogout = async () => {
   font-family: 'Courier New', monospace;
 }
 
+.custom-toggle {
+  :deep(.q-toggle__track) {
+    background: #e0e0e0;
+    opacity: 1;
+    transition: background 0.3s ease;
+  }
+
+  :deep(.q-toggle__inner:not(.q-toggle__inner--truthy) .q-toggle__thumb) {
+    border: 1px;
+    background-color: #c7c7c7 !important;
+    border-radius: 16px;
+  }
+}
+
 .toggle-section {
   display: flex;
   align-items: center;
@@ -949,6 +1054,46 @@ const handleLogout = async () => {
 
 .dialog-content {
   padding: 2rem;
+  background: white;
+  color: #2c3e50;
+}
+
+.dialog-card.details-dialog {
+  background: white;
+  color: #2c3e50;
+}
+
+.form-border {
+  border-radius: 16px;
+
+  :deep(.q-field__control) {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border-radius: 16px;
+    color: rgba(102, 126, 234, 0.3);
+    transition: box-shadow 0.3s ease;
+  }
+
+  :deep(.q-field__control:hover) {
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.12);
+  }
+
+  :deep(.q-field--focused .q-field__control) {
+    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.3);
+  }
+
+  :deep(.q-toggle__inner:not(.q-toggle__inner--truthy) .q-toggle__thumb) {
+    transition:
+      background-color 0.6s ease,
+      border-color 0.6s ease;
+  }
+
+  :deep(.q-toggle__inner:not(.q-toggle__inner--truthy) .q-toggle__track) {
+    transition: background-color 0.6s ease;
+  }
+
+  :deep(.q-toggle__thumb) {
+    transition: transform 0.6s ease;
+  }
 }
 
 .form-field {
@@ -968,6 +1113,24 @@ const handleLogout = async () => {
   flex-direction: column;
   gap: 0.75rem;
   margin-top: 2rem;
+}
+
+.fade-enter-active {
+  transition:
+    opacity 0.8s ease,
+    transform 0.6s ease;
+}
+
+.fade-leave-active {
+  transition:
+    opacity 1s ease,
+    transform 0.8s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: scale(0.9);
 }
 
 @media (max-width: 768px) {

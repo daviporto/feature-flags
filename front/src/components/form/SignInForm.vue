@@ -30,7 +30,7 @@ const onSubmit = async (event: Event) => {
   try {
     await authStore.signIn(data);
 
-    await router.push({ name: Routes.HOME });
+    await router.push({ name: Routes.FEATURE_FLAGS });
   } catch (error) {
     errorRef.value = true;
     message.value = t('common.defaultError');

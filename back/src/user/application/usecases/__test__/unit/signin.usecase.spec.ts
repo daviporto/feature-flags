@@ -73,6 +73,7 @@ describe('SignInUsecase', () => {
       email: user.email,
       createdAt: user.createdAt,
       password: user.password,
+      api_token: user.api_token,
     });
   });
 });

@@ -92,7 +92,7 @@ export class UserController {
     const output = await this.singInUseCase.execute(signIn);
     const token = await this.authService.generateJwt(output.id);
 
-    return new LogInUserPresenter(output, token.accessToken);
+    return new LogInUserPresenter(output, token.accessToken, output.api_token);
   }
 
   @ApiBearerAuth()
@@ -181,5 +181,13 @@ export class UserController {
   @Delete(':id')
   async remove(@Param('id') id: string) {
     await this.deleteUserUseCase.execute({ id });
+  }
+
+  @ApiBearerAuth()
+  @Post('verifyToken')
+  async verifyToken(@Body() { token }: { token: string }) {
+    const result = await this.authService.verifyJwt(token);
+
+    return result;
   }
 }

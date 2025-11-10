@@ -1,26 +1,29 @@
 import { acceptHMRUpdate, defineStore } from "pinia";
-import { createFeatureFlag, searchFeatureFlag , deleteFeatureFlag, updateFeatureFlagApi} from "src/api/featureFlagsApi";
+import { createFeatureFlag, searchFeatureFlag , deleteFeatureFlag, updateFeatureFlag, toggleFeatureFlag} from "src/api/featureFlagsApi";
 import type { CreateFeatureFlagData, FeatureFlag, UpdateFeatureFlagData } from "src/types/feature-flag";
 
 export const useFeatureFlagsStore = defineStore('feature-flag', {
     actions: {
-        async listFeatureFlags () : Promise<FeatureFlag[]> {
-            const result = await searchFeatureFlag();
+        async listFeatureFlags (name? : string) : Promise<FeatureFlag[]> {
+            const result = await searchFeatureFlag(name);
 
             return result;
         },
-        async createFeatureFlag (data : CreateFeatureFlagData) : Promise<FeatureFlag> {
+        async create (data : CreateFeatureFlagData) : Promise<FeatureFlag> {
             const result = await createFeatureFlag(data);
 
             return result;
         },
-        async deleteFeatureFlag (flagId : string) : Promise<void> {
+        async delete (flagId : string) : Promise<void> {
             await deleteFeatureFlag(flagId);
         },
-        async updateFeatureFlag (flagId : string, data : UpdateFeatureFlagData) : Promise<UpdateFeatureFlagData> {
-            const result = await updateFeatureFlagApi(flagId, data);
+        async update (flagId : string, data : UpdateFeatureFlagData) : Promise<UpdateFeatureFlagData> {
+            const result = await updateFeatureFlag(flagId, data);
 
             return result;    
+        },
+        async toggle (flagId : string, data : UpdateFeatureFlagData) : Promise<void> {
+            await toggleFeatureFlag(flagId, data)
         }
     }
 })
