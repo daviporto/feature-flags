@@ -5,4 +5,5 @@ export enum Routes {
   UPDATE_PASSWORD = 'updatePassword',
   UPDATE_NAME = 'updateName',
   FEATURE_FLAGS = 'feature-flags',
+  USER_FEATURE_FLAGS = 'user-feature-flags',
 }

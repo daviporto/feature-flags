@@ -37,6 +37,11 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/UpdateNamePage.vue'),
         name: Routes.UPDATE_NAME,
       },
+      {
+        path: '/user-feature-flags/:userId?',
+        component: () => import('pages/UserFeatureFlagsPage.vue'),
+        name: Routes.USER_FEATURE_FLAGS,
+      },
     ],
   },
 

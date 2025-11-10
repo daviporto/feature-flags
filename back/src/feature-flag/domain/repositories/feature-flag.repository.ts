@@ -10,6 +10,7 @@ export namespace FeatureFlagRepository {
     name?: string;
     description?: string;
     enabled?: boolean;
+    userId?: string;
   };
 
   export const sortableFields = ['name', 'description', 'enabled', 'createdAt'];
@@ -35,5 +36,7 @@ export namespace FeatureFlagRepository {
     disable(id: string): Promise<void>;
 
     assureFeatureFlagExists(id: string): Promise<void>;
+
+    findByIds(ids: string[], appUserId?: string): Promise<FeatureFlagEntity[]>;
   }
 }

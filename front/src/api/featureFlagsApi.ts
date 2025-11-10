@@ -1,16 +1,27 @@
 import { getAxiosWithAuth } from "src/boot/axios"
 import type { CreateFeatureFlagData, FeatureFlag, UpdateFeatureFlagData } from "src/types/feature-flag"
 
-export const searchFeatureFlag = async (name? : string) : Promise<FeatureFlag[]> => {
-    const url = new URL(process.env.VITE_API_URL ?? 'http://localhost:3000');
-    const paramsUrl = new URLSearchParams(url.search);
-
-    if (name) {
-        paramsUrl.set('filter[name]', name.trim())
+export const searchFeatureFlag = async (userId?: string) : Promise<FeatureFlag[]> => {
+    const params: Record<string, unknown> = {}
+    if (userId) {
+        params.filter = { userId }
     }
-
-    const response = await getAxiosWithAuth().get(`/feature-flag?${paramsUrl.toString()}`)
-    
+    const response = await getAxiosWithAuth().get('/feature-flag', { 
+        params,
+        paramsSerializer: (params) => {
+            const searchParams = new URLSearchParams()
+            Object.keys(params).forEach(key => {
+                if (key === 'filter' && typeof params[key] === 'object') {
+                    Object.keys(params[key]).forEach(filterKey => {
+                        searchParams.append(`filter[${filterKey}]`, params[key][filterKey])
+                    })
+                } else {
+                    searchParams.append(key, params[key])
+                }
+            })
+            return searchParams.toString()
+        }
+    })
     return response.data.data
 }
 
