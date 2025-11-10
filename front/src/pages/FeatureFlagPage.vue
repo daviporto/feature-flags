@@ -40,10 +40,17 @@
                 v-if="searchQuery"
                 name="close"
                 class="cursor-pointer"
-                @click="searchQuery = ''"
+                @click="searchQuery = ''; fetchFeatureFlags()"
               />
             </template>
           </q-input>
+          <q-btn 
+            label="search"
+            class="search-button"
+            dense
+            color="primary"
+            size="lg"
+            @click="fetchFeatureFlags()" />
         </div>
 
         <!-- Stats Cards -->
@@ -489,7 +496,7 @@ onMounted(async () => {
 
 const fetchFeatureFlags = async () => {
   try {
-    const flags = await featureFlagsStore.listFeatureFlags();
+    const flags = await featureFlagsStore.listFeatureFlags(searchQuery.value);
     featureFlags.value = flags;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
@@ -767,10 +774,12 @@ const viewFlagDetails = (flag: FeatureFlag) => {
 }
 
 .search-section {
+  display: flex;
   margin-bottom: 2rem;
 }
 
 .search-input {
+  width: 100%;
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
@@ -794,6 +803,22 @@ const viewFlagDetails = (flag: FeatureFlag) => {
 
   :deep(.q-field--focused) {
     box-shadow: 0 8px 30px rgba(102, 126, 234, 0.3);
+  }
+}
+
+.search-button {
+  font-weight: 600;
+  padding: 0.75rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  color: white;
+  margin-left: 10px;
+  font-size: 15px;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
   }
 }
 
