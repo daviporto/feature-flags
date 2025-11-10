@@ -4,8 +4,8 @@ import type { CreateFeatureFlagData, FeatureFlag, UpdateFeatureFlagData } from "
 
 export const useFeatureFlagsStore = defineStore('feature-flag', {
     actions: {
-        async listFeatureFlags (userId?: string) : Promise<FeatureFlag[]> {
-            const result = await searchFeatureFlag(userId);
+        async listFeatureFlags (name? : string) : Promise<FeatureFlag[]> {
+            const result = await searchFeatureFlag(name);
 
             return result;
         },

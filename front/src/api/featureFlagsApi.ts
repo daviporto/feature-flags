@@ -22,7 +22,6 @@ export const searchFeatureFlag = async (userId?: string) : Promise<FeatureFlag[]
             return searchParams.toString()
         }
     })
-    
     return response.data.data
 }
 

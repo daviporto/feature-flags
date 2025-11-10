@@ -46,9 +46,11 @@ describe('Delete user e2e tests', () => {
   beforeEach(async () => {
     await prismaService.user.deleteMany();
 
-    entity = new UserEntity(UserDataBuilder({
-      password: hashPassword,
-    }));
+    entity = new UserEntity(
+      UserDataBuilder({
+        password: hashPassword,
+      }),
+    );
 
     await prismaService.user.create({ data: entity.toJSON() });
 

@@ -6,6 +6,7 @@ export type UserOutput = {
   email: string;
   password: string;
   createdAt: Date;
+  api_token: string;
 };
 
 export class UserOutputMapper {

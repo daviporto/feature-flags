@@ -1,5 +1,4 @@
-import { SignUpDto } from '@/user/infrastructure/dtos/sign-up.dto';
-import { en, faker } from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserRepository } from '@/user/domain/repositories/user.repository';
@@ -12,7 +11,6 @@ import request from 'supertest';
 import { UserController } from '@/user/infrastructure/user.controller';
 import { instanceToPlain } from 'class-transformer';
 import { applyGlobalConfig } from '@/global-config';
-import { UpdateUserDto } from '@/user/infrastructure/dtos/update-user.dto';
 import { UserEntity } from '@/user/domain/entities/user.entity';
 import { UserDataBuilder } from '@/user/domain/testing/helper/user-data-builder';
 import { UpdatePasswordDto } from '@/user/infrastructure/dtos/update-password.dto';

@@ -2,7 +2,7 @@
   "name": "auth",
   "version": "0.0.1",
   "description": "Simple Auth",
-  "productName": "Auth",
+  "productName": "Feature Flag Manager",
   "author": "davi <davi.araujo@onfly.com.br>",
   "type": "module",
   "private": true,
