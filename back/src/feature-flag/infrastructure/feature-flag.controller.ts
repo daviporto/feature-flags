@@ -32,9 +32,9 @@ import { ListFeatureFlagsDto } from '@/feature-flag/infrastructure/dtos/list-fea
 import { CreateFeatureFlagDto } from '@/feature-flag/infrastructure/dtos/create-feature-flag.dto';
 import { CreateFeatureFlagUsecase } from '@/feature-flag/application/usecases/create-feature-flag.usecase';
 import { UpdateFeatureFlagDto } from '@/feature-flag/infrastructure/dtos/update-feature-flag.dto';
-import { ClientUserGuard } from './client-user.guard';
+import { ClientFeatureFlagUsecase } from '@/feature-flag//application/usecases/client-feature-flag.usecase';
+import { ClientUserGuard } from '@/user/infrastructure/client-user.guard';
 import { ClientFeatureFlagsDto } from './dtos/client-feature-flag.dto';
-import { ClientFeatureFlagUsecase } from '../application/usecases/client-feature-flag.usecase';
 
 @ApiTags('feature-flag')
 @Controller('feature-flag')

@@ -12,8 +12,8 @@ import { CreateFeatureFlagUsecase } from '@/feature-flag/application/usecases/cr
 import { UserRepository } from '@/user/domain/repositories/user.repository';
 import { UserPrismaRepository } from '@/user/infrastructure/database/prisma/repositories/user-prisma.repository';
 import { AppUserModule } from '@/app-user/infrastructure/app-user.module';
-import { ClientUserService } from './client-user.service';
 import { ClientFeatureFlagUsecase } from '../application/usecases/client-feature-flag.usecase';
+import { ClientUserService } from '@/user/infrastructure/client-user.service';
 
 @Module({
   imports: [AuthModule, AppUserModule],
