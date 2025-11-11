@@ -12,6 +12,8 @@ import { CreateFeatureFlagUsecase } from '@/feature-flag/application/usecases/cr
 import { UserRepository } from '@/user/domain/repositories/user.repository';
 import { UserPrismaRepository } from '@/user/infrastructure/database/prisma/repositories/user-prisma.repository';
 import { ListFeatureFlagsByIdsUsecase } from '@/feature-flag/application/usecases/list-feature-flags-by-ids.usecase';
+import { UserFeatureFlagsRepository } from '@/user-feature-flags/domain/repositories/user-feature-flags.repository';
+import { UserFeatureFlagsPrismaRepository } from '@/user-feature-flags/infrastructure/database/prisma/repositories/user-feature-flags-prisma.repository';
 
 @Module({
   imports: [AuthModule],
@@ -36,6 +38,13 @@ import { ListFeatureFlagsByIdsUsecase } from '@/feature-flag/application/usecase
       inject: ['PrismaService'],
     },
     {
+      provide: 'UserFeatureFlagsRepository',
+      useFactory: (prismaService: PrismaService) => {
+        return new UserFeatureFlagsPrismaRepository(prismaService);
+      },
+      inject: ['PrismaService'],
+    },
+    {
       provide: GetFeatureFlagUsecase.UseCase,
       useFactory: (featureFlagRepository: FeatureFlagRepository.Repository) => {
         return new GetFeatureFlagUsecase.UseCase(featureFlagRepository);
@@ -51,10 +60,16 @@ import { ListFeatureFlagsByIdsUsecase } from '@/feature-flag/application/usecase
     },
     {
       provide: ListFeatureFlagsByIdsUsecase.UseCase,
-      useFactory: (featureFlagRepository: FeatureFlagRepository.Repository) => {
-        return new ListFeatureFlagsByIdsUsecase.UseCase(featureFlagRepository);
+      useFactory: (
+        featureFlagRepository: FeatureFlagRepository.Repository,
+        userFeatureFlagsRepository: UserFeatureFlagsRepository.Repository,
+      ) => {
+        return new ListFeatureFlagsByIdsUsecase.UseCase(
+          featureFlagRepository,
+          userFeatureFlagsRepository,
+        );
       },
-      inject: ['FeatureFlagRepository'],
+      inject: ['FeatureFlagRepository', 'UserFeatureFlagsRepository'],
     },
     {
       provide: UpdateFeatureFlagUsecase.UseCase,
