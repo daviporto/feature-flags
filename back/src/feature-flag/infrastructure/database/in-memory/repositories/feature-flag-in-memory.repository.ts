@@ -65,4 +65,25 @@ export class FeatureFlagInMemoryRepository
 
     this.items[index].disable();
   }
+
+  async findByIds(
+    ids: string[],
+    _appUserId?: string,
+  ): Promise<FeatureFlagEntity[]> {
+    if (!ids?.length) {
+      return [];
+    }
+
+    const normalizedIds = new Set(
+      ids
+        .map((id) => id?.trim())
+        .filter((id): id is string => Boolean(id && id.length)),
+    );
+
+    if (!normalizedIds.size) {
+      return [];
+    }
+
+    return this.items.filter((item) => normalizedIds.has(item.id));
+  }
 }

@@ -1,9 +1,27 @@
 import { getAxiosWithAuth } from "src/boot/axios"
 import type { CreateFeatureFlagData, FeatureFlag, UpdateFeatureFlagData } from "src/types/feature-flag"
 
-export const searchFeatureFlag = async () : Promise<FeatureFlag[]> => {
-    const response = await getAxiosWithAuth().get('/feature-flag')
-    
+export const searchFeatureFlag = async (userId?: string) : Promise<FeatureFlag[]> => {
+    const params: Record<string, unknown> = {}
+    if (userId) {
+        params.filter = { userId }
+    }
+    const response = await getAxiosWithAuth().get('/feature-flag', { 
+        params,
+        paramsSerializer: (params) => {
+            const searchParams = new URLSearchParams()
+            Object.keys(params).forEach(key => {
+                if (key === 'filter' && typeof params[key] === 'object') {
+                    Object.keys(params[key]).forEach(filterKey => {
+                        searchParams.append(`filter[${filterKey}]`, params[key][filterKey])
+                    })
+                } else {
+                    searchParams.append(key, params[key])
+                }
+            })
+            return searchParams.toString()
+        }
+    })
     return response.data.data
 }
 

@@ -35,6 +35,8 @@ import { UpdateFeatureFlagDto } from '@/feature-flag/infrastructure/dtos/update-
 import { ClientFeatureFlagUsecase } from '@/feature-flag//application/usecases/client-feature-flag.usecase';
 import { ClientUserGuard } from '@/user/infrastructure/client-user.guard';
 import { ClientFeatureFlagsDto } from './dtos/client-feature-flag.dto';
+import { ListFeatureFlagsByIdsUsecase } from '@/feature-flag/application/usecases/list-feature-flags-by-ids.usecase';
+import { GetFeatureFlagsByIdDto } from '@/feature-flag/infrastructure/dtos/get-feature-flags-by-id.dto';
 
 @ApiTags('feature-flag')
 @Controller('feature-flag')
@@ -50,6 +52,9 @@ export class FeatureFlagController {
 
   @Inject(ListFeatureFlagsUsecase.UseCase)
   private listFeatureFlagsUseCase: ListFeatureFlagsUsecase.UseCase;
+
+  @Inject(ListFeatureFlagsByIdsUsecase.UseCase)
+  private listFeatureFlagsByIdsUseCase: ListFeatureFlagsByIdsUsecase.UseCase;
 
   @Inject(DeleteFeatureFlagUsecase.UseCase)
   private deleteFeatureFlagUseCase: DeleteFeatureFlagUsecase.UseCase;
@@ -79,6 +84,23 @@ export class FeatureFlagController {
   @Get()
   async search(@Query() searchParams: ListFeatureFlagsDto) {
     const result = await this.listFeatureFlagsUseCase.execute(searchParams);
+
+    return FeatureFlagController.listFeatureFlagToResponse(result);
+  }
+
+  @ApiBearerAuth()
+  @ApiOkResponse({
+    description: 'FeatureFlags fetched successfully by identifiers.',
+    type: FeatureFlagCollectionPresenter,
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @UseGuards(AuthGuard)
+  @Get('id')
+  async findManyById(@Query() query: GetFeatureFlagsByIdDto) {
+    const result = await this.listFeatureFlagsByIdsUseCase.execute({
+      ids: query.id,
+      appUserId: query.appUserId,
+    });
 
     return FeatureFlagController.listFeatureFlagToResponse(result);
   }

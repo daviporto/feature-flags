@@ -18,14 +18,14 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: true },
     children: [
       {
-        path: '/feature-flags',
+        path: '',
         name: Routes.FEATURE_FLAGS,
         component: () => import('pages/FeatureFlagPage.vue'),
       },
       {
-        path: '',
-        component: () => import('pages/IndexPage.vue'),
+        path: '/home',
         name: Routes.HOME,
+        component: () => import('pages/IndexPage.vue')
       },
       {
         path: '/updatePassword',
@@ -36,6 +36,11 @@ const routes: RouteRecordRaw[] = [
         path: '/updateName',
         component: () => import('pages/UpdateNamePage.vue'),
         name: Routes.UPDATE_NAME,
+      },
+      {
+        path: '/user-feature-flags/:userId?',
+        component: () => import('pages/UserFeatureFlagsPage.vue'),
+        name: Routes.USER_FEATURE_FLAGS,
       },
     ],
   },
