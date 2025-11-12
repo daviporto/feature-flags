@@ -1,8 +1,33 @@
 import { FeatureFlagOutput } from '@/feature-flag/application/dtos/feature-flag-output';
 import { CollectionPresenter } from '@/shared/infrastructure/presenters/collection.presenter';
-import { ApiExtraModels, ApiProperty } from '@nestjs/swagger';
+import { ApiExtraModels, ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { ListFeatureFlagsUsecase } from '@/feature-flag/application/usecases/list-feature-flag.usecase';
+import { UserFeatureFlagsOutput } from '@/user-feature-flags/application/dtos/user-feature-flags-output';
+
+class FeatureFlagTargetUserPresenter {
+  @ApiProperty({ description: 'The id of the user feature flag' })
+  id: string;
+
+  @ApiProperty({ description: 'The related feature flag id' })
+  featureFlagId: string;
+
+  @ApiProperty({ description: 'The related app user id' })
+  userId: string;
+
+  @ApiProperty({
+    description:
+      'Whether the feature flag is enabled for the specified app user',
+  })
+  enabled: boolean;
+
+  constructor(output: UserFeatureFlagsOutput) {
+    this.id = output.id;
+    this.featureFlagId = output.featureFlagId;
+    this.userId = output.userId;
+    this.enabled = output.enabled;
+  }
+}
 
 export class FeatureFlagPresenter {
   @ApiProperty({ description: 'The id of the feature flag' })
@@ -30,17 +55,29 @@ export class FeatureFlagPresenter {
   @Transform(({ value }: { value: Date }) => value.toISOString())
   updatedAt: Date;
 
-  constructor(output: FeatureFlagOutput) {
+  @ApiPropertyOptional({
+    description:
+      'Target user information when feature flags are filtered by AppUser',
+    type: () => FeatureFlagTargetUserPresenter,
+  })
+  targetUser?: FeatureFlagTargetUserPresenter;
+
+  constructor(
+    output: FeatureFlagOutput & { targetUser?: UserFeatureFlagsOutput },
+  ) {
     this.id = output.id;
     this.name = output.name;
     this.description = output.description;
     this.enabled = output.enabled;
     this.createdAt = output.createdAt;
     this.updatedAt = output.updatedAt;
+    if (output.targetUser) {
+      this.targetUser = new FeatureFlagTargetUserPresenter(output.targetUser);
+    }
   }
 }
 
-@ApiExtraModels(FeatureFlagPresenter)
+@ApiExtraModels(FeatureFlagPresenter, FeatureFlagTargetUserPresenter)
 export class FeatureFlagCollectionPresenter extends CollectionPresenter {
   @ApiProperty({
     type: FeatureFlagPresenter,
