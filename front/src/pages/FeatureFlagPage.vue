@@ -55,8 +55,8 @@
         </div>
 
         <div class="search-section">
-          <div class="row q-gutter-md">
-            <div class="col-12 col-md-8">
+          <div class="row items-center q-gutter-md">
+            <div class="col-12 col-md-8 col-lg-9">
               <q-input
                 v-model="searchQuery"
                 outlined
@@ -78,7 +78,7 @@
                 </template>
               </q-input>
             </div>
-            <div class="col-12 col-md-4">
+            <div class="col-12 col-md-4 col-lg-2">
               <q-select
                 v-model="selectedSearchUserId"
                 :options="appUsers"
@@ -88,14 +88,15 @@
                 emit-value
                 map-options
                 outlined
-                dense
                 placeholder="Filter by user"
                 clearable
-                color="white"
+                color="primary"
+                size="lg"
+                class = "filter-user"
                 @update:model-value="handleUserFilterChange"
               >
                 <template v-slot:prepend>
-                  <q-icon name="person" color="primary" />
+                  <q-icon name="filter_alt" color="white" />
                 </template>
                 <template v-slot:option="scope">
                   <q-item v-bind="scope.itemProps">
@@ -1670,6 +1671,33 @@ const handleLogout = async () => {
 .fade-leave-to {
   opacity: 0;
   transform: scale(0.9);
+}
+
+.filter-user {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border-radius: 13px;
+  background-color: #227BD3;
+  transition: all 0.25s ease;
+
+  :deep(.q-field__control) {
+    border-radius: 13px;
+  }
+
+  :deep(.q-field__label) {
+    color: white !important;
+  }
+
+  :deep(.q-field__placeholder) {
+    color: white !important;
+  }
+
+  :deep(.q-field__native) {
+    color: white !important;
+  }
+
+  :deep(.q-select__dropdown-icon) {
+    color: white !important;
+  }
 }
 
 .user-selector {
