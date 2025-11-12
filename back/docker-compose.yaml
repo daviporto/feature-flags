@@ -1,13 +1,13 @@
 services:
   db:
-    build: .
+    image: postgres:17
     container_name: api-db
     restart: always
     tty: true
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
-      - .docker/db-data:/var/lib/postgresql/data
+      - .docker/db-data-flag:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: api
