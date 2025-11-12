@@ -5,11 +5,20 @@ import { EmailAlreadyInUseError } from '@/user/domain/errors/email-already-in-us
 import { InMemorySearchableRepository } from '@/shared/domain/repositories/in-memory-searchable.repository';
 import { SortOrderEnum } from '@/shared/domain/repositories/searchable-repository-contracts';
 import { UserWithIdNotFoundError } from '@/user/infrastructure/errors/user-with-id-not-found-error';
+import { UserWithApiTokenNotFoundError } from '@/user/domain/errors/user-with-api-token-not-found-error';
 
 export class UserInMemoryRepository
   extends InMemorySearchableRepository<UserEntity>
   implements UserRepository.Repository
 {
+  async findByApiToken(api_token: string): Promise<UserEntity> {
+    const user = this.items.find((user) => user.api_token === api_token);
+    if (!user) {
+      throw new UserWithApiTokenNotFoundError(api_token);
+    }
+
+    return user;
+  }
   sortableFields = ['name', 'createdAt'];
 
   async findByEmail(email: string): Promise<UserEntity> {

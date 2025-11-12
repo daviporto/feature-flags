@@ -11,14 +11,17 @@ import { AuthModule } from '@/auth/infrastructure/auth.module';
 import { CreateFeatureFlagUsecase } from '@/feature-flag/application/usecases/create-feature-flag.usecase';
 import { UserRepository } from '@/user/domain/repositories/user.repository';
 import { UserPrismaRepository } from '@/user/infrastructure/database/prisma/repositories/user-prisma.repository';
+import { AppUserModule } from '@/app-user/infrastructure/app-user.module';
+import { ClientUserService } from '@/user/infrastructure/client-user.service';
 import { ListFeatureFlagsByIdsUsecase } from '@/feature-flag/application/usecases/list-feature-flags-by-ids.usecase';
 import { UserFeatureFlagsRepository } from '@/user-feature-flags/domain/repositories/user-feature-flags.repository';
 import { UserFeatureFlagsPrismaRepository } from '@/user-feature-flags/infrastructure/database/prisma/repositories/user-feature-flags-prisma.repository';
 
 @Module({
-  imports: [AuthModule],
+  imports: [AuthModule, AppUserModule],
   controllers: [FeatureFlagController],
   providers: [
+    ClientUserService,
     {
       provide: 'PrismaService',
       useClass: PrismaService,

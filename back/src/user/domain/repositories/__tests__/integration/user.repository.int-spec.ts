@@ -169,9 +169,9 @@ describe('User prisma repository integration tests', () => {
     );
     await sut.insert(entity);
 
-    await expect(
-      sut.assureEmailIsAvailableToUse(entity.email),
-    ).rejects.toThrow(new EmailAlreadyInUseError(entity.email));
+    await expect(sut.assureEmailIsAvailableToUse(entity.email)).rejects.toThrow(
+      new EmailAlreadyInUseError(entity.email),
+    );
   });
 
   it('should not throw error if email is available to use', async () => {

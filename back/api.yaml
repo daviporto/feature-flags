@@ -228,6 +228,21 @@ paths:
         - user
       security:
         - bearer: []
+  /user/verifyToken:
+    post:
+      operationId: UserController_verifyToken
+      parameters: []
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+      tags:
+        - user
+      security:
+        - bearer: []
   /feature-flag:
     get:
       operationId: FeatureFlagController_search
@@ -276,6 +291,7 @@ paths:
             name: feature
             description: user feature
             enabled: true
+            userId: uuid
           schema:
             nullable: true
       responses:
@@ -311,6 +327,46 @@ paths:
           description: Unauthorized
         '422':
           description: Unprocessable Entity
+      tags:
+        - feature-flag
+      security:
+        - bearer: []
+  /feature-flag/id:
+    get:
+      operationId: FeatureFlagController_findManyById
+      parameters:
+        - name: id
+          required: true
+          in: query
+          description: >-
+            Feature flag identifiers to be retrieved. Accepts comma-separated or
+            repeated query params.
+          example:
+            - 8cf10340-8c08-4f2d-8c88-ef1d8f8536da
+          schema:
+            type: array
+            items:
+              type: array
+              items:
+                type: a
+        - name: appUserId
+          required: false
+          in: query
+          description: >-
+            Optional AppUser identifier to filter feature flags that target the
+            informed user.
+          example: 5f2c3de7-0fc9-475c-a6b4-d9067bda3d89
+          schema:
+            type: string
+      responses:
+        '200':
+          description: FeatureFlags fetched successfully by identifiers.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeatureFlagCollectionPresenter'
+        '401':
+          description: Unauthorized
       tags:
         - feature-flag
       security:
@@ -387,6 +443,348 @@ paths:
           description: FeatureFlag not found
       tags:
         - feature-flag
+      security:
+        - bearer: []
+  /feature-flag/client:
+    get:
+      operationId: FeatureFlagController_clientFeatureFlags
+      parameters:
+        - name: token
+          required: true
+          in: query
+          description: The feature flag admin api token
+          example: 79fcd962-d523-4531-8b74-2854f579e062
+          schema:
+            type: string
+        - name: featureFlagId
+          required: true
+          in: query
+          description: The feature flag ID
+          example: 9de0d313-2302-48e6-b775-6e93922ad38a
+          schema:
+            type: string
+        - name: appUserId
+          required: false
+          in: query
+          description: The app user id for feature flag
+          example: 1953870b-41c0-4f6b-b13d-9a2c4e206d9c
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeatureFlagPresenter'
+        '401':
+          description: Unauthorized
+        '404':
+          description: FeatureFlag not found
+      tags:
+        - feature-flag
+  /app-user:
+    get:
+      operationId: AppUserController_search
+      parameters:
+        - name: page
+          required: false
+          in: query
+          description: The page number
+          schema:
+            type: number
+        - name: perPage
+          required: false
+          in: query
+          description: The number of items per page
+          schema:
+            type: number
+        - name: sort
+          required: false
+          in: query
+          description: The field that should be used for sorting
+          schema:
+            nullable: true
+            enum:
+              - name
+              - createdAt
+            type: string
+        - name: sortDir
+          required: false
+          in: query
+          description: The sort direction
+          schema:
+            nullable: true
+            enum:
+              - asc
+              - desc
+            type: string
+        - name: filter
+          required: false
+          in: query
+          description: The filter to apply to the search
+          example:
+            name: feature
+            description: user feature
+            enabled: true
+          schema:
+            nullable: true
+            enum:
+              - name
+            type: string
+      responses:
+        '200':
+          description: The AppUser has been successfully created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppUserCollectionPresenter'
+        '401':
+          description: Unauthorized
+        '422':
+          description: Unprocessable Entity
+      tags:
+        - app-user
+    post:
+      operationId: AppUserController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAppUserDto'
+      responses:
+        '201':
+          description: App user created
+        '422':
+          description: Unprocessable Entity
+      tags:
+        - app-user
+      security:
+        - bearer: []
+  /app-user/{id}:
+    get:
+      operationId: AppUserController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppUserPresenter'
+        '401':
+          description: Unauthorized
+        '404':
+          description: AppUser not found
+      tags:
+        - app-user
+      security:
+        - bearer: []
+    put:
+      operationId: AppUserController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAppUserDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppUserPresenter'
+        '401':
+          description: Unauthorized
+        '404':
+          description: AppUser not found
+        '422':
+          description: Unprocessable Entity
+      tags:
+        - app-user
+      security:
+        - bearer: []
+    delete:
+      operationId: AppUserController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '204':
+          description: AppUser deleted
+        '401':
+          description: Unauthorized
+        '404':
+          description: AppUser not found
+      tags:
+        - app-user
+      security:
+        - bearer: []
+  /user-feature-flags:
+    get:
+      operationId: UserFeatureFlagsController_search
+      parameters:
+        - name: page
+          required: false
+          in: query
+          description: The page number
+          schema:
+            type: number
+        - name: perPage
+          required: false
+          in: query
+          description: The number of items per page
+          schema:
+            type: number
+        - name: sort
+          required: false
+          in: query
+          description: The field that should be used for sorting
+          schema:
+            nullable: true
+            enum:
+              - name
+              - createdAt
+            type: string
+        - name: sortDir
+          required: false
+          in: query
+          description: The sort direction
+          schema:
+            nullable: true
+            enum:
+              - asc
+              - desc
+            type: string
+        - name: filter
+          required: false
+          in: query
+          description: The filter to apply to the search
+          schema:
+            nullable: true
+            enum:
+              - name
+            type: string
+      responses:
+        '200':
+          description: The UserFeatureFlags has been successfully created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserFeatureFlagsCollectionPresenter'
+        '401':
+          description: Unauthorized
+        '422':
+          description: Unprocessable Entity
+      tags:
+        - user-feature-flags
+    post:
+      operationId: UserFeatureFlagsController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserFeatureFlagsDto'
+      responses:
+        '201':
+          description: App user created
+        '422':
+          description: Unprocessable Entity
+      tags:
+        - user-feature-flags
+      security:
+        - bearer: []
+  /user-feature-flags/{id}:
+    get:
+      operationId: UserFeatureFlagsController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserFeatureFlagsPresenter'
+        '401':
+          description: Unauthorized
+        '404':
+          description: UserFeatureFlags not found
+      tags:
+        - user-feature-flags
+      security:
+        - bearer: []
+    put:
+      operationId: UserFeatureFlagsController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserFeatureFlagsDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserFeatureFlagsPresenter'
+        '401':
+          description: Unauthorized
+        '404':
+          description: UserFeatureFlags not found
+        '422':
+          description: Unprocessable Entity
+      tags:
+        - user-feature-flags
+      security:
+        - bearer: []
+    delete:
+      operationId: UserFeatureFlagsController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '204':
+          description: UserFeatureFlags deleted
+        '401':
+          description: Unauthorized
+        '404':
+          description: UserFeatureFlags not found
+      tags:
+        - user-feature-flags
       security:
         - bearer: []
 info:
@@ -474,12 +872,16 @@ components:
         token:
           type: string
           description: The token of the user
+        api_token:
+          type: string
+          description: The user api token
       required:
         - id
         - name
         - email
         - createdAt
         - token
+        - api_token
     UpdateUserDto:
       type: object
       properties:
@@ -579,3 +981,140 @@ components:
         - name
         - description
         - enabled
+    AppUserPresenter:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The id of the app user
+        name:
+          type: string
+          description: The name of the app user
+        email:
+          type: string
+          description: The email of the app user
+        externalId:
+          type: string
+          description: The status of the app user, if is active or not
+        createdAt:
+          format: date-time
+          type: string
+          description: The date when the app user was created
+        updatedAt:
+          format: date-time
+          type: string
+          nullable: true
+          description: The data of last app user update
+      required:
+        - id
+        - name
+        - email
+        - externalId
+        - createdAt
+        - updatedAt
+    AppUserCollectionPresenter:
+      type: object
+      properties:
+        data:
+          description: List of AppUser
+          type: array
+          items:
+            $ref: '#/components/schemas/AppUserPresenter'
+      required:
+        - data
+    UpdateAppUserDto:
+      type: object
+      properties:
+        email:
+          type: string
+          description: The email of the app user
+          example: user@example.com
+        name:
+          type: string
+          description: The name of the app user
+          example: new app user
+        externalId:
+          type: string
+          description: The app user external id
+          example: 4859759348asds
+      required:
+        - email
+        - name
+        - externalId
+    CreateAppUserDto:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the app user
+          example: Alan Turing
+        email:
+          type: string
+          description: The email of the app user
+          example: example@email.com
+        externalId:
+          type: string
+      required:
+        - name
+        - email
+        - externalId
+    UserFeatureFlagsPresenter:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The id of the user feature flag
+        featureFlagId:
+          type: string
+          description: The id of the feature flag
+        userId:
+          type: string
+          description: The id of the user
+        enabled:
+          type: boolean
+          description: The status of the user feature flag, if is active or not
+      required:
+        - id
+        - featureFlagId
+        - userId
+        - enabled
+    UserFeatureFlagsCollectionPresenter:
+      type: object
+      properties:
+        data:
+          description: List of UserFeatureFlags
+          type: array
+          items:
+            $ref: '#/components/schemas/UserFeatureFlagsPresenter'
+      required:
+        - data
+    UpdateUserFeatureFlagsDto:
+      type: object
+      properties:
+        userId:
+          type: string
+          description: The id of the user
+        featureFlagId:
+          type: string
+          description: The id of the feature flag
+        enabled:
+          type: boolean
+          description: Whether the user feature flag is enabled
+          example: true
+      required:
+        - userId
+        - featureFlagId
+        - enabled
+    CreateUserFeatureFlagsDto:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        userId:
+          type: string
+        featureFlagId:
+          type: string
+      required:
+        - enabled
+        - userId
+        - featureFlagId

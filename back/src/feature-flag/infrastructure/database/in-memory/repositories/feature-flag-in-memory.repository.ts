@@ -8,8 +8,6 @@ export class FeatureFlagInMemoryRepository
   extends InMemoryRepository<FeatureFlagEntity>
   implements FeatureFlagRepository.Repository
 {
-  sortableFields: string[] = FeatureFlagRepository.sortableFields;
-
   async search(
     params: FeatureFlagRepository.SearchParams,
   ): Promise<FeatureFlagRepository.SearchResult> {
@@ -59,6 +57,8 @@ export class FeatureFlagInMemoryRepository
 
     this.items[index].enable();
   }
+
+  sortableFields: string[] = FeatureFlagRepository.sortableFields;
 
   async disable(id: string): Promise<void> {
     const index = await this._getIndex(id);
