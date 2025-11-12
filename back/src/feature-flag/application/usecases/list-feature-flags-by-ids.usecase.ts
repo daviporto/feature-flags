@@ -53,20 +53,22 @@ export namespace ListFeatureFlagsByIdsUsecase {
       );
 
       if (input.appUserId) {
-        const searchParams =
-          new UserFeatureFlagsRepository.SearchParams({
-            page: 1,
-            perPage: Math.max(uniqueIds.length, 10),
-            filter: {
-              userId: input.appUserId,
-            },
-          });
+        const searchParams = new UserFeatureFlagsRepository.SearchParams({
+          page: 1,
+          perPage: Math.max(uniqueIds.length, 10),
+          filter: {
+            userId: input.appUserId,
+          },
+        });
 
         const targetUsersSearch =
           await this.userFeatureFlagsRepository.search(searchParams);
 
         const targetUsersMap = targetUsersSearch.items.reduce<
-          Record<string, ReturnType<typeof UserFeatureFlagsOutputMapper.toOutput>>
+          Record<
+            string,
+            ReturnType<typeof UserFeatureFlagsOutputMapper.toOutput>
+          >
         >((acc, userFeatureFlag) => {
           acc[userFeatureFlag.featureFlagId] =
             UserFeatureFlagsOutputMapper.toOutput(userFeatureFlag);
@@ -76,11 +78,13 @@ export namespace ListFeatureFlagsByIdsUsecase {
         items.forEach((item) => {
           const targetUser = targetUsersMap[item.id];
           if (targetUser) {
-            (item as FeatureFlagOutput & {
-              targetUser: ReturnType<
-                typeof UserFeatureFlagsOutputMapper.toOutput
-              >;
-            }).targetUser = targetUser;
+            (
+              item as FeatureFlagOutput & {
+                targetUser: ReturnType<
+                  typeof UserFeatureFlagsOutputMapper.toOutput
+                >;
+              }
+            ).targetUser = targetUser;
           }
         });
       }
@@ -95,4 +99,3 @@ export namespace ListFeatureFlagsByIdsUsecase {
     }
   }
 }
-

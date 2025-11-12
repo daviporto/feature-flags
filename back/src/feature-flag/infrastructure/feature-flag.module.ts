@@ -12,7 +12,6 @@ import { CreateFeatureFlagUsecase } from '@/feature-flag/application/usecases/cr
 import { UserRepository } from '@/user/domain/repositories/user.repository';
 import { UserPrismaRepository } from '@/user/infrastructure/database/prisma/repositories/user-prisma.repository';
 import { AppUserModule } from '@/app-user/infrastructure/app-user.module';
-import { ClientFeatureFlagUsecase } from '../application/usecases/client-feature-flag.usecase';
 import { ClientUserService } from '@/user/infrastructure/client-user.service';
 import { ListFeatureFlagsByIdsUsecase } from '@/feature-flag/application/usecases/list-feature-flags-by-ids.usecase';
 import { UserFeatureFlagsRepository } from '@/user-feature-flags/domain/repositories/user-feature-flags.repository';
@@ -86,13 +85,6 @@ import { UserFeatureFlagsPrismaRepository } from '@/user-feature-flags/infrastru
       provide: DeleteFeatureFlagUsecase.UseCase,
       useFactory: (featureFlagRepository: FeatureFlagRepository.Repository) => {
         return new DeleteFeatureFlagUsecase.UseCase(featureFlagRepository);
-      },
-      inject: ['FeatureFlagRepository'],
-    },
-    {
-      provide: ClientFeatureFlagUsecase.UseCase,
-      useFactory: (featureFlagRepository: FeatureFlagRepository.Repository) => {
-        return new ClientFeatureFlagUsecase.UseCase(featureFlagRepository);
       },
       inject: ['FeatureFlagRepository'],
     },

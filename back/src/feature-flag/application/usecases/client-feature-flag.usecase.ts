@@ -1,9 +1,6 @@
-import { FeatureFlagRepository } from '@/feature-flag/domain/repositories/feature-flag.repository';
 import { UseCaseInterface } from '@/shared/application/use-cases/use-case';
-import {
-  FeatureFlagOutput,
-  FeatureFlagOutputMapper,
-} from '../dtos/feature-flag-output';
+import { FeatureFlagOutput } from '../dtos/feature-flag-output';
+import { ListFeatureFlagsByIdsUsecase } from './list-feature-flags-by-ids.usecase';
 
 export namespace ClientFeatureFlagUsecase {
   export type Input = {
@@ -14,12 +11,17 @@ export namespace ClientFeatureFlagUsecase {
   export type Output = FeatureFlagOutput;
 
   export class UseCase implements UseCaseInterface<Input, Output> {
-    constructor(private repository: FeatureFlagRepository.Repository) {}
+    constructor(
+      private listFeatureFlagsByIdsUsecase: ListFeatureFlagsByIdsUsecase.UseCase,
+    ) {}
 
     async execute(input: Input): Promise<Output> {
-      const entity = await this.repository.findById(input.featureFlagId);
+      const result = await this.listFeatureFlagsByIdsUsecase.execute({
+        ids: [input.featureFlagId],
+        appUserId: input.appUserId,
+      });
 
-      return FeatureFlagOutputMapper.toOutput(entity);
+      return result.items[0];
     }
   }
 }

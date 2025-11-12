@@ -32,11 +32,10 @@ import { ListFeatureFlagsDto } from '@/feature-flag/infrastructure/dtos/list-fea
 import { CreateFeatureFlagDto } from '@/feature-flag/infrastructure/dtos/create-feature-flag.dto';
 import { CreateFeatureFlagUsecase } from '@/feature-flag/application/usecases/create-feature-flag.usecase';
 import { UpdateFeatureFlagDto } from '@/feature-flag/infrastructure/dtos/update-feature-flag.dto';
-import { ClientFeatureFlagUsecase } from '@/feature-flag//application/usecases/client-feature-flag.usecase';
-import { ClientUserGuard } from '@/user/infrastructure/client-user.guard';
-import { ClientFeatureFlagsDto } from './dtos/client-feature-flag.dto';
 import { ListFeatureFlagsByIdsUsecase } from '@/feature-flag/application/usecases/list-feature-flags-by-ids.usecase';
 import { GetFeatureFlagsByIdDto } from '@/feature-flag/infrastructure/dtos/get-feature-flags-by-id.dto';
+import { ClientUserGuard } from '@/user/infrastructure/client-user.guard';
+import { ClientFeatureFlagsDto } from './dtos/client-feature-flag.dto';
 
 @ApiTags('feature-flag')
 @Controller('feature-flag')
@@ -58,9 +57,6 @@ export class FeatureFlagController {
 
   @Inject(DeleteFeatureFlagUsecase.UseCase)
   private deleteFeatureFlagUseCase: DeleteFeatureFlagUsecase.UseCase;
-
-  @Inject(ClientFeatureFlagUsecase.UseCase)
-  private clientFeatureFlagUseCase: ClientFeatureFlagUsecase.UseCase;
 
   static featureFlagToResponse(
     output: FeatureFlagOutput,
@@ -169,8 +165,11 @@ export class FeatureFlagController {
   @UseGuards(ClientUserGuard)
   @Get('client')
   async clientFeatureFlags(@Query() searchParams: ClientFeatureFlagsDto) {
-    const output = await this.clientFeatureFlagUseCase.execute(searchParams);
+    const result = await this.listFeatureFlagsByIdsUseCase.execute({
+      ids: [searchParams.featureFlagId],
+      appUserId: searchParams.appUserId,
+    });
 
-    return FeatureFlagController.featureFlagToResponse(output);
+    return FeatureFlagController.listFeatureFlagToResponse(result);
   }
 }
