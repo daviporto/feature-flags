@@ -26,15 +26,30 @@
               <p class="page-subtitle">Control feature rollouts with ease</p>
             </div>
             <div class="header-right">
-              <q-btn
-                unelevated
-                label="Create New Flag"
-                color="primary"
-                icon="add_circle"
-                size="lg"
-                class="create-btn"
-                @click="showCreateDialog = true"
-              />
+              <div class = "right-item-1">
+                <q-btn
+                  unelevated
+                  label="Create New Flag"
+                  color="primary"
+                  icon="add_circle"
+                  size="lg"
+                  class="create-btn"
+                  @click="showCreateDialog = true"
+                />
+              </div>
+
+              <div class = "right-item-2">
+                <q-btn
+                  unelevated
+                  label="Create New User"
+                  color="primary"
+                  icon="person_add"
+                  size="lg"
+                  class="create-btn"
+                  @click="showCreateUserDialog = true"
+                />
+              </div>
+              
             </div>
           </div>
         </div>
@@ -411,6 +426,87 @@
       </q-card>
     </q-dialog>
 
+    <!-- Create New User Dialog -->
+    <q-dialog v-model="showCreateUserDialog" transition-show="slide-up" transition-hide="slide-down">
+      <q-card class="dialog-card">
+        <q-card-section class="dialog-header">
+          <div class="dialog-title-section">
+            <q-icon name="add_circle" size="32px" color="primary" class="q-mr-sm" />
+            <div>
+              <div class="dialog-title">Create user</div>
+              <div class="dialog-subtitle">Add a new user to your collection</div>
+            </div>
+          </div>
+          <q-btn icon="close" flat round dense @click="showCreateUserDialog = false" />
+        </q-card-section>
+
+        <q-separator />
+
+        <q-card-section class="dialog-content">
+          <q-form @submit.prevent="handleCreateUser">
+            <div class="form-field">
+              <label class="field-label">User Name *</label>
+              <q-input
+                v-model="newAppUser.name"
+                outlined
+                dense
+                class="form-border"
+                :input-style="{ color: 'black' }"
+                :rules="[(val: string | null | undefined) => !!val || 'Name is required']"
+              />
+            </div>
+
+            <div class="form-field">
+              <label class="field-label">Email *</label>
+              <q-input
+                v-model="newAppUser.email"
+                outlined
+                dense
+                class="form-border"
+                :input-style="{ color: 'black' }"
+                :rules="[(val: string | null | undefined) => !!val || 'Email is required']"
+                rows = 1
+              />
+            </div>
+
+            <div class="form-field">
+              <label class="field-label">External UUID *</label>
+              <q-input
+                v-model="newAppUser.externalId"
+                outlined
+                dense
+                class="form-border"
+                :input-style="{ color: 'black' }"
+                :rules="[(val: string | null | undefined) => !!val || 'External UUID is required']"
+                rows = 1
+              />
+            </div>
+
+            <div class="form-actions">
+              <q-btn
+                type="submit"
+                unelevated
+                label="Create User"
+                color="primary"
+                icon="add"
+                class="full-width"
+                size="lg"
+                :loading="loadingCreateUser"
+              />
+              <q-btn
+                label="Cancel"
+                outline
+                color="grey-7"
+                class="full-width"
+                size="lg"
+                @click="showCreateUserDialog = false"
+              />
+            </div>
+          </q-form>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
     <!-- Add User Dialog -->
     <q-dialog v-model="showAddUserDialog" transition-show="slide-up" transition-hide="slide-down">
       <q-card class="dialog-card">
@@ -643,13 +739,14 @@ import { useQuasar } from 'quasar';
 import type { FeatureFlag } from 'src/types/feature-flag';
 import type { AppUser } from 'src/types/app-user';
 import { useFeatureFlagsStore } from 'src/stores/feature-flag';
-import { listAppUsers } from 'src/api/appUserApi';
+import { searchAppUsers } from 'src/api/appUserApi';
 import {
   createUserFeatureFlag,
   listUserFeatureFlags,
   deleteUserFeatureFlag,
 } from 'src/api/userFeatureFlagsApi';
 import type { UserFeatureFlag } from 'src/types/user-feature-flag';
+import { useAppUserStore } from 'src/stores/app-user';
 
 const router = useRouter();
 const $q = useQuasar();
@@ -660,13 +757,16 @@ const selectedFlagForUser = ref<FeatureFlag | null>(null);
 const showCreateDialog = ref(false);
 const showEditDialog = ref(false);
 const showAddUserDialog = ref(false);
+const showCreateUserDialog = ref(false);
 const loadingCreate = ref(false);
 const loadingEdit = ref(false);
+const loadingCreateUser = ref(false);
 const loadingAddUser = ref(false);
 const loadingAppUsers = ref(false);
 const searchQuery = ref('');
 const featureFlagsStore = useFeatureFlagsStore();
 const showDetailsDialog = ref(false);
+const featureUsersStore = useAppUserStore();
 const appUsers = ref<AppUser[]>([]);
 const selectedUser = ref<AppUser | null>(null);
 const selectedUserId = ref<string>('');
@@ -688,6 +788,13 @@ const editingFlag = ref<FeatureFlag>({
   description: '',
   enabled: false,
 });
+
+const newAppUser = ref({
+  name: '',
+  email: '',
+  externalId: '',
+  id: '',
+})
 
 const filteredFlags = computed(() => {
   if (!searchQuery.value) {
@@ -888,6 +995,43 @@ const viewFlagDetails = (flag: FeatureFlag) => {
   showDetailsDialog.value = true;
 };
 
+const handleCreateUser = async () => {
+  try {
+    loadingCreateUser.value = true;
+    const data = {
+      name: newAppUser.value.name,
+      email: newAppUser.value.email,
+      externalId: newAppUser.value.externalId,
+    };
+    await featureUsersStore.create(data);
+    await fetchAppUsers();
+
+    $q.notify({
+      type: 'positive',
+      message: 'User created successfully',
+      position: 'top',
+      icon: 'check_circle',
+    });
+
+    newFlag.value = {
+      name: '',
+      description: '',
+      enabled: false,
+    };
+
+    showCreateUserDialog.value = false;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    $q.notify({
+      type: 'negative',
+      message: error.response?.data?.message || 'Failed to create user',
+      position: 'top',
+    });
+  } finally {
+    loadingCreateUser.value = false;
+  }
+};
+
 const openAddUserDialog = async (flag: FeatureFlag) => {
   selectedFlagForUser.value = flag;
   selectedUser.value = null;
@@ -904,7 +1048,7 @@ const openAddUserDialog = async (flag: FeatureFlag) => {
 const fetchAppUsers = async () => {
   try {
     loadingAppUsers.value = true;
-    const users = await listAppUsers();
+    const users = await searchAppUsers();
     appUsers.value = users;
   } catch (error: unknown) {
     const message =
@@ -1080,10 +1224,20 @@ const handleLogout = async () => {
 
 .header-content {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   flex-wrap: wrap;
   gap: 1.5rem;
+}
+
+.header-right {
+  display: flex;
+  gap: 20px;
+}
+
+.right-item-1,
+.right-item-2 {
+  margin-left: auto;
 }
 
 .page-title {

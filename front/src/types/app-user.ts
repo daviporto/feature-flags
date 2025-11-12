@@ -7,3 +7,8 @@ export interface AppUser {
   updatedAt?: Date;
 }
 
+export interface CreateAppUserData {
+  name: string;
+  email: string;
+  externalId: string;
+}
