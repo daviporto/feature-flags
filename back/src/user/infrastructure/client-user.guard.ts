@@ -12,8 +12,7 @@ export class ClientUserGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-
-    const token = request.query.token;
+    const token = request.headers['x-api-token'];
 
     if (!token) {
       throw new UnauthorizedException();
