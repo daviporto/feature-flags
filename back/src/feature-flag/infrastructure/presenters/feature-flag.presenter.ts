@@ -1,6 +1,10 @@
 import { FeatureFlagOutput } from '@/feature-flag/application/dtos/feature-flag-output';
 import { CollectionPresenter } from '@/shared/infrastructure/presenters/collection.presenter';
-import { ApiExtraModels, ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  ApiExtraModels,
+  ApiProperty,
+  ApiPropertyOptional,
+} from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { ListFeatureFlagsUsecase } from '@/feature-flag/application/usecases/list-feature-flag.usecase';
 import { UserFeatureFlagsOutput } from '@/user-feature-flags/application/dtos/user-feature-flags-output';
