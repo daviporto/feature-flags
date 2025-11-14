@@ -19,7 +19,7 @@ export const useUserFeatureFlagStore = defineStore('user-feature-flags', {
             await updateUserFeatureFlag(flagId, data);
          
         },
-        async toggle(flagId : string, data : UserFeatureFlag) : Promise<void> {
+        async toggle(flagId : string, data : CreateUserFeatureFlagData) : Promise<void> {
             await updateUserFeatureFlag(flagId, data)
         }
     }

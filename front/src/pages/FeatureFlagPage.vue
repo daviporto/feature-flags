@@ -627,7 +627,15 @@
                         {{ getFlagUserEmail(userFlag.userId) || 'No email' }}
                       </q-item-label>
                     </q-item-section>
+                    <q-toggle
+                      :model-value="userFlag.enabled"
+                      @update:model-value="toggleUserFeatureFlag(userFlag)"
+                      color="positive"
+                      size="lg"
+                      class="custom-toggle"
+                    />
                     <q-item-section side>
+                      
                       <q-btn
                         flat
                         round
@@ -1169,6 +1177,35 @@ const handleAddUserToFlag = async () => {
     }
   } finally {
     loadingAddUser.value = false;
+  }
+};
+
+const toggleUserFeatureFlag = async (user: UserFeatureFlag) => {
+  try {
+    const flagId = user.id;
+    const data = {
+      featureFlagId: user.featureFlagId,
+      userId: user.userId,
+      enabled: !user.enabled,
+    };
+
+    await featureUsersFlagsStore.toggle(flagId, data);
+
+    user.enabled = !user.enabled;
+
+    $q.notify({
+      type: 'positive',
+      message: `App User Feature flag ${user.enabled ? 'enabled' : 'disabled'}`,
+      position: 'top',
+      icon: user.enabled ? 'check_circle' : 'cancel',
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    $q.notify({
+      type: 'negative',
+      message: error.response?.data?.message || 'Failed to toggle app user feature flag',
+      position: 'top',
+    });
   }
 };
 

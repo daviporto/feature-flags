@@ -44,6 +44,6 @@ export const deleteUserFeatureFlag = async (id: string): Promise<void> => {
   await getAxiosWithAuth().delete(`/user-feature-flags/${id}`);
 };
 
-export const updateUserFeatureFlag = async (id: string, data : UserFeatureFlag) : Promise<void> => {
+export const updateUserFeatureFlag = async (id: string, data : CreateUserFeatureFlagData) : Promise<void> => {
   await getAxiosWithAuth().put(`/user-feature-flags/${id}`, data);
 };
