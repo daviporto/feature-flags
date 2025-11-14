@@ -741,13 +741,9 @@ import type { FeatureFlag } from 'src/types/feature-flag';
 import type { AppUser } from 'src/types/app-user';
 import { useFeatureFlagsStore } from 'src/stores/feature-flag';
 import { searchAppUsers } from 'src/api/appUserApi';
-import {
-  createUserFeatureFlag,
-  listUserFeatureFlags,
-  deleteUserFeatureFlag,
-} from 'src/api/userFeatureFlagsApi';
 import type { UserFeatureFlag } from 'src/types/user-feature-flag';
 import { useAppUserStore } from 'src/stores/app-user';
+import { useUserFeatureFlagStore } from 'src/stores/user-feature-flag';
 
 const router = useRouter();
 const $q = useQuasar();
@@ -768,6 +764,7 @@ const searchQuery = ref('');
 const featureFlagsStore = useFeatureFlagsStore();
 const showDetailsDialog = ref(false);
 const featureUsersStore = useAppUserStore();
+const featureUsersFlagsStore = useUserFeatureFlagStore();
 const appUsers = ref<AppUser[]>([]);
 const selectedUser = ref<AppUser | null>(null);
 const selectedUserId = ref<string>('');
@@ -1072,7 +1069,7 @@ const fetchFlagUsers = async (featureFlagId: string) => {
     if (appUsers.value.length === 0) {
       await fetchAppUsers();
     }
-    const users = await listUserFeatureFlags(featureFlagId);
+    const users = await featureUsersFlagsStore.search(featureFlagId);
     flagUsers.value = users;
   } catch (error: unknown) {
     const message =
@@ -1101,7 +1098,7 @@ const getFlagUserEmail = (userId: string): string => {
 const handleRemoveUser = async (userFeatureFlag: UserFeatureFlag) => {
   try {
     removingUserId.value = userFeatureFlag.id;
-    await deleteUserFeatureFlag(userFeatureFlag.id);
+    await featureUsersFlagsStore.delete(userFeatureFlag.id);
 
     $q.notify({
       type: 'positive',
@@ -1133,7 +1130,7 @@ const handleAddUserToFlag = async () => {
 
   try {
     loadingAddUser.value = true;
-    await createUserFeatureFlag({
+    await featureUsersFlagsStore.create({
       featureFlagId: selectedFlagForUser.value.id,
       userId: selectedUser.value.id,
       enabled: true,
