@@ -56,7 +56,7 @@
 
         <div class="search-section">
           <div class="row items-center q-gutter-md">
-            <div class="col-12 col-md-8 col-lg-9">
+            <div class="col-12 col-md-8 col-lg-9" style="flex-basis: 77.5%;">
               <q-input
                 v-model="searchQuery"
                 outlined
@@ -78,7 +78,7 @@
                 </template>
               </q-input>
             </div>
-            <div class="col-12 col-md-4 col-lg-2">
+            <div class="col-12 col-md-4 col-lg-2 q-ml-auto" style="flex-basis: 20%;">
               <q-select
                 v-model="selectedSearchUserId"
                 :options="appUsers"
@@ -806,7 +806,7 @@ const filteredFlags = computed(() => {
     (flag: FeatureFlag) =>
       flag.name.toLowerCase().includes(query) ||
       flag.description?.toLowerCase().includes(query) ||
-      flag.id.toLowerCase().includes(query),
+      flag.id.toLowerCase().includes(query)
   );
 });
 
