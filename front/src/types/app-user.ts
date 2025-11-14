@@ -12,3 +12,9 @@ export interface CreateAppUserData {
   email: string;
   externalId: string;
 }
+
+export interface UpdateAppUserData {
+  name: string;
+  email: string;
+  externalId: string;
+}

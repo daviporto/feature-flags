@@ -1,6 +1,6 @@
 import { acceptHMRUpdate, defineStore } from "pinia";
-import { createAppUser, searchAppUsers } from "src/api/appUserApi";
-import type { AppUser, CreateAppUserData } from "src/types/app-user";
+import { createAppUser, deleteAppUser, searchAppUsers, updateAppUser } from "src/api/appUserApi";
+import type { AppUser, CreateAppUserData, UpdateAppUserData } from "src/types/app-user";
 
 export const useAppUserStore = defineStore('app-user', {
     actions: {
@@ -13,6 +13,14 @@ export const useAppUserStore = defineStore('app-user', {
             const result = await createAppUser(data);
 
             return result;
+        },
+        async delete (appUserId : string) : Promise<void> {
+            await deleteAppUser(appUserId);
+        },
+        async update (appUserId : string, data : UpdateAppUserData) : Promise<UpdateAppUserData> {
+            const result = await updateAppUser(appUserId, data);
+
+            return result;    
         },
     }
 })
