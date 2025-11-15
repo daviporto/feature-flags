@@ -26,22 +26,37 @@
               <p class="page-subtitle">Control feature rollouts with ease</p>
             </div>
             <div class="header-right">
-              <q-btn
-                unelevated
-                label="Create New Flag"
-                color="primary"
-                icon="add_circle"
-                size="lg"
-                class="create-btn"
-                @click="showCreateDialog = true"
-              />
+              <div class = "right-item-1">
+                <q-btn
+                  unelevated
+                  label="Create New Flag"
+                  color="primary"
+                  icon="add_circle"
+                  size="lg"
+                  class="create-btn"
+                  @click="showCreateDialog = true"
+                />
+              </div>
+
+              <div class = "right-item-2">
+                <q-btn
+                  unelevated
+                  label="Create New User"
+                  color="primary"
+                  icon="person_add"
+                  size="lg"
+                  class="create-btn"
+                  @click="showCreateUserDialog = true"
+                />
+              </div>
+              
             </div>
           </div>
         </div>
 
         <div class="search-section">
-          <div class="row q-gutter-md">
-            <div class="col-12 col-md-8">
+          <div class="row items-center q-gutter-md">
+            <div class="col-12 col-md-8 col-lg-9" style="flex-basis: 77.5%;">
               <q-input
                 v-model="searchQuery"
                 outlined
@@ -63,7 +78,7 @@
                 </template>
               </q-input>
             </div>
-            <div class="col-12 col-md-4">
+            <div class="col-12 col-md-4 col-lg-2 q-ml-auto" style="flex-basis: 20%;">
               <q-select
                 v-model="selectedSearchUserId"
                 :options="appUsers"
@@ -73,14 +88,15 @@
                 emit-value
                 map-options
                 outlined
-                dense
                 placeholder="Filter by user"
                 clearable
-                color="white"
+                color="primary"
+                size="lg"
+                class = "filter-user"
                 @update:model-value="handleUserFilterChange"
               >
                 <template v-slot:prepend>
-                  <q-icon name="person" color="primary" />
+                  <q-icon name="filter_alt" color="white" />
                 </template>
                 <template v-slot:option="scope">
                   <q-item v-bind="scope.itemProps">
@@ -411,6 +427,87 @@
       </q-card>
     </q-dialog>
 
+    <!-- Create New User Dialog -->
+    <q-dialog v-model="showCreateUserDialog" transition-show="slide-up" transition-hide="slide-down">
+      <q-card class="dialog-card">
+        <q-card-section class="dialog-header">
+          <div class="dialog-title-section">
+            <q-icon name="add_circle" size="32px" color="primary" class="q-mr-sm" />
+            <div>
+              <div class="dialog-title">Create user</div>
+              <div class="dialog-subtitle">Add a new user to your collection</div>
+            </div>
+          </div>
+          <q-btn icon="close" flat round dense @click="showCreateUserDialog = false" />
+        </q-card-section>
+
+        <q-separator />
+
+        <q-card-section class="dialog-content">
+          <q-form @submit.prevent="handleCreateUser">
+            <div class="form-field">
+              <label class="field-label">User Name *</label>
+              <q-input
+                v-model="newAppUser.name"
+                outlined
+                dense
+                class="form-border"
+                :input-style="{ color: 'black' }"
+                :rules="[(val: string | null | undefined) => !!val || 'Name is required']"
+              />
+            </div>
+
+            <div class="form-field">
+              <label class="field-label">Email *</label>
+              <q-input
+                v-model="newAppUser.email"
+                outlined
+                dense
+                class="form-border"
+                :input-style="{ color: 'black' }"
+                :rules="[(val: string | null | undefined) => !!val || 'Email is required']"
+                rows = 1
+              />
+            </div>
+
+            <div class="form-field">
+              <label class="field-label">External UUID *</label>
+              <q-input
+                v-model="newAppUser.externalId"
+                outlined
+                dense
+                class="form-border"
+                :input-style="{ color: 'black' }"
+                :rules="[(val: string | null | undefined) => !!val || 'External UUID is required']"
+                rows = 1
+              />
+            </div>
+
+            <div class="form-actions">
+              <q-btn
+                type="submit"
+                unelevated
+                label="Create User"
+                color="primary"
+                icon="add"
+                class="full-width"
+                size="lg"
+                :loading="loadingCreateUser"
+              />
+              <q-btn
+                label="Cancel"
+                outline
+                color="grey-7"
+                class="full-width"
+                size="lg"
+                @click="showCreateUserDialog = false"
+              />
+            </div>
+          </q-form>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
     <!-- Add User Dialog -->
     <q-dialog v-model="showAddUserDialog" transition-show="slide-up" transition-hide="slide-down">
       <q-card class="dialog-card">
@@ -530,7 +627,15 @@
                         {{ getFlagUserEmail(userFlag.userId) || 'No email' }}
                       </q-item-label>
                     </q-item-section>
+                    <q-toggle
+                      :model-value="userFlag.enabled"
+                      @update:model-value="toggleUserFeatureFlag(userFlag)"
+                      color="positive"
+                      size="lg"
+                      class="custom-toggle"
+                    />
                     <q-item-section side>
+                      
                       <q-btn
                         flat
                         round
@@ -643,13 +748,10 @@ import { useQuasar } from 'quasar';
 import type { FeatureFlag } from 'src/types/feature-flag';
 import type { AppUser } from 'src/types/app-user';
 import { useFeatureFlagsStore } from 'src/stores/feature-flag';
-import { listAppUsers } from 'src/api/appUserApi';
-import {
-  createUserFeatureFlag,
-  listUserFeatureFlags,
-  deleteUserFeatureFlag,
-} from 'src/api/userFeatureFlagsApi';
+import { searchAppUsers } from 'src/api/appUserApi';
 import type { UserFeatureFlag } from 'src/types/user-feature-flag';
+import { useAppUserStore } from 'src/stores/app-user';
+import { useUserFeatureFlagStore } from 'src/stores/user-feature-flag';
 
 const router = useRouter();
 const $q = useQuasar();
@@ -660,13 +762,17 @@ const selectedFlagForUser = ref<FeatureFlag | null>(null);
 const showCreateDialog = ref(false);
 const showEditDialog = ref(false);
 const showAddUserDialog = ref(false);
+const showCreateUserDialog = ref(false);
 const loadingCreate = ref(false);
 const loadingEdit = ref(false);
+const loadingCreateUser = ref(false);
 const loadingAddUser = ref(false);
 const loadingAppUsers = ref(false);
 const searchQuery = ref('');
 const featureFlagsStore = useFeatureFlagsStore();
 const showDetailsDialog = ref(false);
+const featureUsersStore = useAppUserStore();
+const featureUsersFlagsStore = useUserFeatureFlagStore();
 const appUsers = ref<AppUser[]>([]);
 const selectedUser = ref<AppUser | null>(null);
 const selectedUserId = ref<string>('');
@@ -689,6 +795,13 @@ const editingFlag = ref<FeatureFlag>({
   enabled: false,
 });
 
+const newAppUser = ref({
+  name: '',
+  email: '',
+  externalId: '',
+  id: '',
+})
+
 const filteredFlags = computed(() => {
   if (!searchQuery.value) {
     return featureFlags.value;
@@ -698,7 +811,7 @@ const filteredFlags = computed(() => {
     (flag: FeatureFlag) =>
       flag.name.toLowerCase().includes(query) ||
       flag.description?.toLowerCase().includes(query) ||
-      flag.id.toLowerCase().includes(query),
+      flag.id.toLowerCase().includes(query)
   );
 });
 
@@ -888,6 +1001,43 @@ const viewFlagDetails = (flag: FeatureFlag) => {
   showDetailsDialog.value = true;
 };
 
+const handleCreateUser = async () => {
+  try {
+    loadingCreateUser.value = true;
+    const data = {
+      name: newAppUser.value.name,
+      email: newAppUser.value.email,
+      externalId: newAppUser.value.externalId,
+    };
+    await featureUsersStore.create(data);
+    await fetchAppUsers();
+
+    $q.notify({
+      type: 'positive',
+      message: 'User created successfully',
+      position: 'top',
+      icon: 'check_circle',
+    });
+
+    newFlag.value = {
+      name: '',
+      description: '',
+      enabled: false,
+    };
+
+    showCreateUserDialog.value = false;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    $q.notify({
+      type: 'negative',
+      message: error.response?.data?.message || 'Failed to create user',
+      position: 'top',
+    });
+  } finally {
+    loadingCreateUser.value = false;
+  }
+};
+
 const openAddUserDialog = async (flag: FeatureFlag) => {
   selectedFlagForUser.value = flag;
   selectedUser.value = null;
@@ -904,7 +1054,7 @@ const openAddUserDialog = async (flag: FeatureFlag) => {
 const fetchAppUsers = async () => {
   try {
     loadingAppUsers.value = true;
-    const users = await listAppUsers();
+    const users = await searchAppUsers();
     appUsers.value = users;
   } catch (error: unknown) {
     const message =
@@ -927,7 +1077,7 @@ const fetchFlagUsers = async (featureFlagId: string) => {
     if (appUsers.value.length === 0) {
       await fetchAppUsers();
     }
-    const users = await listUserFeatureFlags(featureFlagId);
+    const users = await featureUsersFlagsStore.search(featureFlagId);
     flagUsers.value = users;
   } catch (error: unknown) {
     const message =
@@ -956,7 +1106,7 @@ const getFlagUserEmail = (userId: string): string => {
 const handleRemoveUser = async (userFeatureFlag: UserFeatureFlag) => {
   try {
     removingUserId.value = userFeatureFlag.id;
-    await deleteUserFeatureFlag(userFeatureFlag.id);
+    await featureUsersFlagsStore.delete(userFeatureFlag.id);
 
     $q.notify({
       type: 'positive',
@@ -988,7 +1138,7 @@ const handleAddUserToFlag = async () => {
 
   try {
     loadingAddUser.value = true;
-    await createUserFeatureFlag({
+    await featureUsersFlagsStore.create({
       featureFlagId: selectedFlagForUser.value.id,
       userId: selectedUser.value.id,
       enabled: true,
@@ -1027,6 +1177,35 @@ const handleAddUserToFlag = async () => {
     }
   } finally {
     loadingAddUser.value = false;
+  }
+};
+
+const toggleUserFeatureFlag = async (user: UserFeatureFlag) => {
+  try {
+    const flagId = user.id;
+    const data = {
+      featureFlagId: user.featureFlagId,
+      userId: user.userId,
+      enabled: !user.enabled,
+    };
+
+    await featureUsersFlagsStore.toggle(flagId, data);
+
+    user.enabled = !user.enabled;
+
+    $q.notify({
+      type: 'positive',
+      message: `App User Feature flag ${user.enabled ? 'enabled' : 'disabled'}`,
+      position: 'top',
+      icon: user.enabled ? 'check_circle' : 'cancel',
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    $q.notify({
+      type: 'negative',
+      message: error.response?.data?.message || 'Failed to toggle app user feature flag',
+      position: 'top',
+    });
   }
 };
 
@@ -1080,10 +1259,20 @@ const handleLogout = async () => {
 
 .header-content {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   flex-wrap: wrap;
   gap: 1.5rem;
+}
+
+.header-right {
+  display: flex;
+  gap: 20px;
+}
+
+.right-item-1,
+.right-item-2 {
+  margin-left: auto;
 }
 
 .page-title {
@@ -1516,6 +1705,33 @@ const handleLogout = async () => {
 .fade-leave-to {
   opacity: 0;
   transform: scale(0.9);
+}
+
+.filter-user {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border-radius: 13px;
+  background-color: #227BD3;
+  transition: all 0.25s ease;
+
+  :deep(.q-field__control) {
+    border-radius: 13px;
+  }
+
+  :deep(.q-field__label) {
+    color: white !important;
+  }
+
+  :deep(.q-field__placeholder) {
+    color: white !important;
+  }
+
+  :deep(.q-field__native) {
+    color: white !important;
+  }
+
+  :deep(.q-select__dropdown-icon) {
+    color: white !important;
+  }
 }
 
 .user-selector {

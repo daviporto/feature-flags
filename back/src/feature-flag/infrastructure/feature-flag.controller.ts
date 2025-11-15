@@ -34,8 +34,9 @@ import { CreateFeatureFlagUsecase } from '@/feature-flag/application/usecases/cr
 import { UpdateFeatureFlagDto } from '@/feature-flag/infrastructure/dtos/update-feature-flag.dto';
 import { ListFeatureFlagsByIdsUsecase } from '@/feature-flag/application/usecases/list-feature-flags-by-ids.usecase';
 import { GetFeatureFlagsByIdDto } from '@/feature-flag/infrastructure/dtos/get-feature-flags-by-id.dto';
-import { ClientUserGuard } from '@/user/infrastructure/client-user.guard';
 import { ClientFeatureFlagsDto } from './dtos/client-feature-flag.dto';
+import { ClientUserGuard } from '@/auth/infrastructure/client-user.guard';
+import { FeatureFlagWithIdNotFoundError } from './errors/feature-flag-with-id-not-found-error';
 
 @ApiTags('feature-flag')
 @Controller('feature-flag')
@@ -164,12 +165,15 @@ export class FeatureFlagController {
   @ApiResponse({ status: 404, description: 'FeatureFlag not found' })
   @UseGuards(ClientUserGuard)
   @Get('client')
-  async clientFeatureFlags(@Query() searchParams: ClientFeatureFlagsDto) {
-    const result = await this.listFeatureFlagsByIdsUseCase.execute({
+  async clientFeatureFlag(@Query() searchParams: ClientFeatureFlagsDto) {
+    const { items } = await this.listFeatureFlagsByIdsUseCase.execute({
       ids: [searchParams.featureFlagId],
       appUserId: searchParams.appUserId,
     });
 
-    return FeatureFlagController.listFeatureFlagToResponse(result);
+    if (items.length <= 0)
+      throw new FeatureFlagWithIdNotFoundError(searchParams.featureFlagId);
+
+    return FeatureFlagController.featureFlagToResponse(items[0]);
   }
 }

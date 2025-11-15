@@ -7,3 +7,14 @@ export interface AppUser {
   updatedAt?: Date;
 }
 
+export interface CreateAppUserData {
+  name: string;
+  email: string;
+  externalId: string;
+}
+
+export interface UpdateAppUserData {
+  name: string;
+  email: string;
+  externalId: string;
+}

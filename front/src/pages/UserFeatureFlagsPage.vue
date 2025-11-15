@@ -151,7 +151,7 @@ import { useQuasar } from 'quasar';
 import type { FeatureFlag } from 'src/types/feature-flag';
 import type { AppUser } from 'src/types/app-user';
 import { useFeatureFlagsStore } from 'src/stores/feature-flag';
-import { listAppUsers } from 'src/api/appUserApi';
+import { searchAppUsers } from 'src/api/appUserApi';
 import { Routes } from 'src/enums/Routes';
 import { useAuthStore } from 'src/stores/auth';
 
@@ -200,7 +200,7 @@ onMounted(async () => {
 
 const fetchAppUsers = async () => {
   try {
-    const users = await listAppUsers();
+    const users = await searchAppUsers();
     appUsers.value = users;
   } catch (error: unknown) {
     const message =
