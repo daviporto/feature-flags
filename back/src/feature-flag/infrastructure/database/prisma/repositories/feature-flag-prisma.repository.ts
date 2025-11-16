@@ -102,7 +102,7 @@ export class FeatureFlagPrismaRepository
       },
     };
 
-    return await this.filterByAppUserId(appUserId, where);
+    return await this.filterByAppUserId(appUserId, uniqueIds[0], where);
   }
 
   async findByNames(
@@ -131,7 +131,7 @@ export class FeatureFlagPrismaRepository
       },
     };
 
-    return await this.filterByAppUserId(appUserId, where);
+    return await this.filterByAppUserId(appUserId, uniqueNames[0], where);
   }
 
   async update(entity: FeatureFlagEntity): Promise<void> {
@@ -192,17 +192,27 @@ export class FeatureFlagPrismaRepository
   }
 
   private async filterByAppUserId(
-    appUserId: string,
+    appUserExternalId: string,
+    featureFlagIdId: string,
     where: Prisma.FeatureFlagWhereInput,
   ) {
-    const normalizedAppUserId = appUserId?.trim();
+    const normalizedAppUserExternalId = appUserExternalId?.trim();
 
-    if (normalizedAppUserId) {
-      where['targetUsers'] = {
-        some: {
-          userId: normalizedAppUserId,
-        },
-      };
+    if (normalizedAppUserExternalId) {
+      const appUser = await this.prismaService.appUser.findUnique({
+        where: { externalId: normalizedAppUserExternalId },
+        select: { id: true },
+      });
+
+      if (appUser) {
+        where['targetUsers'] = {
+          some: {
+            userId: appUser.id,
+          },
+        };
+      } else {
+        throw new FeatureFlagWithIdNotFoundError(featureFlagIdId);
+      }
     }
 
     const models = await this.prismaService.featureFlag.findMany({
