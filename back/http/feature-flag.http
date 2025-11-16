@@ -15,7 +15,7 @@ Authorization: Bearer {{token}}
 %}
 
 ### get feature flag by name
-GET {{host}}/feature-flag/client?featureFlagName=Alterar Nome&appUserId=1256b4df-a0ee-4157-bfe8-5479d75bf120
+GET {{host}}/feature-flag/client?featureFlagName=Alterar Nome&appUserId=6a7e766c-faac-44d6-b3ae-f0dba2739557
 Content-Type: application/json
 Authorization: Bearer {{token}}
 x-api-token: 062cda98-9b2b-49a5-98b0-bbdd5f81d282

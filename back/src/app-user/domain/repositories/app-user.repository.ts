@@ -31,5 +31,6 @@ export namespace AppUserRepository {
       SearchResult
     > {
     assureAppUserExists(id: string): Promise<void>;
+    findIdByExternalId(id: string): Promise<string>;
   }
 }

@@ -16,7 +16,9 @@ import { ListFeatureFlagsByIdsUsecase } from '@/feature-flag/application/usecase
 import { UserFeatureFlagsRepository } from '@/user-feature-flags/domain/repositories/user-feature-flags.repository';
 import { UserFeatureFlagsPrismaRepository } from '@/user-feature-flags/infrastructure/database/prisma/repositories/user-feature-flags-prisma.repository';
 import { ClientUserService } from '@/auth/infrastructure/client-user.service';
-import {ListFeatureFlagsByNamesUsecase} from "@/feature-flag/application/usecases/list-feature-flags-by-names.usecase";
+import { ListFeatureFlagsByNamesUsecase } from '@/feature-flag/application/usecases/list-feature-flags-by-names.usecase';
+import { AppUserRepository } from '@/app-user/domain/repositories/app-user.repository';
+import { AppUserPrismaRepository } from '@/app-user/infrastructure/database/prisma/repositories/app-user-prisma.repository';
 
 @Module({
   imports: [AuthModule, AppUserModule],
@@ -38,6 +40,13 @@ import {ListFeatureFlagsByNamesUsecase} from "@/feature-flag/application/usecase
       provide: 'UserRepository',
       useFactory: (prismaService: PrismaService) => {
         return new UserPrismaRepository(prismaService);
+      },
+      inject: ['PrismaService'],
+    },
+    {
+      provide: 'AppUserRepository',
+      useFactory: (prismaService: PrismaService) => {
+        return new AppUserPrismaRepository(prismaService);
       },
       inject: ['PrismaService'],
     },
@@ -67,26 +76,38 @@ import {ListFeatureFlagsByNamesUsecase} from "@/feature-flag/application/usecase
       useFactory: (
         featureFlagRepository: FeatureFlagRepository.Repository,
         userFeatureFlagsRepository: UserFeatureFlagsRepository.Repository,
+        appUserRepository: AppUserRepository.Repository,
       ) => {
-        return new ListFeatureFlagsByIdsUsecase.UseCase(
+        return new ListFeatureFlagsByNamesUsecase.UseCase(
           featureFlagRepository,
           userFeatureFlagsRepository,
+          appUserRepository,
         );
       },
-      inject: ['FeatureFlagRepository', 'UserFeatureFlagsRepository'],
+      inject: [
+        'FeatureFlagRepository',
+        'UserFeatureFlagsRepository',
+        'AppUserRepository',
+      ],
     },
     {
       provide: ListFeatureFlagsByNamesUsecase.UseCase,
       useFactory: (
         featureFlagRepository: FeatureFlagRepository.Repository,
         userFeatureFlagsRepository: UserFeatureFlagsRepository.Repository,
+        appUserRepository: AppUserRepository.Repository,
       ) => {
         return new ListFeatureFlagsByNamesUsecase.UseCase(
           featureFlagRepository,
           userFeatureFlagsRepository,
+          appUserRepository,
         );
       },
-      inject: ['FeatureFlagRepository', 'UserFeatureFlagsRepository'],
+      inject: [
+        'FeatureFlagRepository',
+        'UserFeatureFlagsRepository',
+        'AppUserRepository',
+      ],
     },
     {
       provide: UpdateFeatureFlagUsecase.UseCase,

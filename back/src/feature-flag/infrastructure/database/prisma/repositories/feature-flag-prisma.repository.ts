@@ -7,6 +7,7 @@ import { SortOrderEnum } from '@/shared/domain/repositories/searchable-repositor
 import { AbstractPrismaRepository } from '@/shared/infrastructure/repository/abstract-prisma.repository';
 import { FeatureFlag, Prisma } from '@prisma/client';
 import { isUndefined } from '@nestjs/common/utils/shared.utils';
+import { AppUserWithIdNotFoundError } from '@/app-user/infrastructure/errors/app-user-with-id-not-found-error';
 
 export class FeatureFlagPrismaRepository
   extends AbstractPrismaRepository
@@ -211,7 +212,7 @@ export class FeatureFlagPrismaRepository
           },
         };
       } else {
-        throw new FeatureFlagWithIdNotFoundError(featureFlagIdId);
+        throw new AppUserWithIdNotFoundError(normalizedAppUserExternalId);
       }
     }
 

@@ -170,14 +170,31 @@ export class FeatureFlagController {
   @UseGuards(ClientUserGuard)
   @Get('client')
   async clientFeatureFlag(@Query() searchParams: ClientFeatureFlagsDto) {
+    const featureFlagOutput = await this.findFeatureFlagByNameAndAppUser(
+      searchParams.featureFlagName,
+      searchParams.appUserId,
+    );
+
+    return FeatureFlagController.featureFlagToResponse(featureFlagOutput);
+  }
+
+  private async findFeatureFlagByNameAndAppUser(
+    featureFlagName: string,
+    appUserId?: string,
+  ): Promise<FeatureFlagOutput> {
     const { items } = await this.listFeatureFlagsByNamesUseCase.execute({
-      names: [searchParams.featureFlagName],
-      appUserId: searchParams.appUserId,
+      names: [featureFlagName],
+      appUserId,
     });
 
-    if (items.length <= 0)
-      throw new FeatureFlagWithNameNotFoundError(searchParams.featureFlagName);
+    if (items.length > 0) {
+      return items[0];
+    }
 
-    return FeatureFlagController.featureFlagToResponse(items[0]);
+    if (appUserId) {
+      return this.findFeatureFlagByNameAndAppUser(featureFlagName);
+    }
+
+    throw new FeatureFlagWithNameNotFoundError(featureFlagName);
   }
 }
