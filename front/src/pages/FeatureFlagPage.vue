@@ -1,21 +1,5 @@
 <template>
   <div class="feature-flags-container">
-    <q-header elevated class="glass-header">
-      <q-toolbar class="q-px-lg">
-        <div class="row items-center q-gutter-sm">
-          <q-icon name="flag" size="28px" color="primary" />
-          <q-toolbar-title class="text-weight-bold">Feature Flags</q-toolbar-title>
-        </div>
-        <q-space />
-        <q-btn flat round dense icon="settings" class="q-mr-sm" @click="$router.push('/configure')">
-          <q-tooltip>Settings</q-tooltip>
-        </q-btn>
-        <q-btn flat round dense icon="logout" @click="handleLogout">
-          <q-tooltip>Logout</q-tooltip>
-        </q-btn>
-      </q-toolbar>
-    </q-header>
-
     <q-page class="page-content">
       <div class="content-wrapper">
         <!-- Header Section -->
@@ -26,7 +10,7 @@
               <p class="page-subtitle">Control feature rollouts with ease</p>
             </div>
             <div class="header-right">
-              <div class = "right-item-1">
+              <div class="right-item-1">
                 <q-btn
                   unelevated
                   label="Create New Flag"
@@ -38,7 +22,7 @@
                 />
               </div>
 
-              <div class = "right-item-2">
+              <div class="right-item-2">
                 <q-btn
                   unelevated
                   label="Create New User"
@@ -49,14 +33,13 @@
                   @click="showCreateUserDialog = true"
                 />
               </div>
-              
             </div>
           </div>
         </div>
 
         <div class="search-section">
           <div class="row items-center q-gutter-md">
-            <div class="col-12 col-md-8 col-lg-9" style="flex-basis: 77.5%;">
+            <div class="col-12 col-md-8 col-lg-9" style="flex-basis: 77.5%">
               <q-input
                 v-model="searchQuery"
                 outlined
@@ -78,7 +61,7 @@
                 </template>
               </q-input>
             </div>
-            <div class="col-12 col-md-4 col-lg-2 q-ml-auto" style="flex-basis: 20%;">
+            <div class="col-12 col-md-4 col-lg-2 q-ml-auto" style="flex-basis: 20%">
               <q-select
                 v-model="selectedSearchUserId"
                 :options="appUsers"
@@ -92,7 +75,7 @@
                 clearable
                 color="primary"
                 size="lg"
-                class = "filter-user"
+                class="filter-user"
                 @update:model-value="handleUserFilterChange"
               >
                 <template v-slot:prepend>
@@ -428,7 +411,11 @@
     </q-dialog>
 
     <!-- Create New User Dialog -->
-    <q-dialog v-model="showCreateUserDialog" transition-show="slide-up" transition-hide="slide-down">
+    <q-dialog
+      v-model="showCreateUserDialog"
+      transition-show="slide-up"
+      transition-hide="slide-down"
+    >
       <q-card class="dialog-card">
         <q-card-section class="dialog-header">
           <div class="dialog-title-section">
@@ -466,7 +453,7 @@
                 class="form-border"
                 :input-style="{ color: 'black' }"
                 :rules="[(val: string | null | undefined) => !!val || 'Email is required']"
-                rows = 1
+                rows="1"
               />
             </div>
 
@@ -479,7 +466,7 @@
                 class="form-border"
                 :input-style="{ color: 'black' }"
                 :rules="[(val: string | null | undefined) => !!val || 'External UUID is required']"
-                rows = 1
+                rows="1"
               />
             </div>
 
@@ -569,7 +556,9 @@
                     <template v-slot:selected>
                       <div v-if="selectedUser" class="row items-center no-wrap full-width">
                         <q-icon name="person" color="white" class="q-mr-sm" />
-                        <span class="text-white" style="font-weight: 500; font-size: 14px">{{ selectedUser.name }}</span>
+                        <span class="text-white" style="font-weight: 500; font-size: 14px">{{
+                          selectedUser.name
+                        }}</span>
                       </div>
                       <span v-else class="text-white" style="opacity: 0.8">Filter by user</span>
                     </template>
@@ -596,8 +585,12 @@
             <!-- Show message when all users are added -->
             <div v-else class="text-center q-pa-md">
               <q-icon name="check_circle" size="48px" color="positive" />
-              <div class="q-mt-md text-grey-6">All available users have been added to this flag</div>
-              <div class="q-mt-sm text-caption text-grey-5">You can remove users below to add new ones</div>
+              <div class="q-mt-md text-grey-6">
+                All available users have been added to this flag
+              </div>
+              <div class="q-mt-sm text-caption text-grey-5">
+                You can remove users below to add new ones
+              </div>
             </div>
 
             <!-- Users List - Always show if there are users in the flag -->
@@ -611,11 +604,7 @@
               </div>
               <div v-else class="user-list">
                 <q-list bordered separator>
-                  <q-item
-                    v-for="userFlag in flagUsers"
-                    :key="userFlag.id"
-                    class="user-list-item"
-                  >
+                  <q-item v-for="userFlag in flagUsers" :key="userFlag.id" class="user-list-item">
                     <q-item-section avatar>
                       <q-icon name="person" color="primary" size="24px" />
                     </q-item-section>
@@ -635,7 +624,6 @@
                       class="custom-toggle"
                     />
                     <q-item-section side>
-                      
                       <q-btn
                         flat
                         round
@@ -743,7 +731,6 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
-import { useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
 import type { FeatureFlag } from 'src/types/feature-flag';
 import type { AppUser } from 'src/types/app-user';
@@ -753,7 +740,6 @@ import type { UserFeatureFlag } from 'src/types/user-feature-flag';
 import { useAppUserStore } from 'src/stores/app-user';
 import { useUserFeatureFlagStore } from 'src/stores/user-feature-flag';
 
-const router = useRouter();
 const $q = useQuasar();
 
 const featureFlags = ref<FeatureFlag[]>([]);
@@ -781,7 +767,6 @@ const flagUsers = ref<UserFeatureFlag[]>([]);
 const loadingFlagUsers = ref(false);
 const removingUserId = ref<string | null>(null);
 
-
 const newFlag = ref({
   name: '',
   description: '',
@@ -800,7 +785,7 @@ const newAppUser = ref({
   email: '',
   externalId: '',
   id: '',
-})
+});
 
 const filteredFlags = computed(() => {
   if (!searchQuery.value) {
@@ -811,12 +796,16 @@ const filteredFlags = computed(() => {
     (flag: FeatureFlag) =>
       flag.name.toLowerCase().includes(query) ||
       flag.description?.toLowerCase().includes(query) ||
-      flag.id.toLowerCase().includes(query)
+      flag.id.toLowerCase().includes(query),
   );
 });
 
-const enabledCount = computed(() => filteredFlags.value.filter((f: FeatureFlag) => f.enabled).length);
-const disabledCount = computed(() => filteredFlags.value.filter((f: FeatureFlag) => !f.enabled).length);
+const enabledCount = computed(
+  () => filteredFlags.value.filter((f: FeatureFlag) => f.enabled).length,
+);
+const disabledCount = computed(
+  () => filteredFlags.value.filter((f: FeatureFlag) => !f.enabled).length,
+);
 
 // Filter out users that are already added to the flag
 const availableUsers = computed(() => {
@@ -1081,8 +1070,8 @@ const fetchFlagUsers = async (featureFlagId: string) => {
     flagUsers.value = users;
   } catch (error: unknown) {
     const message =
-      (error as { response?: { data?: { message?: string } } })?.response?.data
-        ?.message || 'Failed to fetch flag users';
+      (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+      'Failed to fetch flag users';
     $q.notify({
       type: 'negative',
       message,
@@ -1122,8 +1111,7 @@ const handleRemoveUser = async (userFeatureFlag: UserFeatureFlag) => {
   } catch (error: any) {
     $q.notify({
       type: 'negative',
-      message:
-        error.response?.data?.message || 'Failed to remove user from feature flag',
+      message: error.response?.data?.message || 'Failed to remove user from feature flag',
       position: 'top',
     });
   } finally {
@@ -1158,9 +1146,8 @@ const handleAddUserToFlag = async () => {
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    const errorMessage =
-      error.response?.data?.message || 'Failed to add user to feature flag';
-    
+    const errorMessage = error.response?.data?.message || 'Failed to add user to feature flag';
+
     // If it's a conflict error (409), show a more user-friendly message
     if (error.response?.status === 409) {
       $q.notify({
@@ -1207,12 +1194,6 @@ const toggleUserFeatureFlag = async (user: UserFeatureFlag) => {
       position: 'top',
     });
   }
-};
-
-const handleLogout = async () => {
-  localStorage.removeItem('authToken');
-  localStorage.removeItem('user');
-  await router.push('/login');
 };
 </script>
 
@@ -1710,7 +1691,7 @@ const handleLogout = async () => {
 .filter-user {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   border-radius: 13px;
-  background-color: #227BD3;
+  background-color: #227bd3;
   transition: all 0.25s ease;
 
   :deep(.q-field__control) {

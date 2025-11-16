@@ -29,17 +29,18 @@ const copyToClipboard = async (text: string) => {
 <template>
   <q-layout view="lHh Lpr lFf">
     <q-header class="glass-header">
-      <q-toolbar>
+      <q-toolbar class="q-px-lg">
+        <div class="row items-center q-gutter-sm">
+          <q-icon name="flag" size="28px" color="primary" />
+          <q-toolbar-title class="text-weight-bold">Feature Flags</q-toolbar-title>
+        </div>
         <q-space />
-        <q-toolbar-title @click="$router.push({ name: Routes.FEATURE_FLAGS })">
-          {{ $t('common.pageTitle') }}</q-toolbar-title
-        >
         <q-btn icon="account_circle" round flat dense @click="drawer = !drawer"></q-btn>
       </q-toolbar>
     </q-header>
 
     <q-drawer side="right" v-model="drawer">
-      <q-scroll-area class="fit">
+      <q-scroll-area class="fit q-pt-xl">
         <UserInfo />
         <q-list class="menu-list">
           <q-item clickable v-ripple @click="logout">
