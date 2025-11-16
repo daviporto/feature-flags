@@ -7,6 +7,7 @@ import { SortOrderEnum } from '@/shared/domain/repositories/searchable-repositor
 import { AbstractPrismaRepository } from '@/shared/infrastructure/repository/abstract-prisma.repository';
 import { FeatureFlag, Prisma } from '@prisma/client';
 import { isUndefined } from '@nestjs/common/utils/shared.utils';
+import { AppUserWithIdNotFoundError } from '@/app-user/infrastructure/errors/app-user-with-id-not-found-error';
 
 export class FeatureFlagPrismaRepository
   extends AbstractPrismaRepository
@@ -102,7 +103,7 @@ export class FeatureFlagPrismaRepository
       },
     };
 
-    return await this.filterByAppUserId(appUserId, where);
+    return await this.filterByAppUserId(appUserId, uniqueIds[0], where);
   }
 
   async findByNames(
@@ -131,7 +132,7 @@ export class FeatureFlagPrismaRepository
       },
     };
 
-    return await this.filterByAppUserId(appUserId, where);
+    return await this.filterByAppUserId(appUserId, uniqueNames[0], where);
   }
 
   async update(entity: FeatureFlagEntity): Promise<void> {
@@ -192,17 +193,27 @@ export class FeatureFlagPrismaRepository
   }
 
   private async filterByAppUserId(
-    appUserId: string,
+    appUserExternalId: string,
+    featureFlagIdId: string,
     where: Prisma.FeatureFlagWhereInput,
   ) {
-    const normalizedAppUserId = appUserId?.trim();
+    const normalizedAppUserExternalId = appUserExternalId?.trim();
 
-    if (normalizedAppUserId) {
-      where['targetUsers'] = {
-        some: {
-          userId: normalizedAppUserId,
-        },
-      };
+    if (normalizedAppUserExternalId) {
+      const appUser = await this.prismaService.appUser.findUnique({
+        where: { externalId: normalizedAppUserExternalId },
+        select: { id: true },
+      });
+
+      if (appUser) {
+        where['targetUsers'] = {
+          some: {
+            userId: appUser.id,
+          },
+        };
+      } else {
+        throw new AppUserWithIdNotFoundError(normalizedAppUserExternalId);
+      }
     }
 
     const models = await this.prismaService.featureFlag.findMany({

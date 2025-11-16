@@ -6,6 +6,7 @@ import {
 import { UserFeatureFlagsRepository } from '@/user-feature-flags/domain/repositories/user-feature-flags.repository';
 import { UserFeatureFlagsOutputMapper } from '@/user-feature-flags/application/dtos/user-feature-flags-output';
 import { FeatureFlagRepository } from '@/feature-flag/domain/repositories/feature-flag.repository';
+import { AppUserRepository } from '@/app-user/domain/repositories/app-user.repository';
 
 export namespace AbstractListFeatureFlagsUsecase {
   export interface Input {
@@ -16,6 +17,7 @@ export namespace AbstractListFeatureFlagsUsecase {
     constructor(
       protected featureFlagRepository: FeatureFlagRepository.Repository,
       protected userFeatureFlagsRepository: UserFeatureFlagsRepository.Repository,
+      protected appUserRepository: AppUserRepository.Repository,
     ) {}
 
     protected async filterByAppUser(
@@ -28,11 +30,15 @@ export namespace AbstractListFeatureFlagsUsecase {
       );
 
       if (input.appUserId) {
+        const appUserId = await this.appUserRepository.findIdByExternalId(
+          input.appUserId,
+        );
+
         const searchParams = new UserFeatureFlagsRepository.SearchParams({
           page: 1,
           perPage: Math.max(lenght, 10),
           filter: {
-            userId: input.appUserId,
+            userId: appUserId,
           },
         });
 

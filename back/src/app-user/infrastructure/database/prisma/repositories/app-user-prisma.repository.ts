@@ -90,6 +90,14 @@ export class AppUserPrismaRepository
     return this._get(id);
   }
 
+  async findIdByExternalId(id: string): Promise<string> {
+    const appUser = await this.prismaService.appUser.findFirst({
+      where: { externalId: id },
+    });
+
+    return appUser.id;
+  }
+
   async findAll(): Promise<AppUserEntity[]> {
     const models = await this.prismaService.appUser.findMany();
 

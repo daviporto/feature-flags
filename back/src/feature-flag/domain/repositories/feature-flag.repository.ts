@@ -39,6 +39,9 @@ export namespace FeatureFlagRepository {
 
     findByIds(ids: string[], appUserId?: string): Promise<FeatureFlagEntity[]>;
 
-    findByNames(names: string[], appUserId?: string): Promise<FeatureFlagEntity[]>;
+    findByNames(
+      names: string[],
+      appUserId?: string,
+    ): Promise<FeatureFlagEntity[]>;
   }
 }

@@ -53,4 +53,10 @@ export class AppUserInMemoryRepository
 
     return Promise.resolve();
   }
+
+  findIdByExternalId(id: string): Promise<string> {
+    return Promise.resolve(
+      this.items.find((item) => item.externalId === id)?.id,
+    );
+  }
 }
