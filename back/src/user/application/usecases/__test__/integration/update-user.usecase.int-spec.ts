@@ -1,7 +1,10 @@
 import { PrismaClient } from '@prisma/client';
 import { UserPrismaRepository } from '@/user/infrastructure/database/prisma/repositories/user-prisma.repository';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setUpPrismaTest } from '@/shared/infrastructure/database/prisma/testing/set-up-prisma-test';
+import {
+  resetDatabase,
+  setUpPrismaTest,
+} from '@/shared/infrastructure/database/prisma/testing/set-up-prisma-test';
 import { DatabaseModule } from '@/shared/infrastructure/database/database.module';
 import { UserDataBuilder } from '@/user/domain/testing/helper/user-data-builder';
 import { faker } from '@faker-js/faker';
@@ -26,7 +29,7 @@ describe('Update user usecase integration tests', () => {
 
   beforeEach(async () => {
     sut = new UpdateUserUsecase.UseCase(repository);
-    await prismaService.user.deleteMany();
+    await resetDatabase(prismaService);
   });
 
   afterAll(async () => {

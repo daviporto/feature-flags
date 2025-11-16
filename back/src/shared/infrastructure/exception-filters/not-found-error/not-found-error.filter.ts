@@ -4,11 +4,13 @@ import { UserWithEmailNotFoundError } from '@/user/domain/errors/user-with-email
 import { UserWithIdNotFoundError } from '@/user/infrastructure/errors/user-with-id-not-found-error';
 import { FeatureFlagWithIdNotFoundError } from '@/feature-flag/infrastructure/errors/feature-flag-with-id-not-found-error';
 import { AppUserWithIdNotFoundError } from '@/app-user/infrastructure/errors/app-user-with-id-not-found-error';
+import { FeatureFlagWithNameNotFoundError } from '@/feature-flag/infrastructure/errors/feature-flag-with-name-not-found-error';
 
 @Catch(
   UserWithEmailNotFoundError,
   UserWithIdNotFoundError,
   FeatureFlagWithIdNotFoundError,
+  FeatureFlagWithNameNotFoundError,
   AppUserWithIdNotFoundError,
 )
 export class NotFoundErrorFilter implements ExceptionFilter {

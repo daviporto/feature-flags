@@ -4,27 +4,30 @@ import { ListFeatureFlagsUsecase } from '@/feature-flag/application/usecases/lis
 import { UserFeatureFlagsRepository } from '@/user-feature-flags/domain/repositories/user-feature-flags.repository';
 import { AbstractListFeatureFlagsUsecase } from '@/feature-flag/application/usecases/abstract-list-feature-flag-usecase';
 
-export namespace ListFeatureFlagsByIdsUsecase {
+export namespace ListFeatureFlagsByNamesUsecase {
   export interface Input extends AbstractListFeatureFlagsUsecase.Input {
-    ids: string[];
+    names: string[];
   }
 
   export type Output = ListFeatureFlagsUsecase.Output;
 
   export class UseCase
     extends AbstractListFeatureFlagsUsecase.AbstractListFeatureFlagUsecase
-    implements UseCaseInterface<Input, ListFeatureFlagsByIdsUsecase.Output>
+    implements UseCaseInterface<Input, ListFeatureFlagsByNamesUsecase.Output>
   {
-    async execute(input: Input): Promise<ListFeatureFlagsByIdsUsecase.Output> {
-      const uniqueIds = Array.from(
+    async execute(
+      input: Input,
+    ): Promise<ListFeatureFlagsByNamesUsecase.Output> {
+      const uniqueNames = Array.from(
         new Set(
-          input.ids
-            ?.map((id) => id?.trim())
-            .filter((id): id is string => Boolean(id && id.length)) ?? [],
+          input.names
+            ?.map((name) => name?.trim())
+            .filter((name): name is string => Boolean(name && name.length)) ??
+            [],
         ),
       );
 
-      if (!uniqueIds.length) {
+      if (!uniqueNames.length) {
         return {
           items: [],
           total: 0,
@@ -34,12 +37,12 @@ export namespace ListFeatureFlagsByIdsUsecase {
         };
       }
 
-      const entities = await this.featureFlagRepository.findByIds(
-        uniqueIds,
+      const entities = await this.featureFlagRepository.findByNames(
+        uniqueNames,
         input.appUserId,
       );
 
-      return await this.filterByAppUser(entities, input, uniqueIds.length);
+      return await this.filterByAppUser(entities, input, uniqueNames.length);
     }
   }
 }

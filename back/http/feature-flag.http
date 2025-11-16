@@ -1,26 +1,31 @@
-### Get Feature Flags
-GET {{host}}/feature-flag?filter[enabled]=0
-Authorization: Bearer {{token}}
-
-> {%
-    client.test('sucess response', () => {
-        client.assert(response.status === 200, 'response status is not 200')
-    })
-%}
-
-### Get Feature Flags
+### Create feature flag
 POST {{host}}/feature-flag
-Authorization: Bearer {{token}}
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
-  "name": "test 4",
-  "description": "test ff",
+  "name": "Test 3",
+  "description": "test@user.com",
   "enabled": true
 }
-
 > {%
-    client.test('sucess response', () => {
-        client.assert(response.status === 200, 'response status is not 200')
-    })
+  client.test('sucess response', () => {
+    client.assert(response.status === 201, 'response status is not 201')
+  })
 %}
+
+### get feature flag by name
+GET {{host}}/feature-flag/client?featureFlagName=Test 3&appUserId=e90184af-7daf-467e-817b-4319b2255278
+Content-Type: application/json
+Authorization: Bearer {{token}}
+x-api-token: 062cda98-9b2b-49a5-98b0-bbdd5f81d282
+
+{
+  "featureFlagName": "Test 3"
+}
+> {%
+  client.test('sucess response', () => {
+    client.assert(response.status === 201, 'response status is not 201')
+  })
+%}
+

@@ -102,21 +102,36 @@ export class FeatureFlagPrismaRepository
       },
     };
 
-    const normalizedAppUserId = appUserId?.trim();
+    return await this.filterByAppUserId(appUserId, where);
+  }
 
-    if (normalizedAppUserId) {
-      where['targetUsers'] = {
-        some: {
-          userId: normalizedAppUserId,
-        },
-      };
+  async findByNames(
+    names: string[],
+    appUserId?: string,
+  ): Promise<FeatureFlagEntity[]> {
+    if (!names?.length) {
+      return [];
     }
 
-    const models = await this.prismaService.featureFlag.findMany({
-      where,
-    });
+    const uniqueNames = Array.from(
+      new Set(
+        names
+          .map((name) => name?.trim())
+          .filter((name): name is string => Boolean(name?.length)),
+      ),
+    );
 
-    return models.map(FeatureFlagModelMapper.toEntity);
+    if (!uniqueNames.length) {
+      return [];
+    }
+
+    const where: Prisma.FeatureFlagWhereInput = {
+      name: {
+        in: uniqueNames,
+      },
+    };
+
+    return await this.filterByAppUserId(appUserId, where);
   }
 
   async update(entity: FeatureFlagEntity): Promise<void> {
@@ -158,6 +173,12 @@ export class FeatureFlagPrismaRepository
     });
   }
 
+  public async assureFeatureFlagExists(id: string): Promise<void> {
+    if ((await this.prismaService.featureFlag.count({ where: { id } })) === 0) {
+      throw new FeatureFlagWithIdNotFoundError(id);
+    }
+  }
+
   protected async _get(id: string): Promise<FeatureFlagEntity> {
     try {
       const featureFlag = await this.prismaService.featureFlag.findUnique({
@@ -168,6 +189,27 @@ export class FeatureFlagPrismaRepository
     } catch {
       throw new FeatureFlagWithIdNotFoundError(id);
     }
+  }
+
+  private async filterByAppUserId(
+    appUserId: string,
+    where: Prisma.FeatureFlagWhereInput,
+  ) {
+    const normalizedAppUserId = appUserId?.trim();
+
+    if (normalizedAppUserId) {
+      where['targetUsers'] = {
+        some: {
+          userId: normalizedAppUserId,
+        },
+      };
+    }
+
+    const models = await this.prismaService.featureFlag.findMany({
+      where,
+    });
+
+    return models.map(FeatureFlagModelMapper.toEntity);
   }
 
   private async executeQueries(
@@ -233,11 +275,5 @@ export class FeatureFlagPrismaRepository
     }
 
     return filtersObject;
-  }
-
-  public async assureFeatureFlagExists(id: string): Promise<void> {
-    if ((await this.prismaService.featureFlag.count({ where: { id } })) === 0) {
-      throw new FeatureFlagWithIdNotFoundError(id);
-    }
   }
 }
