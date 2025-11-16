@@ -2,7 +2,7 @@
   <q-item class="q-pa-md">
     <q-item-section avatar>
       <q-avatar size="56px">
-        <img src="https://cdn.quasar.dev/img/avatar.png" alt="Avatar image" />
+        {{ `${user?.name[0]}${user?.name[1]}` }}
       </q-avatar>
     </q-item-section>
     <q-item-section>
