@@ -45,10 +45,25 @@ http://localhost:9000/
 <br>
 
 ## Como utilizar
+- Ao abrir a interface em um navegador, você irá ver a página de login.<br>
+<div align="center">
+  <img src="img/sign-in.png" />
+  <p><i>Página de sign in</i></p>
+</div>
 
-- Abra a interface no navegador, você verá uma página parecida com a seguir
-![alt text](img/principal-page.png)
-- A seguir são listadas o que cada funcionalidade permite fazer
+- Caso não tenha um login, faça seu cadastro com seu nome, email e senha.<br>
+<div align="center">
+  <img src="img/sign-up.png" />
+  <p><i>Página de sign up</i></p>
+</div>
+
+- Ao logar, você verá uma página parecida com a seguir<br>
+<div align="center">
+  <img src="img/principal-page.png" />
+  <p><i>Página principal da aplicação</i></p>
+</div>
+A seguir são listadas o que cada funcionalidade da página principal da aplicação permite fazer.
+
 ### 1. Cria uma nova feature flag
 Abre um modal onde você pode criar uma flag informando:
 - Nome (obrigatório)
@@ -114,8 +129,11 @@ Exibe informações completas sobre a flag, sendo elas:
 
 ## API Token
 Para consumir a API de features flags via cliente externo, como o frontend, é necessário enviar o API Token do usuário via header.
-Esse token pode ser copiado no painel do usuário (ícone de perfil no canto superior direito):
-![alt text](img/api-token.png)
+Esse token pode ser copiado no painel do usuário (ícone de perfil no canto superior direito):<br>
+<div align="center">
+  <img src="img/api-token.png" />
+  <p><i>Painel do usuário</i></p>
+</div>
 
 <br>
 
