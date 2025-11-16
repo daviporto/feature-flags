@@ -3,12 +3,11 @@ import { IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class ClientFeatureFlagsDto {
   @ApiProperty({
-    description: 'The feature flag ID',
-    example: '9de0d313-2302-48e6-b775-6e93922ad38a',
+    description: 'The feature flag Name',
+    example: 'feature flag 1',
   })
   @IsString()
-  @IsUUID()
-  featureFlagId: string;
+  featureFlagName: string;
 
   @ApiPropertyOptional({
     description: 'The app user id for feature flag',

@@ -86,4 +86,25 @@ export class FeatureFlagInMemoryRepository
 
     return this.items.filter((item) => normalizedIds.has(item.id));
   }
+
+  async findByNames(
+    names: string[],
+    _appUserId?: string,
+  ): Promise<FeatureFlagEntity[]> {
+    if (!names?.length) {
+      return [];
+    }
+
+    const normalizedNames = new Set(
+      names
+        .map((name) => name?.trim())
+        .filter((name): name is string => Boolean(name && name.length)),
+    );
+
+    if (!normalizedNames.size) {
+      return [];
+    }
+
+    return this.items.filter((item) => normalizedNames.has(item.id));
+  }
 }
